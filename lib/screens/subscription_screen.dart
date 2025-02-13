@@ -48,26 +48,6 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     return selectedDates.length;
   }
 
-  Future<void> _selectDate(BuildContext context, bool isStartDate) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: isStartDate
-          ? (startDate ?? DateTime.now())
-          : (endDate ?? DateTime.now()),
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2101),
-    );
-    if (picked != null && picked != (isStartDate ? startDate : endDate)) {
-      setState(() {
-        if (isStartDate) {
-          startDate = picked;
-        } else {
-          endDate = picked;
-        }
-      });
-      _generateDates();
-    }
-  }
 
   Future<void> _selectCustomDateRange(BuildContext context) async {
     final DateTimeRange? picked = await showDateRangePicker(

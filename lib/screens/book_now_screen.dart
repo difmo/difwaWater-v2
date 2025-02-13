@@ -2,9 +2,9 @@ import 'dart:ui';
 
 import 'package:difwa/controller/bottle_controller.dart';
 import 'package:difwa/routes/app_routes.dart';
+import 'package:difwa/widgets/custom_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:difwa/config/app_color.dart';
 
 class BookNowScreen extends StatefulWidget {
   const BookNowScreen({super.key});
@@ -23,57 +23,10 @@ class _BookNowScreenState extends State<BookNowScreen> {
     final BottleController bottleController = Get.put(BottleController());
 
     return Scaffold(
-      backgroundColor: AppColors.mywhite,
-      appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Left side - Water Drop Icon and Text
-            Row(
-              children: [
-                Container(
-                  decoration: const BoxDecoration(
-                    color: AppColors.myblack, // Black background
-                    shape: BoxShape.circle, // Circular shape
-                  ),
-                  padding: EdgeInsets.all(8), // Adjust padding to fit the icon
-                  child: const Icon(
-                    Icons.water_drop,
-                    color: Colors.white,
-                    size: 25, // Adjust the icon size
-                  ),
-                ),
-                SizedBox(width: 8),
-                const Text(
-                  'PureHydrateDrop',
-                  style: TextStyle(
-                    color: AppColors.myblack,
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            // Right side - Notification Icon
-            Container(
-              decoration: const BoxDecoration(
-                color: AppColors.primary, // Black background
-                shape: BoxShape.circle, // Circular shape
-              ),
-              padding: EdgeInsets.all(8), // Adjust padding to fit the icon
-              child: const Icon(
-                Icons.notification_add,
-                color: Colors.white,
-                size: 20, // Adjust the icon size
-              ),
-            ),
-          ],
+      appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(60),
+          child: CustomAppbar(onProfilePressed: (){}, onNotificationPressed: (){}, onMenuPressed: (){}, hasNotifications: true)
         ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.blue),
-      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -81,7 +34,7 @@ class _BookNowScreenState extends State<BookNowScreen> {
             children: [
               Obx(() {
                 if (bottleController.bottleItems.isEmpty) {
-                  return const CircularProgressIndicator(); // Show loading indicator
+                  return const CircularProgressIndicator(); 
                 }
 
                 return SizedBox(
@@ -96,17 +49,20 @@ class _BookNowScreenState extends State<BookNowScreen> {
                       String imagePath;
                       switch (bottle['size']) {
                         case 15:
-                          imagePath = 'assets/images/water.jpg'; // 15L bottle image
+                          imagePath =
+                              'assets/images/water.jpg'; 
                           break;
                         case 20:
-                          imagePath = 'assets/images/water.jpg'; // 20L bottle image
+                          imagePath =
+                              'assets/images/water.jpg'; 
                           break;
                         case 10:
-                          imagePath = 'assets/images/water.jpg'; // 10L bottle image
+                          imagePath =
+                              'assets/images/water.jpg'; 
                           break;
                         default:
-                          imagePath = 'assets/images/water.jpg'; // Default image
-                          break;
+                          imagePath =
+                              'assets/images/water.jpg';                         break;
                       }
 
                       return GestureDetector(
@@ -121,7 +77,7 @@ class _BookNowScreenState extends State<BookNowScreen> {
                           ),
                           elevation: 4,
                           color: isSelected
-                              ? AppColors.secondary
+                              ? Colors.amber
                               : Colors.white, // Highlight selected card
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
@@ -164,7 +120,7 @@ class _BookNowScreenState extends State<BookNowScreen> {
                   borderRadius: BorderRadius.circular(16.0),
                 ),
                 elevation: 4,
-                color: AppColors.secondary,
+                color: Colors.black,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -224,13 +180,11 @@ class _BookNowScreenState extends State<BookNowScreen> {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      if (_selectedIndex !=
-                          -1) // Show selected bottle details
+                      if (_selectedIndex != -1) // Show selected bottle details
                         Column(
                           children: [
                             Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 const Text('Water Price:'),
                                 Text(
@@ -240,8 +194,7 @@ class _BookNowScreenState extends State<BookNowScreen> {
                               ],
                             ),
                             Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 const Text('Bottle Price:'),
                                 Text(
@@ -254,8 +207,7 @@ class _BookNowScreenState extends State<BookNowScreen> {
                             ),
                             const Divider(),
                             Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 const Text(
                                   'Total Price:',
@@ -290,7 +242,7 @@ class _BookNowScreenState extends State<BookNowScreen> {
                       print("One-time order placed");
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary, // Button color
+                      backgroundColor: Colors.blue, // Button color
                       padding: const EdgeInsets.symmetric(
                           vertical: 16.0, horizontal: 32.0),
                       shape: RoundedRectangleBorder(
@@ -322,7 +274,7 @@ class _BookNowScreenState extends State<BookNowScreen> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
+                      backgroundColor: Colors.blueAccent,
                       padding: const EdgeInsets.symmetric(
                           vertical: 16.0, horizontal: 32.0),
                       shape: RoundedRectangleBorder(

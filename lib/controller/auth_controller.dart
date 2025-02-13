@@ -46,90 +46,70 @@ class AuthController extends GetxController {
         password: password,
       );
 
-      // After successful login, save user data and fetch user role
       print("hello1");
       await _saveUserDataemail(email); // Check if name is set in Firestore
       await _fetchUserRole();
       print("hello2");
 
-      // Navigate to dashboard based on user role
       _navigateToDashboard();
     } on FirebaseAuthException catch (e) {
-      // If there's an error during login, show a Snackbar with error message
       Get.snackbar('Error', e.message ?? 'An error occurred while logging in');
     } catch (e) {
-      // Catch any other errors that may happen (e.g., network errors, etc.)
       Get.snackbar('Error', 'An unexpected error occurred: $e');
     }
   }
     Future<void> loginwithemail(String email, String password) async {
     try {
-      // Sign in using email and password
       print("hello");
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      // After successful login, save user data and fetch user role
       print("hello1");
       await _fetchUserRole();
       print("hello2");
 
-      // Navigate to dashboard based on user role
       _navigateToDashboard();
     } on FirebaseAuthException catch (e) {
-      // If there's an error during login, show a Snackbar with error message
       Get.snackbar('Error', e.message ?? 'An error occurred while logging in');
     } catch (e) {
-      // Catch any other errors that may happen (e.g., network errors, etc.)
       Get.snackbar('Error', 'An unexpected error occurred: $e');
     }
   }
 Future<void> verifyUserExistenceAndLogin(String email, String password) async {
   try {
-    // Check if the user exists by trying to sign in
     print("Checking if user exists...");
     UserCredential userCredential = await _auth.signInWithEmailAndPassword(
       email: email,
       password: password,
     );
 
-    // If successful, proceed to check user data and navigate
     print("User found, verifying...");
-    await _saveUserDataemail(email); // Check if name is set in Firestore
+    await _saveUserDataemail(email);
     await _fetchUserRole();
     print("User verified");
 
-    // Navigate to the home page after successful login
     _navigateToHomePage();
   } on FirebaseAuthException catch (e) {
-    // If the error is related to user not found or wrong credentials
     if (e.code == 'user-not-found') {
       print("User not found, navigate to login page");
-      // Navigate to the login page
       _navigateToLoginPage();
     } else if (e.code == 'wrong-password') {
-      // Handle wrong password error specifically
       Get.snackbar('Error', 'Incorrect password. Please try again.');
     } else {
-      // Handle any other Firebase authentication errors
       Get.snackbar('Error', e.message ?? 'An error occurred while logging in');
     }
   } catch (e) {
-    // Catch any other errors that may happen (e.g., network errors, etc.)
     Get.snackbar('Error', 'An unexpected error occurred: $e');
   }
 }
 
-// Navigation methods for Home and Login pages
 void _navigateToHomePage() {
-  // Replace with your logic to navigate to the home page
-  Get.offNamed('/home'); // Example using GetX routing
+  Get.offNamed('/home'); 
 }
 
 void _navigateToLoginPage() {
-  // Replace with your logic to navigate to the login page
   Get.offNamed('/login'); // Example using GetX routing
 }
 

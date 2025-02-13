@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:difwa/controller/wallet_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class WalletScreen extends StatefulWidget {
   const WalletScreen({Key? key}) : super(key: key);
@@ -11,35 +10,17 @@ class WalletScreen extends StatefulWidget {
 }
 
 class _WalletScreenState extends State<WalletScreen> {
-  Razorpay? _razorpay;
   TextEditingController amountController = TextEditingController();
   WalletController? walletController;
 
   @override
   void initState() {
     super.initState();
-    _razorpay = Razorpay();
     walletController = WalletController(
-      razorpay: _razorpay!,
       context: context,
       amountController: amountController,
     );
-
-    _razorpay?.on(
-        Razorpay.EVENT_PAYMENT_SUCCESS, walletController!.handlePaymentSuccess);
-    _razorpay?.on(
-        Razorpay.EVENT_PAYMENT_ERROR, walletController!.handlePaymentError);
-    _razorpay?.on(
-        Razorpay.EVENT_EXTERNAL_WALLET, walletController!.handleExternalWallet);
-
-    // Fetch user wallet balance and listen for updates
     walletController?.fetchUserWalletBalance();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _razorpay?.clear();
   }
 
   @override
@@ -55,7 +36,7 @@ class _WalletScreenState extends State<WalletScreen> {
         ),
       ),
       body: Container(
-        color: Colors.white, // Set background color to white
+        color: Colors.white,
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -69,7 +50,6 @@ class _WalletScreenState extends State<WalletScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            // Display wallet balance with real-time updates
             StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection('difwa-users')
@@ -85,12 +65,12 @@ class _WalletScreenState extends State<WalletScreen> {
                 }
 
                 if (snapshot.hasData) {
-                  var userDoc = snapshot.data!;
-                  double walletBalance = userDoc['walletBalance'] ?? 0.0;
+                    var userDoc = snapshot.data!;
+                    double walletBalance = (userDoc['walletBalance'] is int)
+                      ? (userDoc['walletBalance'] as int).toDouble()
+                      : (userDoc['walletBalance'] ?? 0.0);
                   return Text(
                     '₹ ${walletBalance.toStringAsFixed(2)}',
-                    
-                      // "hgsjh",
                     style: const TextStyle(
                       color: Colors.blue,
                       fontWeight: FontWeight.bold,
@@ -101,12 +81,6 @@ class _WalletScreenState extends State<WalletScreen> {
                   return const Text('No data');
                 }
               },
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Add money to your Watrify wallet to have a hassle-free booking experience.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14),
             ),
             const SizedBox(height: 16),
             TextField(
@@ -132,14 +106,7 @@ class _WalletScreenState extends State<WalletScreen> {
                 ),
                 onPressed: () {
                   double amount = double.tryParse(amountController.text) ?? 0.0;
-                  if (amount >= 30.0) {
-                    walletController?.openCheckout(amount);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content:
-                          const Text("Please enter an amount greater than ₹30"),
-                    ));
-                  }
+                  walletController?.redirectToPaymentWebsite(amount);
                 },
                 child: const Text(
                   'Add Money To Wallet',

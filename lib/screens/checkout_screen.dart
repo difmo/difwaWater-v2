@@ -49,7 +49,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             .then((userDoc) {
           if (userDoc.exists) {
             setState(() {
-              walletBalance = userDoc['walletBalance'] ?? 0.0;
+              walletBalance = (userDoc['walletBalance'] is int)
+                  ? (userDoc['walletBalance'] as int).toDouble()
+                  : (userDoc['walletBalance'] ?? 0.0);
             });
           }
         });
@@ -230,7 +232,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
                   if (snapshot.hasData) {
                     var userDoc = snapshot.data!;
-                    double balance = userDoc['walletBalance'] ?? 0.0;
+                    double balance = (userDoc['walletBalance'] is int)
+                        ? (userDoc['walletBalance'] as int).toDouble()
+                        : (userDoc['walletBalance'] ?? 0.0);
+
                     return Text(
                       '₹ ${balance.toStringAsFixed(2)}',
                       style: const TextStyle(
