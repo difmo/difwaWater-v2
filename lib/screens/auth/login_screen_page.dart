@@ -1,5 +1,6 @@
 import 'package:difwa/config/app_color.dart';
 import 'package:difwa/controller/auth_controller.dart';
+import 'package:difwa/widgets/custom_inputfield.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:difwa/routes/app_routes.dart'; // Assuming you have routes setup
@@ -103,7 +104,6 @@ class _LoginScreenState extends State<LoginScreenPage> {
         title: const Text(
           'Login',
           style: TextStyle(color: AppColors.primary),
-          
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -128,40 +128,31 @@ class _LoginScreenState extends State<LoginScreenPage> {
             const SizedBox(height: 20),
 
             // Email TextField
-            TextField(
+            CommonTextField(
               controller: _emailController,
-              keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(
-                labelText: 'Email',
-                prefixIcon: const Icon(Icons.email),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                filled: true,
-                fillColor: AppColors.secondary,
-              ),
+              inputType: InputType.email,
+              onChanged: (String) {},
+              label: 'Email',
+              hint: 'Enter Your Email',
+              icon: Icons.email,
             ),
             const SizedBox(height: 16),
 
             // Password TextField
-            TextField(
+            CommonTextField(
               controller: _passwordController,
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'Password',
-                prefixIcon: const Icon(Icons.lock),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                filled: true,
-                fillColor: AppColors.secondary,
-              ),
+              inputType: InputType.visiblePassword,
+              onChanged: (String) {},
+              label: 'Password',
+              hint: 'Enter Your Password',
+              icon: Icons.lock,
+              suffixIcon: Icons.visibility_off,
             ),
             const SizedBox(height: 16),
 
             // Login Button
             SizedBox(
-               width: 140,
+              width: 140,
               child: ElevatedButton(
                 onPressed: isLoading ? null : _loginwithmail,
                 style: ElevatedButton.styleFrom(
@@ -191,8 +182,8 @@ class _LoginScreenState extends State<LoginScreenPage> {
                 TextButton(
                   onPressed: () {
                     // Navigate to Forgot Password page
-                    Get.toNamed(AppRoutes
-                        .login); // Assuming you have this route
+                    Get.toNamed(
+                        AppRoutes.login); // Assuming you have this route
                   },
                   child: const Text(
                     'Forgot Password?',
@@ -203,8 +194,8 @@ class _LoginScreenState extends State<LoginScreenPage> {
                 TextButton(
                   onPressed: () {
                     // Navigate to Register page
-                    Get.toNamed(AppRoutes
-                        .login); // Assuming you have a register route
+                    Get.toNamed(
+                        AppRoutes.login); // Assuming you have a register route
                   },
                   child: const Text(
                     'Create Account',

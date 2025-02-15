@@ -3,9 +3,10 @@ import 'package:difwa/config/app_styles.dart';
 import 'package:difwa/controller/auth_controller.dart';
 import 'package:difwa/routes/app_routes.dart';
 import 'package:difwa/screens/auth/login_screen_page.dart';
+import 'package:difwa/widgets/custom_button.dart';
+import 'package:difwa/widgets/custom_inputfield.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class MobileNumberPage extends StatefulWidget {
@@ -74,10 +75,18 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
     }
   }
 
+
+  
+ 
+
+
+
+
   // Handle email login
   void _handlemail() async {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
+ 
 
     // Validate email format
     if (email.isEmpty ||
@@ -148,280 +157,183 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: isSmallScreen ? 15 : 20),
-          child: Column(
-            children: [
-              SizedBox(
-                height: screenSize.height * 0.3,
-                child: SvgPicture.asset(
-                  'assets/images/login.svg',
-                  semanticsLabel: 'Illustration',
-                ),
-              ),
-              Text(
-                "Enter your details",
-                style: AppStyle.headingBlack.copyWith(
-                  fontSize: isSmallScreen ? 20 : 24,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 10),
-              Text(
-                "Please enter your name and the required verification details",
-                style: AppStyle.greyText18.copyWith(
-                  fontSize: isSmallScreen ? 14 : 18,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 30),
-
-              // Custom Tabs Section (Instead of TabBar)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildCustomTab("Mobile Number", 0),
-                  _buildCustomTab("Email", 1),
-                ],
-              ),
-              SizedBox(height: 20),
-
-              // Tab Views (Show based on the selected tab index)
-              if (_selectedTabIndex == 0) ...[
-                // Mobile Number Tab View
-                SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      TextField(
-                        controller: nameController,
-                        cursorColor: AppColors.blackLight2,
-                        decoration: InputDecoration(
-                          labelText: "Name",
-                          prefixIcon: const Icon(Icons.person),
-                          labelStyle: AppStyle.normal.copyWith(
-                            fontSize: isSmallScreen ? 14 : 16,
-                            color: AppColors.blackLight2,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: AppColors.primary),
-                          ),
-                          filled: true,
-                          fillColor: AppColors.secondary,
-                        ),
-                        keyboardType: TextInputType.name,
-                        textCapitalization: TextCapitalization.words,
+      body: Stack(
+        children: [
+          Center(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                    
+                      child: Image.asset(
+                      'assets/images/gb.png', // Replace with your app logo
+                      height: 300, // Adjust the size of the logo
+                      width: 300,
+                      fit: BoxFit.cover,
+                    ),
+                    ),
+                    Text(
+                      "Enter your details",
+                      style: AppStyle.headingBlack.copyWith(
+                        fontSize: isSmallScreen ? 20 : 24,
                       ),
-                      SizedBox(height: 20),
-                      Column(
-                        children: [
-                          TextField(
-                            cursorColor: AppColors.blackLight2,
-                            controller: phoneController,
-                            decoration: InputDecoration(
-                              labelText: "Mobile number",
-                              prefixIcon: Padding(
-                                padding: const EdgeInsets.all(
-                                    8.0), // Adds space around the icon
-                                child:
-                                    const Icon(Icons.perm_contact_calendar_rounded),
-                              ),
-                              labelStyle: AppStyle.normal.copyWith(
-                                fontSize: isSmallScreen ? 14 : 16,
-                                color: AppColors.blackLight2,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: AppColors.primary),
-                              ),
-                              filled: true,
-                              fillColor: AppColors.secondary,
-                              contentPadding: EdgeInsets.symmetric(
-                                  vertical: 16,
-                                  horizontal: 12), // Padding inside the text field
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      "Please enter your name and the required verification details",
+                      style: AppStyle.greyText18.copyWith(
+                        fontSize: isSmallScreen ? 14 : 18,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 30),
+                
+                    // Custom Tabs Section (Instead of TabBar)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildCustomTab("Mobile Number", 0),
+                        _buildCustomTab("Email", 1),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                
+                    // Tab Views (Show based on the selected tab index)
+                    if (_selectedTabIndex == 0) ...[
+                      // Mobile Number Tab View
+                      SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            CommonTextField(
+                              controller: nameController, inputType: InputType.name, onChanged: (String ) {  }, label: 'Name', hint: 'Enter Your Name',
+                              icon: Icons.person,
+                              
                             ),
-                            keyboardType: TextInputType.phone,
-                            maxLength: 10, // Limits the number of characters to 10
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          SizedBox(
-                            width: 150,
-                            height: isSmallScreen ? 50 : 50,
-                            child: ElevatedButton(
-                              onPressed: isLoading ? null : _handleRegister,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primary,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(50),
+                            SizedBox(height: 20),
+                            Column(
+                              children: [
+                               CommonTextField(
+                            controller: phoneController, inputType: InputType.phone, onChanged: (String ) {  }, label: 'Mobile No.', hint: 'Enter Your Mobile No.',
+                              icon: Icons.phone,
+                            ),
+                              ],
+                            ),
+                            SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                SizedBox(
+                                  width: 150,
+                                  height: isSmallScreen ? 50 : 50,
+                                  child: CustomButton(
+                                    onPressed: _handleRegister, text: 'Register',
+                                    
+                                   
+                                  ),
                                 ),
-                              ),
-                              child: isLoading
-                                  ? const CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                          AppColors.mywhite),
-                                    )
-                                  : Text("CONTINUE",
-                                      style: AppStyle.headingWhite),
+                              ],
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
+                      ),
+                    ] else if (_selectedTabIndex == 1) ...[
+                      // Email Tab View
+                      SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            CommonTextField(
+                              controller: nameController, inputType: InputType.email, onChanged: (String ) {  }, label: 'Name', hint: 'Enter Your Name',
+                              icon: Icons.person,
+                            ),
+                            SizedBox(height: 20),
+                            Column(
+                              children: [
+                                CommonTextField(
+                                  controller: emailController,
+                                  inputType: InputType.email,
+                                  onChanged: (String ) {  },
+                                  label: 'Email',
+                                  hint: 'Enter Your Email',
+                                  icon: Icons.email,
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 20),
+                            Column(
+                              children: [
+                                CommonTextField(
+                                  controller: passwordController,
+                                  inputType: InputType.visiblePassword,
+                                  onChanged: (String ) {  },
+                                  label: 'Password',
+                                  hint: 'Enter Your Password',
+                                  icon: Icons.lock,
+                                  suffixIcon: Icons.visibility_off,
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                SizedBox(
+                                  width: 140,
+                                  height: isSmallScreen ? 50 : 50,
+                                  child: ElevatedButton(
+                                    onPressed: isLoading ? null : _handlemail,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.primary,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(50),
+                                      ),
+                                    ),
+                                    child: isLoading
+                                        ? const CircularProgressIndicator(
+                                            valueColor: AlwaysStoppedAnimation<Color>(
+                                                AppColors.mywhite),
+                                          )
+                                        : Text("Register",
+                                            style: AppStyle.headingWhite),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                const Text("Already have an account?"),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const LoginScreenPage())); // Forgot password functionality
+                                  },
+                                  child: const Text(
+                                    'LogIn',
+                                    style: TextStyle(
+                                      color: Colors.blueAccent,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ],
-                  ),
+                  ],
                 ),
-              ] else if (_selectedTabIndex == 1) ...[
-                // Email Tab View
-                SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      TextField(
-                        controller: nameController,
-                        cursorColor: AppColors.primary,
-                        decoration: InputDecoration(
-                          labelText: "Name",
-                          prefixIcon: const Icon(Icons.person),
-                          labelStyle: AppStyle.normal.copyWith(
-                            fontSize: isSmallScreen ? 14 : 16,
-                            color: AppColors.blackLight2,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: AppColors.primary),
-                          ),
-                          filled: true,
-                          fillColor: AppColors.secondary,
-                        ),
-                        keyboardType: TextInputType.name,
-                      ),
-                      SizedBox(height: 20),
-                      Column(
-                        children: [
-                          TextField(
-                            controller: emailController,
-                            cursorColor: AppColors.primary,
-                            decoration: InputDecoration(
-                              labelText: "Email",
-                              prefixIcon: Padding(
-                                padding: const EdgeInsets.only(
-                                    left:
-                                        8.0), // Adds space between the icon and the text field
-                                child: Icon(Icons.mail),
-                              ),
-                              labelStyle: AppStyle.normal.copyWith(
-                                fontSize: isSmallScreen ? 14 : 16,
-                                color: AppColors.blackLight2,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide:
-                                    BorderSide(color: AppColors.primary),
-                              ),
-                              filled: true,
-                              fillColor: AppColors.secondary,
-                              contentPadding: EdgeInsets.symmetric(
-                                  vertical: 16,
-                                  horizontal:
-                                      12), // Adds padding around the content
-                            ),
-                            keyboardType: TextInputType.emailAddress,
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 20),
-                      Column(
-                        children: [
-                          TextField(
-                            controller: passwordController,
-                            cursorColor: AppColors.primary,
-                            decoration: InputDecoration(
-                              labelText: "Password",
-                              prefixIcon: Padding(
-                                padding: const EdgeInsets.all(
-                                    8.0), // Space around the icon
-                                child: Icon(Icons.lock),
-                              ),
-                              labelStyle: AppStyle.normal.copyWith(
-                                fontSize: isSmallScreen ? 14 : 16,
-                                color: AppColors.blackLight2,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide:
-                                    BorderSide(color: AppColors.primary),
-                              ),
-                              filled: true,
-                              fillColor: AppColors.secondary,
-                              contentPadding: EdgeInsets.symmetric(
-                                  vertical: 16,
-                                  horizontal:
-                                      12), // Padding inside the text field
-                            ),
-                            keyboardType: TextInputType.visiblePassword,
-                            obscureText: true, // For password field
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          SizedBox(
-                            width: 140,
-                            height: isSmallScreen ? 50 : 50,
-                            child: ElevatedButton(
-                              onPressed: isLoading ? null : _handlemail,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primary,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                              ),
-                              child: isLoading
-                                  ? const CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                          AppColors.mywhite),
-                                    )
-                                  : Text("Register",
-                                      style: AppStyle.headingWhite),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          const Text("Already have an account?"),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const LoginScreenPage())); // Forgot password functionality
-                            },
-                            child: const Text(
-                              'LogIn',
-                              style: TextStyle(
-                                color: Colors.blueAccent,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ],
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
