@@ -64,8 +64,10 @@ class OrderStatus extends StatelessWidget {
 
   Widget _buildOrderSummary(Order order) {
     return Container(
+      
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
+        color: Colors.white,
         border: Border.all(color: Colors.grey),
         borderRadius: BorderRadius.circular(10),
       ),

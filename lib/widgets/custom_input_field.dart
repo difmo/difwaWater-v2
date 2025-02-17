@@ -72,43 +72,12 @@ class _CommonTextFieldState extends State<CommonTextField> {
         _keyboardType = TextInputType.streetAddress;
         break;
       case InputType.visiblePassword:
-      case InputType.visiblePassword:
         _keyboardType = TextInputType.text;
         break;
     }
   }
 
-  String? _validateInput(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return '${widget.label} is required';
-    }
-    switch (widget.inputType) {
-      case InputType.phone:
-        if (value.length != 10) return 'Enter a valid 10-digit phone number';
-        break;
-      case InputType.email:
-        if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
-            .hasMatch(value)) {
-          return 'Enter a valid email address';
-        }
-        break;
-      case InputType.name:
-        if (value.length < 2) return 'Enter a valid name';
-        break;
-      case InputType.address:
-        if (value.length < 5) return 'Enter a valid address';
-        break;
-      case InputType.visiblePassword:
-        String passwordPattern =
-            r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$';
-
-        if (!RegExp(passwordPattern).hasMatch(value)) {
-          return 'Password must be at least 8 characters, include an uppercase letter, a lowercase letter, a number, and a special character';
-        }
-        break;
-    }
-    return null;
-  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -121,7 +90,6 @@ class _CommonTextFieldState extends State<CommonTextField> {
       inputFormatters: _inputFormatters,
       readOnly: widget.readOnly,
       onChanged: widget.onChanged,
-      validator: _validateInput,
       obscureText:
           widget.inputType == InputType.visiblePassword ? _obscureText : false,
       style: TextStyle(
@@ -131,13 +99,13 @@ class _CommonTextFieldState extends State<CommonTextField> {
       ),
       decoration: InputDecoration(
         prefixIcon: widget.icon != null
-            ? Icon(widget.icon, color: ThemeConstants.grey)
+            ? Icon(widget.icon, color: ThemeConstants.blackColor)
             : null,
         suffixIcon: widget.inputType == InputType.visiblePassword
             ? IconButton(
                 icon: Icon(
                     _obscureText ? Icons.visibility_off : Icons.visibility,
-                    color: ThemeConstants.grey),
+                    color: ThemeConstants.blackColor),
                 onPressed: () {
                   setState(() {
                     _obscureText = !_obscureText;

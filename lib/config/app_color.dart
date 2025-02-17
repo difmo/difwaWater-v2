@@ -10,6 +10,7 @@ class AppColors {
   static const Color blackLight2 = Color.fromARGB(255, 22, 21, 21);
   static const Color mywhite = Colors.white;
   static const Color myGreen = Colors.green;
+  static const Color buttonbgColor = Color(0xFF096FCE);
 
   static var primaryColor = const Color(0xFF6256CA);
 

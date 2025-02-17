@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:difwa/controller/wallet_controller.dart';
+import 'package:difwa/utils/theme_constant.dart';
+import 'package:difwa/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 
 class WalletScreen extends StatefulWidget {
@@ -26,22 +28,13 @@ class _WalletScreenState extends State<WalletScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        title: const Text(
-          'Wallet',
-          style: TextStyle(color: Colors.blue),
-        ),
-      ),
       body: Container(
         color: Colors.white,
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 16),
+            const SizedBox(height: 90),
             const Text(
               'Your Wallet Balance',
               style: TextStyle(
@@ -49,7 +42,7 @@ class _WalletScreenState extends State<WalletScreen> {
                 fontSize: 18,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 30),
             StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection('difwa-users')
@@ -65,14 +58,14 @@ class _WalletScreenState extends State<WalletScreen> {
                 }
 
                 if (snapshot.hasData) {
-                    var userDoc = snapshot.data!;
-                    double walletBalance = (userDoc['walletBalance'] is int)
+                  var userDoc = snapshot.data!;
+                  double walletBalance = (userDoc['walletBalance'] is int)
                       ? (userDoc['walletBalance'] as int).toDouble()
                       : (userDoc['walletBalance'] ?? 0.0);
                   return Text(
                     '₹ ${walletBalance.toStringAsFixed(2)}',
                     style: const TextStyle(
-                      color: Colors.blue,
+                      color: ThemeConstants.primaryColorNew,
                       fontWeight: FontWeight.bold,
                       fontSize: 32,
                     ),
@@ -96,24 +89,16 @@ class _WalletScreenState extends State<WalletScreen> {
             ),
             const SizedBox(height: 16),
             SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                onPressed: () {
-                  double amount = double.tryParse(amountController.text) ?? 0.0;
-                  walletController?.redirectToPaymentWebsite(amount);
-                },
-                child: const Text(
-                  'Add Money To Wallet',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-              ),
-            ),
+                width: double.infinity,
+                child: CustomButton(
+                  baseTextColor: ThemeConstants.whiteColor,
+                  text: "Add Money",
+                  onPressed: () {
+                    double amount =
+                        double.tryParse(amountController.text) ?? 0.0;
+                    walletController?.redirectToPaymentWebsite(amount);
+                  },
+                )),
           ],
         ),
       ),

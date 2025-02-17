@@ -28,7 +28,7 @@ class WalletController {
           walletBalance = userDoc.data()?['walletBalance'] ?? 0.0;
           print("Updated Wallet Balance: $walletBalance");
         } else {
-          walletBalance = 0.0; 
+          walletBalance = 0.0;
         }
       }, onError: (e) {
         print("Error fetching wallet balance: $e");
@@ -40,14 +40,12 @@ class WalletController {
 
   void redirectToPaymentWebsite(double amount) async {
     if (amount >= 30.0) {
-      String url = 'https://www.difwa.com/payment-page?amount=$amount&userId=$currentUserId';
+      String url =
+          'https://www.difwa.com/payment-page?amount=$amount&userId=$currentUserId';
 
       try {
-        if (await canLaunch(url)) {
-          await launch(url);
-        } else {
-          throw 'Could not launch $url';
-        }
+        await launch(url);
+        throw 'Could not launch $url';
       } catch (e) {
         print("Error launching payment page: $e");
       }

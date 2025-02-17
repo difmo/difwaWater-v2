@@ -1,8 +1,7 @@
 import 'package:difwa/routes/store_bottom_bar.dart';
 import 'package:difwa/routes/user_bottom_bar.dart';
 import 'package:difwa/screens/admin_screens/create_store_screen.dart';
-import 'package:difwa/screens/auth/login_screen.dart';
-import 'package:difwa/screens/auth/otp_screnn.dart';
+import 'package:difwa/screens/auth/signin_screen.dart';
 import 'package:difwa/screens/available_service_select.dart';
 import 'package:difwa/screens/book_now_screen.dart';
 import 'package:difwa/screens/profile_screen.dart';
@@ -48,10 +47,7 @@ class AppRoutes {
       name: login,
       page: () =>  MobileNumberPage(),
     ),
-    GetPage(
-      name: otp,
-      page: () => const OTPVerificationPage(),
-    ),
+   
     GetPage(
       name: userbottom,
       page: () => const BottomUserHomePage(),

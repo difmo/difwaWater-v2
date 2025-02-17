@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class ThemeConstants {
   static const Color primaryColor = Color.fromARGB(255, 17, 191, 245);
+  static const Color primaryColorNew =    Color(0xFF02739C);
   static const Color secondaryColor = Color(0xFFFFB53B);
   static const Color secondarySkyBlue = Color(0xFF2EB7E2);
   static const Color secondaryLight = Color(0xFFA8DDE3);

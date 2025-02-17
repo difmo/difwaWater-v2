@@ -1,6 +1,6 @@
 import 'package:difwa/config/app_color.dart';
 import 'package:difwa/controller/auth_controller.dart';
-import 'package:difwa/widgets/custom_inputfield.dart';
+import 'package:difwa/widgets/custom_input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:difwa/routes/app_routes.dart'; // Assuming you have routes setup

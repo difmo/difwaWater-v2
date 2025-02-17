@@ -1,7 +1,7 @@
 import 'dart:io';
-import 'package:difwa/config/app_color.dart';
 import 'package:difwa/config/app_styles.dart';
 import 'package:difwa/controller/admin_controller/add_store_controller.dart';
+import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 // import 'package:image_picker/image_picker.dart';
@@ -59,6 +59,7 @@ class _CreateStorePageState extends State<CreateStorePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ThemeConstants.whiteColor,
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -100,7 +101,7 @@ class _CreateStorePageState extends State<CreateStorePage> {
                       onTap: _showImageSourceDialog,
                       child: Container(
                         decoration: BoxDecoration(
-                          border: Border.all(color: AppColors.primary),
+                          border: Border.all(color: ThemeConstants.primaryColorNew),
                           borderRadius: BorderRadius.circular(5.0),
                         ),
                         child: Row(
@@ -133,7 +134,7 @@ class _CreateStorePageState extends State<CreateStorePage> {
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 50, vertical: 15),
-                        backgroundColor: AppColors.primary,
+                        backgroundColor: ThemeConstants.primaryColorNew,
                         foregroundColor: Colors.white,
                       ),
                       child: Text(
@@ -160,12 +161,12 @@ class _CreateStorePageState extends State<CreateStorePage> {
       obscureText: isObscure,
       decoration: InputDecoration(
         labelText: labelText,
-        prefixIcon: Icon(icon, color: AppColors.primary),
+        prefixIcon: Icon(icon, color: ThemeConstants.primaryColorNew),
         enabledBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: AppColors.primary),
+          borderSide: BorderSide(color: ThemeConstants.primaryColorNew),
         ),
         focusedBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: AppColors.primary),
+          borderSide: BorderSide(color: ThemeConstants.primaryColorNew),
         ),
         labelStyle: AppStyle.greyText16,
       ),

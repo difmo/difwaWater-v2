@@ -4,6 +4,7 @@ import 'package:difwa/screens/book_now_screen.dart';
 import 'package:difwa/screens/ordershistory_screen.dart';
 import 'package:difwa/screens/profile_screen.dart';
 import 'package:difwa/screens/user_wallet_page.dart';
+import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
 
 class BottomUserHomePage extends StatefulWidget {
@@ -32,6 +33,7 @@ class _HomeScreenState extends State<BottomUserHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ThemeConstants.whiteColor,
       body: _screens[_selectedIndex],
       bottomNavigationBar: Container(
         margin: const EdgeInsets.only(
@@ -39,12 +41,13 @@ class _HomeScreenState extends State<BottomUserHomePage> {
         ),
         padding: const EdgeInsets.only(top: 5.0),
         decoration: const BoxDecoration(
-          color: AppColors.primary,
+          color: ThemeConstants.primaryColorNew,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: ClipRRect(
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           child: BottomNavigationBar(
+            backgroundColor: Colors.white,
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
                 icon: Icon(Icons.home, size: 30),
@@ -66,7 +69,7 @@ class _HomeScreenState extends State<BottomUserHomePage> {
             currentIndex: _selectedIndex,
             onTap: _onItemTapped,
             type: BottomNavigationBarType.fixed,
-            selectedItemColor: AppColors.primary,
+            selectedItemColor: ThemeConstants.primaryColorNew,
             unselectedItemColor: AppColors.darkGrey,
             selectedLabelStyle: AppStyle.selectedTabStyle,
             unselectedLabelStyle: AppStyle.unSelectedTabStyle,
