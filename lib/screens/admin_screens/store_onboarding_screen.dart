@@ -34,9 +34,6 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
     );
   }
 
-  void _onSkip() {
-    _pageController.jumpToPage(2);
-  }
 
   void _onNext() {
     if (_currentIndex < 2) {

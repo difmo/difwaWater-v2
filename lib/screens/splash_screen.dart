@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,24 +13,41 @@ class SplashScreen extends StatefulWidget {
   _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _logoOpacity;
+  late Animation<double> _textOpacity;
+
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 2), _checkLoginStatus);
+    _controller = AnimationController(
+      duration: Duration(seconds: 3),
+      vsync: this,
+    );
+    _logoOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+    );
+    _textOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+    );
+    _controller.forward();
+    Timer(const Duration(seconds: 3), _checkLoginStatus);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   Future<void> _checkLoginStatus() async {
     User? user = FirebaseAuth.instance.currentUser;
-    print('FDHGNS :$user');
-    // Get.offNamed(AppRoutes.userbottom);
 
     if (user != null) {
       await _getUserRole(user.uid);
     } else {
-      // Get.offNamed(AppRoutes.loginwithmobilenumber);
       Get.offNamed(AppRoutes.login);
-      // Get.offNamed(AppRoutes.userbottom);
     }
   }
 
@@ -63,20 +80,51 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: Color(0xFF010614),
       body: Stack(
         children: [
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                SvgPicture.asset(
-                  "assets/logos/logo.svg",
-                  width: 100,
-                  height: 100,
+                FadeTransition(
+                  opacity: _logoOpacity,
+                  child: SvgPicture.asset(
+                    "assets/images/difwalogo.svg",
+                    width: 100,
+                    height: 100,
+                  ),
                 ),
                 const SizedBox(height: 20),
               ],
+            ),
+          ),
+          
+          Positioned(
+            bottom: 0,
+            child: Center(
+              child: SvgPicture.asset(
+                "assets/elements/splash.svg",
+              ),
+            ),
+          ),
+          
+          // Text with fade-in animation
+          Positioned(
+            bottom: 20,
+            left: 0,
+            right: 0,
+            child: FadeTransition(
+              opacity: _textOpacity,
+              child: const Center(
+                child: Text(
+                  'Powered by Difmo',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey,
+                  ),
+                ),
+              ),
             ),
           ),
         ],

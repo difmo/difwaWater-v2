@@ -1,3 +1,5 @@
 {
-    "cmake.sourceDirectory": "C:/development/flutter_works/lastdifwa/difwa/linux"
+    "cmake.sourceDirectory": "C:/development/flutter_works/lastdifwa/difwa/linux",
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.compile.nullAnalysis.mode": "automatic"
 }

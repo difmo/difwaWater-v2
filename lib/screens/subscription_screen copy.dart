@@ -6,7 +6,7 @@ import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:table_calendar/table_calendar.dart';
+import 'package:intl/intl.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({super.key});
@@ -97,98 +97,59 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     }
   }
 
-Future<void> _selectCustomDatesDialog(BuildContext context) async {
-  getDatesBasedOnFrequency();
-  
-  // Create a temporary list to manage selection state
-  List<DateTime> tempSelectedDates = List.from(selectedDates);
+  Future<void> _selectCustomDatesDialog(BuildContext context) async {
+    List<DateTime> allDates = getDatesBasedOnFrequency();
 
-  await showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Select Dates'),
-        content: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                width: 500,
-                height: 400,
-                child: TableCalendar(
-                  firstDay: DateTime.utc(2000, 1, 1),
-                  lastDay: DateTime.utc(2100, 12, 31),
-                  focusedDay: DateTime.now(),
-                  selectedDayPredicate: (day) {
-                    return tempSelectedDates.any((selectedDate) => isSameDay(selectedDate, day));
-                  },
-                  onDaySelected: (selectedDay, focusedDay) {
+    List<DateTime> tempSelectedDates = List.from(selectedDates);
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select Dates'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: allDates.map((date) {
+                bool isSelected = tempSelectedDates.contains(date);
+
+                return CheckboxListTile(
+                  title: Text(DateFormat('yyyy-MM-dd').format(date)),
+                  value: isSelected,
+                  onChanged: (bool? value) {
                     setState(() {
-                      if (tempSelectedDates.contains(selectedDay)) {
-                        tempSelectedDates.remove(selectedDay);
+                      if (value == true) {
+                        tempSelectedDates.add(date);
                       } else {
-                        tempSelectedDates.add(selectedDay);
+                        tempSelectedDates.remove(date);
                       }
                     });
                   },
-                  calendarStyle: const CalendarStyle(
-                    selectedDecoration: BoxDecoration(
-                      color: Colors.blue,
-                      shape: BoxShape.circle,
-                    ),
-                    todayDecoration: BoxDecoration(
-                      color: Colors.orange,
-                      shape: BoxShape.circle,
-                    ),
-                    defaultDecoration: BoxDecoration(
-                      color: Colors.transparent,
-                    ),
-                    outsideDecoration: BoxDecoration(
-                      color: Colors.red, 
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  daysOfWeekStyle: const DaysOfWeekStyle(
-                    weekdayStyle: TextStyle(color: Colors.black),
-                    weekendStyle: TextStyle(color: Colors.black),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
+                );
+              }).toList(),
+            ),
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              setState(() {
-                selectedDates = tempSelectedDates;
-              });
-              Navigator.of(context).pop();
-            },
-            child: const Text('OK'),
-          ),
-          TextButton(
-            onPressed: () {
-              setState(() {
-                tempSelectedDates.clear(); // Clear selection if needed
-              });
-            },
-            child: const Text('Clear Selection'),
-          ),
-        ],
-      );
-    },
-  );
+          actions: [
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  selectedDates = tempSelectedDates;
+                });
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
 
-  // Update totalDays and totalPrice after selection
-  totalDays = getTotalDays();
-  totalPrice = bottlePrice * orderData['quantity'];
-  if (orderData['hasEmptyBottle']) {
-    totalPrice += orderData['vacantPrice'] * orderData['quantity'];
+    totalDays = getTotalDays();
+
+    totalPrice = bottlePrice * orderData['quantity'];
+    if (orderData['hasEmptyBottle']) {
+      totalPrice += orderData['vacantPrice'] * orderData['quantity'];
+    }
   }
-}
-
-
 
   List<DateTime> getDatesBasedOnFrequency() {
     List<DateTime> dates = [];

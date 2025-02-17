@@ -63,8 +63,8 @@ class _AdminScreenState extends State<AddItem> {
                       color: selectedBottleSize == bottle['size']
                           ? Colors.blue.shade100
                           : Colors.white,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+                      child: Padding( 
+                        padding: const EdgeInsets.all(12.0),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [

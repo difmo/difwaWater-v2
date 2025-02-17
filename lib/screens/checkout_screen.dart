@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:difwa/controller/admin_controller/add_items_controller.dart';
 import 'package:difwa/routes/app_routes.dart';
+import 'package:difwa/utils/app__text_style.dart';
+import 'package:difwa/utils/theme_constant.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final Map<String, dynamic> orderData;
@@ -152,6 +154,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         widget.totalPrice * widget.totalDays + vacantBottlePrice;
 
     return Scaffold(
+      backgroundColor: ThemeConstants.whiteColor,
       appBar: AppBar(
         title: const Text('Checkout'),
       ),
@@ -162,11 +165,22 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Card(
+                color: ThemeConstants.primaryColorNew,
+                shape: const RoundedRectangleBorder(
+                  side: BorderSide(
+                      width: 1, color: ThemeConstants.primaryColorNew),
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(10),
+                  ),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                      ),
                       Image.asset(
                         'assets/images/water.jpg',
                         width: 80,
@@ -178,20 +192,21 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              '${widget.orderData['bottle']['size']}L',
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
-                            ),
+                            Text('${widget.orderData['bottle']['size']}L',
+                                style: AppTextStyle.Text12400.copyWith(
+                                    color: ThemeConstants.whiteColor)),
                             const SizedBox(height: 8),
                             Text(
-                              'Price: ₹ ${widget.orderData['price']} per bottle',
-                              style: TextStyle(
-                                  fontSize: 12, color: Colors.grey[600]),
-                            ),
+                                'Price: ₹ ${widget.orderData['price']} per bottle',
+                                style: AppTextStyle.Text12400.copyWith(
+                                    color: ThemeConstants.whiteColor)),
                             const SizedBox(height: 8),
-                            Text('One Bottle Price: ₹ ${widget.totalPrice}'),
-                            Text('Vacant Bottle Price: ₹ ${vacantBottlePrice}'),
+                            Text('One Bottle Price: ₹ ${widget.totalPrice}',
+                                style: AppTextStyle.Text12400.copyWith(
+                                    color: ThemeConstants.whiteColor)),
+                            Text('Vacant Bottle Price: ₹ ${vacantBottlePrice}',
+                                style: AppTextStyle.Text12400.copyWith(
+                                    color: ThemeConstants.whiteColor)),
                           ],
                         ),
                       ),
@@ -200,10 +215,90 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text('Selected Dates:'),
-              ...widget.selectedDates
-                  .map((date) => Text(DateFormat('yyyy-MM-dd').format(date)))
-                  .toList(),
+              //////////////////////////////////////////
+              // const Text('Selected Dates:'),
+              // ...widget.selectedDates
+              //     .map((date) => Text(DateFormat('yyyy-MM-dd').format(date)))
+              //     .toList(),
+
+              ///////////////////////////////////
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color:
+                        ThemeConstants.whiteColor, // Set the background color here
+                    border: Border.all(
+                      color: ThemeConstants.secondaryLight, // Set the border color here
+                      width: 1, // Set the border width here
+                    ),
+                    borderRadius: BorderRadius.circular(
+                        10), // Set the border radius if needed
+                  ),
+                  child: TableCalendar(
+                  firstDay: DateTime.utc(2000, 1, 1),
+                  lastDay: DateTime.utc(2100, 12, 31),
+                  focusedDay: DateTime.now(),
+                  selectedDayPredicate: (day) {
+                    return widget.selectedDates.any((selectedDate) => isSameDay(selectedDate, day));
+                  },
+                  calendarStyle: const CalendarStyle(
+                    // Decoration for selected day
+                    selectedDecoration: BoxDecoration(
+                      color: ThemeConstants.primaryColorNew,
+                      shape: BoxShape.circle,
+                    ),
+                    // Decoration for today's day
+                    todayDecoration: BoxDecoration(
+                      color: Colors.orange,
+                      shape: BoxShape.circle,
+                    ),
+                    // Default decoration for all other days
+                    defaultDecoration: BoxDecoration(
+                      color: Colors.transparent,
+                    ),
+                    
+                    // Text styles set to white for all day cells
+                    // todayTextStyle: TextStyle(
+                    //   color: Colors.white, // White text for today
+                    // ),
+                    // selectedTextStyle: TextStyle(
+                    //   color: Colors.white, // White text for selected day
+                    // ),
+                    // defaultTextStyle: TextStyle(
+                    //   color: Colors.white, // White text for default days
+                    // ),
+                    // rangeStartTextStyle: TextStyle(
+                    //   color: Colors.white, // White text for range start day
+                    // ),
+                    // rangeEndTextStyle: TextStyle(
+                    //   color: Colors.white, // White text for range end day
+                    // ),
+                    // withinRangeTextStyle: TextStyle(
+                    //   color: Colors.white, // White text for within range days
+                    // ),
+                    // outsideTextStyle: TextStyle(
+                    //   color: Colors.white, // White text for outside month days
+                    // ),
+                    // disabledTextStyle: TextStyle(
+                    //   color: Colors.white, // White text for disabled days
+                    // ),
+                    // holidayTextStyle: TextStyle(
+                    //   color: Colors.white, // White text for holidays
+                    // ),
+                    // weekendTextStyle: TextStyle(
+                    //   color: Colors.white, // White text for weekends
+                    // ),
+                    // weekNumberTextStyle: TextStyle(
+                    //   color: Colors.white, // White text for week numbers
+                    // ),
+                  ),
+                )
+                
+                  
+                ),
+              ),
+
               const SizedBox(height: 16),
               Text('Total Days: ${widget.totalDays} days'),
               const SizedBox(height: 16),

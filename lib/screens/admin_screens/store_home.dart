@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:difwa/utils/theme_constant.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -9,8 +10,8 @@ class StoreHome extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Admin Panel'),
-        backgroundColor: Colors.blue,
+        title: const Text('Admin Panel',style: TextStyle(color: ThemeConstants.whiteColor),),
+        backgroundColor: ThemeConstants.primaryColorNew,
         actions: [
           // Logout Button in AppBar
           IconButton(

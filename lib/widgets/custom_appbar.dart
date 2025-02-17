@@ -54,7 +54,7 @@ class _CustomToolbarState extends State<CustomAppbar> {
               Padding(
                 padding: const EdgeInsets.only(left: 3),
                 child: SvgPicture.asset(
-                  'assets/images/difwalogo.svg',
+                  'assets/images/difwalogo2.svg',
                   width: 109,
                 ),
               ),
