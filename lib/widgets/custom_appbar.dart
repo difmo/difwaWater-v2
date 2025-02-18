@@ -1,6 +1,5 @@
+import 'package:difwa/config/app_color.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-
 
 class CustomAppbar extends StatefulWidget {
   final VoidCallback onProfilePressed;
@@ -23,9 +22,8 @@ class CustomAppbar extends StatefulWidget {
 }
 
 class _CustomToolbarState extends State<CustomAppbar> {
-  // No need for 'late' here
-  bool get hasNotifications => widget.hasNotifications;  // Directly using the widget's property
-  String? get profileImageUrl => widget.profileImageUrl;  // Directly using the widget's property
+  bool get hasNotifications => widget.hasNotifications;
+  String? get profileImageUrl => widget.profileImageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -45,39 +43,75 @@ class _CustomToolbarState extends State<CustomAppbar> {
           ),
         ),
       ),
-      padding: EdgeInsets.only(top: topPadding, left: 16, right: 16, bottom: 8),
+      padding: EdgeInsets.only(top: topPadding, left: 16, right: 16, bottom: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          // Left side - Water Drop Icon and Text
           Row(
             children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 3),
-                child: SvgPicture.asset(
-                  'assets/images/difwalogo2.svg',
-                  width: 109,
+              Container(
+                decoration: const BoxDecoration(
+                  color: AppColors.myblack, // Black background
+                  shape: BoxShape.circle, // Circular shape
+                ),
+                padding: EdgeInsets.all(4), // Adjust padding to fit the icon
+                child: const Icon(
+                  Icons.water_drop,
+                  color: Colors.white,
+                  size: 25, // Adjust the icon size
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 4),
+              const Text(
+                'FreshDropHydrate',
+                style: TextStyle(
+                  color: AppColors.myblack,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                  
+                ),
+              ),
             ],
           ),
+          // Right side - Notification, Menu, Profile
           Row(
             children: [
-              
               Stack(
                 clipBehavior: Clip.none,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.notifications),
+                    icon: Icon(
+                      Icons.circle_notifications,
+                      color: hasNotifications ? AppColors.myblack : Colors.black,
+                      size: 30,
+                    ),
                     onPressed: widget.onNotificationPressed,
                   ),
-               
+                  if (hasNotifications)
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: CircleAvatar(
+                        radius: 6,
+                        backgroundColor: AppColors.primary,
+                      ),
+                    ),
                 ],
               ),
               // IconButton(
               //   icon: const Icon(Icons.grid_view),
               //   onPressed: widget.onMenuPressed,
               // ),
+              // IconButton(
+              //   icon: const Icon(Icons.person),
+              //   onPressed: widget.onProfilePressed,
+              // ),
+              if (profileImageUrl != null)
+                CircleAvatar(
+                  radius: 16,
+                  backgroundImage: NetworkImage(profileImageUrl!),
+                ),
             ],
           ),
         ],

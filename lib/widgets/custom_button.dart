@@ -1,5 +1,4 @@
 import 'package:difwa/config/app_color.dart';
-import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
@@ -46,7 +45,8 @@ class CustomButton extends StatelessWidget {
           padding: EdgeInsets.all(0),
           foregroundColor: textColor,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(borderRadius),
+            borderRadius: BorderRadius.circular(borderRadius
+            ),
             side: borderColor != null
                 ? BorderSide(color: borderColor!)
                 : BorderSide.none, // Apply border color if provided

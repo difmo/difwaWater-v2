@@ -50,7 +50,7 @@ class AppRoutes {
    
     GetPage(
       name: userbottom,
-      page: () => const BottomUserHomePage(),
+      page: () =>  BottomUserHomePage(),
     ),
     GetPage(
       name: subscription,
