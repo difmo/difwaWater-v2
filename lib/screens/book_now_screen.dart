@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
+import '../widgets/ImageCarouselApp.dart';
+
 class BookNowScreen extends StatefulWidget {
   const BookNowScreen({super.key});
 
@@ -20,10 +22,10 @@ class _BookNowScreenState extends State<BookNowScreen> {
   int _selectedIndex = -1;
   bool _hasEmptyBottle = false;
   int _quantity = 1;
-
   @override
   Widget build(BuildContext context) {
     final BottleController bottleController = Get.put(BottleController());
+final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       backgroundColor: ThemeConstants.whiteColor,
@@ -34,11 +36,16 @@ class _BookNowScreenState extends State<BookNowScreen> {
               onNotificationPressed: () {},
               onMenuPressed: () {},
               hasNotifications: true)),
+             
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
+               SizedBox(
+                height: screenHeight * 0.5,
+                child: const ImageCarouselPage(),
+              ),
               Obx(() {
                 if (bottleController.bottleItems.isEmpty) {
                   return const CircularProgressIndicator();
@@ -47,8 +54,8 @@ class _BookNowScreenState extends State<BookNowScreen> {
                   height: 200, // Card height
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    // itemCount: bottleController.bottleItems.length,
                     itemCount: bottleController.bottleItems.length,
+                    // itemCount: bottleController.bottleItems.length,
                     itemBuilder: (context, index) {
                       var bottle = bottleController.bottleItems[index];
                       bool isSelected = index == _selectedIndex;

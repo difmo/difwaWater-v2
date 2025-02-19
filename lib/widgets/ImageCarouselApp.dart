@@ -1,29 +1,14 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(const CarouselApp());
 
-class CarouselApp extends StatelessWidget {
-  const CarouselApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: const CarouselExample(),
-      ),
-    );
-  }
-}
-
-class CarouselExample extends StatefulWidget {
-  const CarouselExample({super.key});
+class ImageCarouselPage extends StatefulWidget {
+  const ImageCarouselPage({super.key});
 
   @override
-  State<CarouselExample> createState() => _CarouselExampleState();
+  State<ImageCarouselPage> createState() => _ImageCarouselPageState();
 }
 
-class _CarouselExampleState extends State<CarouselExample> {
+class _ImageCarouselPageState extends State<ImageCarouselPage> {
   final CarouselController controller = CarouselController(initialItem: 1);
 
   @override
@@ -36,20 +21,23 @@ class _CarouselExampleState extends State<CarouselExample> {
   Widget build(BuildContext context) {
     final double height = MediaQuery.sizeOf(context).height;
 
-    return ListView(
-      children: <Widget>[
-        ConstrainedBox(
-          constraints: BoxConstraints(maxHeight: height / 2),
-          child: CarouselView.weighted(
-            controller: controller,
-            itemSnapping: true,
-            flexWeights: const <int>[1, 7, 1],
-            children: ImageInfo.values.map((ImageInfo image) {
-              return HeroLayoutCard(imageInfo: image);
-            }).toList(),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: ListView(
+        children: <Widget>[
+          ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: height / 2),
+            child: CarouselView.weighted(
+              controller: controller,
+              itemSnapping: true,
+              flexWeights: const <int>[1, 7, 1],
+              children: ImageInfo.values.map((ImageInfo image) {
+                return HeroLayoutCard(imageInfo: image);
+              }).toList(),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -67,11 +55,13 @@ class HeroLayoutCard extends StatelessWidget {
       children: <Widget>[
         ClipRect(
           child: OverflowBox(
-            maxWidth: width * 7 / 8,
-            minWidth: width * 7 / 8,
-            child: const Image(
-              fit: BoxFit.cover,
-              image: AssetImage('assets/images/water.jpg'), // Using asset image
+            maxWidth: width * 1.9,
+            minWidth: width * 1.9,
+            child: Image(
+              fit: BoxFit.contain,
+              image: AssetImage(
+                '${imageInfo.url}', // Using local assets
+              ),
             ),
           ),
         ),
@@ -85,14 +75,16 @@ class HeroLayoutCard extends StatelessWidget {
                 imageInfo.title,
                 overflow: TextOverflow.clip,
                 softWrap: false,
-                style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Colors.white),
+                style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Colors.black),
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 10),
               Text(
                 imageInfo.subtitle,
                 overflow: TextOverflow.clip,
                 softWrap: false,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.black),
+                textAlign: TextAlign.center,
               ),
             ],
           ),
@@ -103,9 +95,13 @@ class HeroLayoutCard extends StatelessWidget {
 }
 
 enum ImageInfo {
-  image0('The Flow', 'Sponsored | Season 1 Now Streaming', 'assets/images/water.jpg'),
-  image1('Through the Pane', 'Sponsored | Season 1 Now Streaming', 'assets/images/water.jpg'),
-  image2('Iridescence', 'Sponsored | Season 1 Now Streaming', 'assets/images/water.jpg'),
+  image0('Drips Springs', 'Bottle water delivery | Season 1 Now Streaming', 'assets/scollerimg/image0.jpg'),
+  image1(
+    'Through the Pane',
+    'Sponsored | Season 1 Now Streaming',
+    'assets/scollerimg/image1.png',
+  ),
+  image2('Iridescence', 'Sponsored | Season 1 Now Streaming', 'assets/scollerimg/image2.png'),
   image3('Sea Change', 'Sponsored | Season 1 Now Streaming', 'assets/images/water.jpg'),
   image4('Blue Symphony', 'Sponsored | Season 1 Now Streaming', 'assets/images/water.jpg'),
   image5('When It Rains', 'Sponsored | Season 1 Now Streaming', 'assets/images/water.jpg');
