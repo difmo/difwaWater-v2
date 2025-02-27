@@ -15,18 +15,21 @@ class AuthController extends GetxController {
     _auth.authStateChanges().listen(_handleAuthStateChanged);
   }
 
-///////////////////////////////////////////////////////////////////////// SININ WITH EMAIL //////////////////////////////////////////////////////////////////////////
-  Future<void> signwithemail(String email, String password) async {
+///////////////////////////////////////////////////////////////////////// SIGN UP WITH EMAIL //////////////////////////////////////////////////////////////////////////
+  Future<void> signwithemail(String email, String name, String password,  String number) async {
     try {
-      await _auth.createUserWithEmailAndPassword(
+      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
+        
       );
-      await _saveUserDataemail(email);
+
+      // Save additional user details in Firestore
+      await _saveUserDataemail(userCredential.user!.uid, email, name, number);
       await _fetchUserRole();
       _navigateToDashboard();
     } on FirebaseAuthException catch (e) {
-      Get.snackbar('Error', e.message ?? 'An error occurred while logging in');
+      Get.snackbar('Error', e.message ?? 'An error occurred while signing up');
     } catch (e) {
       Get.snackbar('Error', 'An unexpected error occurred: $e');
     }
@@ -49,14 +52,12 @@ class AuthController extends GetxController {
   }
 
 ///////////////////////////////////////////////////////////////////////// VERIFY USER //////////////////////////////////////////////////////////////////////////
-  Future<void> verifyUserExistenceAndLogin(
-      String email, String password) async {
+  Future<void> verifyUserExistenceAndLogin(String email, String password) async {
     try {
       await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      await _saveUserDataemail(email);
       await _fetchUserRole();
       _navigateToHomePage();
     } on FirebaseAuthException catch (e) {
@@ -65,8 +66,7 @@ class AuthController extends GetxController {
       } else if (e.code == 'wrong-password') {
         Get.snackbar('Error', 'Incorrect password. Please try again.');
       } else {
-        Get.snackbar(
-            'Error', e.message ?? 'An error occurred while logging in');
+        Get.snackbar('Error', e.message ?? 'An error occurred while logging in');
       }
     } catch (e) {
       Get.snackbar('Error', 'An unexpected error occurred: $e');
@@ -93,24 +93,23 @@ class AuthController extends GetxController {
   }
 
 ///////////////////////////////////////////////////////////////////////// SAVE USER DETAILS ////////////////////////////////////////////////////////////////////
-  Future<void> _saveUserDataemail(String email) async {
-    final user = _auth.currentUser;
-    if (user != null) {
-      DocumentSnapshot userDoc =
-          await _firestore.collection('difwa-users').doc(user.uid).get();
-      if (!userDoc.exists) {
-        await _firestore.collection('difwa-users').doc(user.uid).set({
-          'uid': user.uid,
-          'role': 'isUser',
-          'email': email,
-          'walletBalance': 0.0,
-        }, SetOptions(merge: true));
-      } else {
-        await _firestore.collection('difwa-users').doc(user.uid).update({
-          'name': email,
-          'walletBalance': 0.0,
-        });
-      }
+  Future<void> _saveUserDataemail(String uid, String email, String name, String number) async {
+    DocumentSnapshot userDoc = await _firestore.collection('difwa-users').doc(uid).get();
+    
+    if (!userDoc.exists) {
+      await _firestore.collection('difwa-users').doc(uid).set({
+        'uid': uid,
+        'name': name,
+        'number': number,
+        'email': email,
+        'role': 'isUser',
+        'walletBalance': 0.0,
+      }, SetOptions(merge: true));
+    } else {
+      await _firestore.collection('difwa-users').doc(uid).update({
+        'name': name,
+        'number': number,
+      });
     }
   }
 

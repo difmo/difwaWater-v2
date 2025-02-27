@@ -1,8 +1,10 @@
+import 'package:difwa/config/app_color.dart';
 import 'package:difwa/utils/theme_constant.dart';
+import 'package:difwa/utils/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-enum InputType { phone, email, name, address, visiblePassword }
+enum InputType { phone, email, name, address, visiblePassword ,pin}
 
 class CommonTextField extends StatefulWidget {
   final InputType inputType;
@@ -17,6 +19,8 @@ class CommonTextField extends StatefulWidget {
   final Color? borderColor;
   final IconData? icon;
   final IconData? suffixIcon;
+  final String? Function(String?)? validator; // Accept a validator function
+
 
   const CommonTextField({
     super.key,
@@ -32,6 +36,7 @@ class CommonTextField extends StatefulWidget {
     this.borderColor,
     this.icon,
     this.suffixIcon,
+    this.validator, // Optional validator function
   });
 
   @override
@@ -74,10 +79,17 @@ class _CommonTextFieldState extends State<CommonTextField> {
       case InputType.visiblePassword:
         _keyboardType = TextInputType.text;
         break;
-    }
-  }
+    
 
-  
+    case InputType.pin:
+        _keyboardType = TextInputType.number;
+        _inputFormatters = [
+          FilteringTextInputFormatter.digitsOnly,
+          LengthLimitingTextInputFormatter(6),
+        ];
+        break;
+        }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,6 +104,7 @@ class _CommonTextFieldState extends State<CommonTextField> {
       onChanged: widget.onChanged,
       obscureText:
           widget.inputType == InputType.visiblePassword ? _obscureText : false,
+      validator: widget.validator, // Apply validation function
       style: TextStyle(
         color:
             widget.readOnly ? Colors.grey : const Color.fromARGB(255, 0, 0, 0),
@@ -138,14 +151,14 @@ class _CommonTextFieldState extends State<CommonTextField> {
         ),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(
-            color: widget.borderColor ?? Colors.grey[100]!,
+            color: widget.borderColor ?? Colors.grey[200]!,
             width: 1.5,
           ),
           borderRadius: BorderRadius.circular(widget.borderRadius ?? 16.0),
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(
-            color: defaultBorderColor,
+            color: AppColors.inputfield,
             width: 1,
           ),
           borderRadius: BorderRadius.circular(widget.borderRadius ?? 16.0),
