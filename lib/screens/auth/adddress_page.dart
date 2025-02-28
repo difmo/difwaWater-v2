@@ -1,27 +1,13 @@
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:country_picker/country_picker.dart';
+import 'package:difwa/config/app_color.dart';
+import 'package:difwa/controller/address_controller.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/utils/validators.dart';
 import 'package:difwa/widgets/custom_button.dart';
 import 'package:difwa/widgets/custom_input_field.dart';
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(AddressPage());
-}
-
-class AddressPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Custom Address Form',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: AddressForm(),
-    );
-  }
-}
+import 'package:get/get.dart';
 
 class AddressForm extends StatefulWidget {
   @override
@@ -29,12 +15,8 @@ class AddressForm extends StatefulWidget {
 }
 
 class _AddressFormState extends State<AddressForm> {
-  // late AnimationController _staggeredController;
-  // late List<Interval> _itemSlideIntervals;
-  // late Interval _buttonInterval;
-  final _formKey = GlobalKey<FormState>();
-
   // Controllers for text fields
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController _streetController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
@@ -42,10 +24,14 @@ class _AddressFormState extends State<AddressForm> {
   final TextEditingController _countryController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  bool _isChecked = false; // Checkbox state
+
+  final AddressController _addressController = Get.put(AddressController());
 
   String selectedCountryCode = "+91"; // Default country code
   Country? selectedCountry; // To store the selected country
 
+  // Form keys for each section (if you want separate validation for each)
   final _formKeyName = GlobalKey<FormState>();
   final _formKeyPhone = GlobalKey<FormState>();
   final _formKeyAddress = GlobalKey<FormState>();
@@ -53,19 +39,7 @@ class _AddressFormState extends State<AddressForm> {
   final _formState = GlobalKey<FormState>();
   final _formCity = GlobalKey<FormState>();
 
-  // Submit form
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      // Form is valid, you can process the data
-      print("Full Name: ${_nameController.text}");
-      print("Phone: ${_phoneController.text}");
-      print("Street: ${_streetController.text}");
-      print("City: ${_cityController.text}");
-      print("State: ${_stateController.text}");
-      print("ZIP: ${_zipController.text}");
-      print("Country: ${_countryController.text}");
-    }
-  }
+  bool _isSubmitting = false; // State to handle submission progress
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +47,10 @@ class _AddressFormState extends State<AddressForm> {
       backgroundColor: ThemeConstants.whiteColor,
       appBar: AppBar(
         backgroundColor: ThemeConstants.whiteColor,
-        title: Text('Checkout'),
+        title: Text(
+          'Checkout',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.only(left: 16, right: 16, top: 50),
@@ -145,19 +122,6 @@ class _AddressFormState extends State<AddressForm> {
             ),
             SizedBox(height: 20),
 
-            // // City
-            // Form(
-            //   child: CommonTextField(
-            //     inputType: InputType.name,
-            //     controller: _cityController,
-            //     onChanged: (value) {},
-            //     label: 'City',
-            //     hint: 'Enter your city',
-            //     validator: Validators.validateName,
-            //   ),
-            // ),
-            // SizedBox(height: 16),
-
             // State
             Form(
               key: _formState,
@@ -169,7 +133,7 @@ class _AddressFormState extends State<AddressForm> {
                 },
                 label: 'State',
                 hint: 'Enter your state',
-                validator: Validators.validateName,
+                validator: Validators.validatestreet,
               ),
             ),
             SizedBox(height: 20),
@@ -205,7 +169,7 @@ class _AddressFormState extends State<AddressForm> {
                       },
                       label: 'City',
                       hint: 'Enter your city',
-                      validator: Validators.validateName,
+                      validator: Validators.validatestreet,
                     ),
                   ),
                 ),
@@ -235,8 +199,8 @@ class _AddressFormState extends State<AddressForm> {
                       inputType: InputType.name,
                       label: 'Country',
                       hint: 'Enter your country',
-                       icon: Icons.arrow_drop_down,
-                      validator: Validators.validateName,
+                      icon: Icons.arrow_drop_down,
+                      validator: Validators.validatestreet,
                       onChanged: (String value) {
                         // You can handle the onChanged callback here if needed
                       },
@@ -246,15 +210,61 @@ class _AddressFormState extends State<AddressForm> {
               },
             ),
             const SizedBox(height: 24),
+            Container(
+              padding: EdgeInsets.all(8),
+              child: Row(
+                children: [
+                  Checkbox(
+                    value: _isChecked,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _isChecked = value!;
+                      });
+                    },
+                    activeColor: AppColors.inputfield, // Color when checked
+                    checkColor: AppColors.mywhite, // Color of the checkmark
+                  ),
+                  Text('Save shipping address'),
+                ],
+              ),
+            ),
+            SizedBox(height: 20),
 
             // Submit Button
             SizedBox(
               width: double.infinity,
-              child: CustomButton(
-                  baseTextColor: ThemeConstants.whiteColor,
-                  onPressed: _submitForm,
-                  text: 'Submit'),
-            )
+              child: _isSubmitting
+                  ? CircularProgressIndicator()
+                  : CustomButton(
+                      baseTextColor: ThemeConstants.whiteColor,
+                      onPressed: () async {
+                        _formKeyName.currentState!.validate() ;
+                            _formKeyPhone.currentState!.validate();
+                        _formKeyAddress.currentState!.validate();
+                        _formState.currentState!.validate();
+                        _formPin.currentState!.validate();
+                        _formCity.currentState!.validate();
+
+                        if (_formKeyName.currentState!.validate() &&
+                            _formKeyPhone.currentState!.validate() &&
+                            _formKeyAddress.currentState!.validate() &&
+                            _formState.currentState!.validate() &&
+                            _formPin.currentState!.validate() &&
+                            _formCity.currentState!.validate()) {
+                          await _addressController.saveAddress(
+                            _streetController.text,
+                            _cityController.text,
+                            _stateController.text,
+                            _zipController.text,
+                            _countryController.text,
+                            _phoneController.text,
+                            _isChecked,
+                          );
+                        }
+                      },
+                      text: 'Submit'),
+            ),
+            SizedBox(height: 20),
           ],
         ),
       ),

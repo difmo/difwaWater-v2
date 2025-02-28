@@ -18,8 +18,7 @@ class Validators {
       return 'Phone number is required';
     }
     final phoneRegex = RegExp(r'^\d{10}\$');
-    if (!phoneRegex.hasMatch(value)) {
-    }
+    if (!phoneRegex.hasMatch(value)) {}
     return null;
   }
 
@@ -40,36 +39,34 @@ class Validators {
     if (value.length < 6) {
       return 'Password must be at least 6 characters long';
     }
-    if (!RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}\$').hasMatch(value)) {
-    }
+    if (!RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}\$').hasMatch(value)) {}
     return null;
   }
 
   static String? validatestreet(String? value) {
-  if (value == null || value.isEmpty) {
-    return 'Street address is required';
-  }
-  
-  // Updated regex to allow letters, numbers, and spaces (for street numbers)
-  if (!RegExp(r'^[A-Za-z0-9\s,.\-]').hasMatch(value)) {
-    return 'Address must contain only letters, numbers, and allowed symbols like , . -';
-  }
+    if (value == null || value.isEmpty) {
+      return 'Required';
+    }
 
-  return null;  // Return null if the value passes validation
-}
+    // Updated regex to allow only letters (a-z, A-Z), numbers (0-9), and spaces
+    if (!RegExp(r'^[A-Za-z0-9\s]+$').hasMatch(value)) {
+      return 'It should contain only letters, numbers, and spaces';
+    }
+
+    return null; // Return null if the value passes validation
+  }
 
   static String? validatePin(String? value) {
-  // Check if the value is null or empty
-  if (value == null || value.isEmpty) {
-    return 'Pincode is required';
+    // Check if the value is null or empty
+    if (value == null || value.isEmpty) {
+      return 'Pincode is required';
+    }
+
+    // Check if the value is exactly 6 digits
+    if (!RegExp(r'^\d{6}$').hasMatch(value)) {
+      return 'Pincode must be a 6-digit number';
+    }
+
+    return null;
   }
-
-  // Check if the value is exactly 6 digits
-  if (!RegExp(r'^\d{6}$').hasMatch(value)) {
-    return 'Pincode must be a 6-digit number';
-  }
-
-  return null;
-}
-
 }

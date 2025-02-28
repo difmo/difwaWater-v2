@@ -39,7 +39,7 @@ class _LoginScreenState extends State<ProfileScreen> {
                 children: [
                   CircleAvatar(
                     radius: 30,
-                    backgroundColor: ThemeConstants.primaryColorNew,
+                    backgroundColor: AppColors.inputfield,
                     child: Icon(
                       Icons.person,
                       color: Colors.white,
@@ -154,7 +154,7 @@ class MenuOption extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(icon, size: 24, color: ThemeConstants.primaryColorNew),
+          Icon(icon, size: 24, color: AppColors.inputfield),
           const SizedBox(width: 16),
           Text(
             title,
@@ -162,7 +162,7 @@ class MenuOption extends StatelessWidget {
           ),
           const Spacer(),
           const Icon(Icons.arrow_forward,
-              size: 24, color: ThemeConstants.primaryColorNew),
+              size: 24, color: ThemeConstants.grey),
         ],
       ),
     );
