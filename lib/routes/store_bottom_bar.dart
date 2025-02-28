@@ -4,6 +4,7 @@ import 'package:difwa/screens/admin_screens/store_home.dart';
 import 'package:difwa/screens/admin_screens/admin_orders_page.dart';
 import 'package:difwa/screens/admin_screens/store_items.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';  // Import flutter_svg package
 
 class BottomStoreHomePage extends StatefulWidget {
   const BottomStoreHomePage({super.key});
@@ -41,19 +42,19 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: ClipRRect(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20) ,),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           child: BottomNavigationBar(
-            items: const <BottomNavigationBarItem>[
+            items: <BottomNavigationBarItem>[
               BottomNavigationBarItem(
-                icon: Icon(Icons.home, size: 30),
-                label: 'Home ',
+                icon: _buildIcon(Icons.home, 0),
+                label: 'Home',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.store, size: 30),
+                icon: _buildIcon(Icons.store_rounded, 1),
                 label: 'Product',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.shopping_bag, size: 30),
+                icon: _buildIcon(Icons.shopping_bag_rounded, 2),
                 label: 'Orders',
               ),
             ],
@@ -66,6 +67,37 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
             unselectedLabelStyle: AppStyle.unSelectedTabStyle,
           ),
         ),
+      ),
+    );
+  }
+
+  // Custom method to build the icon with zoom effect and SVG background
+  Widget _buildIcon(IconData iconData, int index) {
+    bool isSelected = _selectedIndex == index;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      padding: EdgeInsets.all(isSelected ? 10 : 9), // Add padding for zoom effect
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8), // Round corners for background
+      ),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Background SVG image when selected
+          if (isSelected)
+            SvgPicture.asset(
+              'assets/icons/iconbg.svg', // Replace with your actual SVG asset path
+              width: 60, // Adjust size as per your requirement
+              height: 60, // Adjust size as per your requirement
+            ),
+          // Icon on top of the SVG background
+          Icon(
+            iconData,
+            size: isSelected ? 35 : 30, // Zoom in when selected
+            color: isSelected ? Colors.white : Colors.black, // Change icon color when selected
+          ),
+        ],
       ),
     );
   }

@@ -29,4 +29,11 @@ class AppColors {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
+
+  // Custom Gradient for Background
+  static const LinearGradient iconbg = LinearGradient(
+    colors: [Color(0xFFFFA082), Color(0xFFF3743D)], // Custom gradient colors
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+  );
 }
