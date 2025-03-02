@@ -141,7 +141,7 @@ class OrderListPage extends StatelessWidget {
                   final statusHistory =
                       selectedDate['statusHistory'] as List<dynamic>;
               
-                  String statusText = 'Unknown'; // Default if no status found
+                  String statusText = 'Unknown';
                   Color statusColor = Colors.grey;
               
                   for (var statusEntry in statusHistory) {

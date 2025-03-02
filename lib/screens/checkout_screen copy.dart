@@ -5,7 +5,6 @@ import 'package:difwa/utils/app__text_style.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CheckoutScreen extends StatefulWidget {
@@ -86,140 +85,65 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     }
   }
 
+  void _processPayment() async {
+    double vacantBottlePrice =
+        widget.orderData['vacantPrice'] * widget.orderData['quantity'];
+    double totalAmount =
+        widget.totalPrice * widget.totalDays + vacantBottlePrice;
 
+    if (walletBalance >= totalAmount) {
+      double newBalance = walletBalance - totalAmount;
 
-// Function to generate the main order ID
-String generateMainOrderId(int count) {
-  String datetime = DateTime.now()
-      .toUtc()
-      .toString()
-      .substring(0, 19)
-      .replaceAll("-", "")
-      .replaceAll(":", "")
-      .replaceAll("T", "-");
+      try {
+        Timestamp currentTimestamp = Timestamp.now();
 
-  String mainOrderId = "difwabulkid-$datetime-$count"; // Custom format for main order ID
-  return mainOrderId;
-}
+        await FirebaseFirestore.instance
+            .collection('difwa-users')
+            .doc(currentUserId)
+            .update({'walletBalance': newBalance});
 
-// Function to get the order count for today
-Future<int> _getOrderCountForToday() async {
-  DateTime todayStart = DateTime.now().subtract(Duration(
-      hours: DateTime.now().hour,
-      minutes: DateTime.now().minute,
-      seconds: DateTime.now().second,
-      microseconds: DateTime.now().microsecond));
-  DateTime todayEnd = todayStart.add(Duration(days: 1));
+        List<Map<String, dynamic>> selectedDatesWithHistory =
+            widget.selectedDates
+                .map((date) => {
+                      'date': date.toIso8601String(),
+                      'statusHistory': [
+                        {
+                          'status': 'pending',
+                          'time': currentTimestamp,
+                        }
+                      ],
+                    })
+                .toList();
 
-  QuerySnapshot snapshot = await FirebaseFirestore.instance
-      .collection('difwa-orders')
-      .where('timestamp',
-          isGreaterThanOrEqualTo: Timestamp.fromDate(todayStart))
-      .where('timestamp', isLessThan: Timestamp.fromDate(todayEnd))
-      .get();
+        await FirebaseFirestore.instance.collection('difwa-orders').add({
+          'userId': currentUserId,
+          'totalPrice': totalAmount,
+          'totalDays': widget.totalDays,
+          'selectedDates': selectedDatesWithHistory,
+          'orderData': widget.orderData,
+          'status': 'paid',
+          'timestamp': FieldValue.serverTimestamp(),
+          'merchantId': merchantId,
+        });
 
-  return snapshot.docs.length;
-}
-
-// Function to get the order count for a specific date
-Future<int> _getOrderCountForDate(DateTime date) async {
-  // Get the date in the format 'yyyyMMdd' to match the order id format
-  String formattedDate = DateFormat('yyyyMMdd').format(date);
-
-  // Query Firestore to count the number of orders for this date
-  QuerySnapshot snapshot = await FirebaseFirestore.instance
-      .collection('difwa-orders')
-      .where('selectedDates.date', arrayContains: formattedDate) // Filter by the specific date
-      .get();
-
-  // Return the order count, which will be the count of existing orders for that date
-  return snapshot.docs.length;
-}
-
-// Function to generate daily order ID
-Future<String> generateDailyOrderId(DateTime date) async {
-  // Get the order count for the date
-  int orderCount = await _getOrderCountForDate(date);
-
-  // Increment the order count by 1 to get the new daily order ID
-  String dailyOrderId = 'difwa-${DateFormat('yyyyMMdd').format(date)}-${orderCount + 1}';
-
-  // Return the generated daily order ID
-  return dailyOrderId;
-}
-
-// Function to process the payment
-void _processPayment() async {
-  double vacantBottlePrice =
-      widget.orderData['vacantPrice'] * widget.orderData['quantity'];
-  double totalAmount =
-      widget.totalPrice * widget.totalDays + vacantBottlePrice;
-
-  if (walletBalance >= totalAmount) {
-    double newBalance = walletBalance - totalAmount;
-    try {
-      Timestamp currentTimestamp = Timestamp.now();
-      await FirebaseFirestore.instance
-          .collection('difwa-users')
-          .doc(currentUserId)
-          .update({'walletBalance': newBalance});
-
-      int orderCount = await _getOrderCountForToday();
-      String mainOrderId = generateMainOrderId(orderCount);
-
-      // Mapping selected dates with history
-      List<Future<Map<String, dynamic>>> selectedDatesWithHistory =
-          widget.selectedDates.map((date) async {
-        String dailyOrderId = await generateDailyOrderId(date);
-
-        return {
-          'date': date.toIso8601String(),
-          'statusHistory': [
-            {
-              'status': 'pending',
-              'dailyorderid': dailyOrderId,
-              'time': currentTimestamp,
-            }
-          ],
-        };
-      }).toList();
-
-      List<Map<String, dynamic>> selectedDatesWithHistoryList =
-          await Future.wait(selectedDatesWithHistory);
-
-      await FirebaseFirestore.instance.collection('difwa-orders').add({
-        'orderId': mainOrderId, // Add main order ID
-        'userId': currentUserId,
-        'totalPrice': totalAmount,
-        'totalDays': widget.totalDays,
-        'selectedDates': selectedDatesWithHistoryList,
-        'orderData': widget.orderData,
-        'status': 'paid',
-        'timestamp': FieldValue.serverTimestamp(),
-        'merchantId': merchantId,
-      });
-
-      // Navigate to Congratulations page
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => CongratulationsPage()),
-      );
-    } catch (e) {
-      print(e);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => CongratulationsPage()),
+        );
+      } catch (e) {
+        print(e);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error processing payment: $e')),
+        );
+      }
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error processing payment: $e')),
+        const SnackBar(
+            content:
+                Text('Insufficient balance. Please add funds to your wallet.')),
       );
     }
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-          content:
-              Text('Insufficient balance. Please add funds to your wallet.')),
-    );
   }
-}
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -290,46 +214,51 @@ void _processPayment() async {
                 ),
               ),
               const SizedBox(height: 16),
+           
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
-                    decoration: BoxDecoration(
-                      color: ThemeConstants
-                          .whiteColor, // Set the background color here
-                      border: Border.all(
-                        color: ThemeConstants
-                            .secondaryLight, // Set the border color here
-                        width: 1, // Set the border width here
-                      ),
-                      borderRadius: BorderRadius.circular(
-                          10), // Set the border radius if needed
+                  decoration: BoxDecoration(
+                    color:
+                        ThemeConstants.whiteColor, // Set the background color here
+                    border: Border.all(
+                      color: ThemeConstants.secondaryLight, // Set the border color here
+                      width: 1, // Set the border width here
                     ),
-                    child: TableCalendar(
-                      firstDay: DateTime.utc(2000, 1, 1),
-                      lastDay: DateTime.utc(2100, 12, 31),
-                      focusedDay: DateTime.now(),
-                      selectedDayPredicate: (day) {
-                        return widget.selectedDates.any(
-                            (selectedDate) => isSameDay(selectedDate, day));
-                      },
-                      calendarStyle: const CalendarStyle(
-                        // Decoration for selected day
-                        selectedDecoration: BoxDecoration(
-                          color: ThemeConstants.primaryColorNew,
-                          shape: BoxShape.circle,
-                        ),
-                        // Decoration for today's day
-                        todayDecoration: BoxDecoration(
-                          color: Colors.orange,
-                          shape: BoxShape.circle,
-                        ),
-                        // Default decoration for all other days
-                        defaultDecoration: BoxDecoration(
-                          color: Colors.transparent,
-                        ),
-                      ),
-                    )),
+                    borderRadius: BorderRadius.circular(
+                        10), // Set the border radius if needed
+                  ),
+                  child: TableCalendar(
+                  firstDay: DateTime.utc(2000, 1, 1),
+                  lastDay: DateTime.utc(2100, 12, 31),
+                  focusedDay: DateTime.now(),
+                  selectedDayPredicate: (day) {
+                    return widget.selectedDates.any((selectedDate) => isSameDay(selectedDate, day));
+                  },
+                  calendarStyle: const CalendarStyle(
+                    // Decoration for selected day
+                    selectedDecoration: BoxDecoration(
+                      color: ThemeConstants.primaryColorNew,
+                      shape: BoxShape.circle,
+                    ),
+                    // Decoration for today's day
+                    todayDecoration: BoxDecoration(
+                      color: Colors.orange,
+                      shape: BoxShape.circle,
+                    ),
+                    // Default decoration for all other days
+                    defaultDecoration: BoxDecoration(
+                      color: Colors.transparent,
+                    ),
+                    
+                  
+                  ),
+                )
+                
+                  
+                ),
               ),
+
               const SizedBox(height: 16),
               Text('Total Days: ${widget.totalDays} days'),
               const SizedBox(height: 16),
