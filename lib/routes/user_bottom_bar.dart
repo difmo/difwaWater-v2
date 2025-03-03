@@ -76,7 +76,7 @@ class _HomeScreenState extends State<BottomUserHomePage> {
           onTap: _onItemTapped,
           type: BottomNavigationBarType.fixed,
           selectedItemColor: AppColors.inputfield, // Color when selected
-          unselectedItemColor: Colors.grey, // Color when not selected
+          unselectedItemColor: Colors.white, // Color when not selected
         ),
       ),
     );
@@ -105,7 +105,7 @@ class _HomeScreenState extends State<BottomUserHomePage> {
           // Icon on top of the SVG background
           Icon(
             iconData,
-            size: isSelected ? 35 : 30, // Zoom in when selected
+            size: isSelected ? 30 : 20, // Zoom in when selected
             color: isSelected ? Colors.white : Colors.black, // Change icon color when selected
           ),
         ],

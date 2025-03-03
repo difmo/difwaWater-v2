@@ -47,15 +47,15 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
             items: <BottomNavigationBarItem>[
               BottomNavigationBarItem(
                 icon: _buildIcon(Icons.home, 0),
-                label: 'Home',
+                label: '',  // Removed label
               ),
               BottomNavigationBarItem(
-                icon: _buildIcon(Icons.store_rounded, 1),
-                label: 'Product',
+                icon: _buildIcon(Icons.store, 1),
+                label: '',  // Removed label
               ),
               BottomNavigationBarItem(
-                icon: _buildIcon(Icons.shopping_bag_rounded, 2),
-                label: 'Orders',
+                icon: _buildIcon(Icons.shopping_bag, 2),
+                label: '',  // Removed label
               ),
             ],
             currentIndex: _selectedIndex,
@@ -94,7 +94,7 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
           // Icon on top of the SVG background
           Icon(
             iconData,
-            size: isSelected ? 35 : 30, // Zoom in when selected
+            size: isSelected ? 40 : 30, // Zoom in when selected
             color: isSelected ? Colors.white : Colors.black, // Change icon color when selected
           ),
         ],

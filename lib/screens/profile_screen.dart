@@ -147,7 +147,7 @@ class MenuOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
+      margin: const EdgeInsets.symmetric(horizontal: 1.0, vertical: 2.0),
       padding: const EdgeInsets.all(12.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10.0),

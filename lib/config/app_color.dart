@@ -36,4 +36,7 @@ class AppColors {
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
+
+  static const Color iconbgStart = Color(0xFFFFA082); // Start color
+  static const Color iconbgEnd = Color(0xFFF3743D);   // End color
 }
