@@ -1,5 +1,6 @@
 import 'dart:ui'; // Import for BackdropFilter
-import 'package:difwa/config/app_color.dart';
+import 'package:difwa/config/app_styles.dart';
+import 'package:difwa/utils/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -20,27 +21,33 @@ class LoginScreenPage extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreenPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool isLoading = false; // Flag to show loader
+  // bool isLoading = false; // Flag to show loader
 
   final authController = Get.find<AuthController>();
-
+  final _formKeyEmail = GlobalKey<FormState>();
+  final _formKeyPassword = GlobalKey<FormState>();
+  bool isLoading = false;
+  
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final isSmallScreen = screenSize.width < 600;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
         children: [
           // Top background image
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: SvgPicture.asset(
-              'assets/bgimage/top.svg',
-              fit: BoxFit.cover,
-              width: MediaQuery.of(context).size.width,
-            ),
-          ),
+          // Positioned(
+          //   top: 0,
+          //   left: 0,
+          //   right: 0,
+          //   child: SvgPicture.asset(
+          //     'assets/bgimage/top.svg',
+          //     fit: BoxFit.cover,
+          //     width: MediaQuery.of(context).size.width,
+          //   ),
+          // ),
           // Bottom background image
           Positioned(
             bottom: 0,
@@ -66,50 +73,59 @@ class _LoginScreenState extends State<LoginScreenPage> {
                       height: 100, // Adjust height as needed
                     ),
                     const SizedBox(height: 30),
-                    const Text(
-                      "Login Now",
-                      style: TextStyle(
-                        fontSize: 30.0,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.0,
-                        color: AppColors.primary,
-                        height: 1.2,
-                        fontFamily: 'Roboto',
+                    Text(
+                      "Enter your details",
+                      style: AppStyle.headingBlack.copyWith(
+                        fontSize: isSmallScreen ? 20 : 24,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      "Please enter your name and the required verification details",
+                      style: AppStyle.greyText18.copyWith(
+                        fontSize: isSmallScreen ? 14 : 18,
                       ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 30),
                     // Email Field
-                    CommonTextField(
-                      controller: _emailController,
-                      inputType: InputType.email,
-                      onChanged: (String) {},
-                      label: 'Email',
-                      hint: 'Enter Your Email',
-                      icon: Icons.email,
+                    Form(
+                      key: _formKeyEmail,
+                      child: CommonTextField(
+                        controller: _emailController,
+                        inputType: InputType.email,
+                        onChanged: (String) {_formKeyEmail.currentState!.validate();},
+                        label: 'Email',
+                        hint: 'Enter Your Email',
+                        icon: Icons.email,
+                        validator: Validators.validateEmail, // Apply validation function
+                      ),
                     ),
                     const SizedBox(height: 16),
                     // Password Field
-                    CommonTextField(
-                      controller: _passwordController,
-                      inputType: InputType.visiblePassword,
-                      onChanged: (String) {},
-                      label: 'Password',
-                      hint: 'Enter Your Password',
-                      icon: Icons.lock,
-                      suffixIcon: Icons.visibility_off,
+                    Form(
+                      key: _formKeyPassword,
+                      child: CommonTextField(
+                        controller: _passwordController,
+                        inputType: InputType.visiblePassword,
+                        onChanged: (String) {_formKeyPassword.currentState!.validate();},
+                        label: 'Password',
+                        hint: 'Enter Your Password',
+                        icon: Icons.lock,
+                        suffixIcon: Icons.visibility_off,
+                        validator: Validators.validatePassword, // Apply validation function
+                      ),
                     ),
                     const SizedBox(height: 16),
                     // Login Button
                     SizedBox(
-                      width: 140,
                       child: CustomButton(
                         baseTextColor: ThemeConstants.whiteColor,
                         onPressed: () async {
-                          setState(() {
-                            isLoading = true; // Show loader
-                          });
-
+                                  if (_formKeyEmail.currentState!.validate() &&
+                                      _formKeyPassword.currentState!
+                                          .validate()) {}
                           await authController.loginwithemail(
                               _emailController.text, _passwordController.text);
 

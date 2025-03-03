@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:difwa/routes/app_routes.dart'; // Assuming you have routes setup
 
-class LoginScreenPage extends StatefulWidget {
-  const LoginScreenPage({super.key});
+class LoginScreenPagevalidation extends StatefulWidget {
+  const LoginScreenPagevalidation({super.key});
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreenPage> {
+class _LoginScreenState extends State<LoginScreenPagevalidation> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool isLoading = false;

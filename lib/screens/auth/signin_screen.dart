@@ -1,23 +1,28 @@
-import 'dart:ui';
+import 'package:flutter/material.dart';
+import 'package:flutter/animation.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 import 'package:difwa/config/app_styles.dart';
 import 'package:difwa/controller/auth_controller.dart';
 import 'package:difwa/screens/auth/login_screen.dart';
 import 'package:difwa/widgets/custom_button.dart';
 import 'package:difwa/widgets/custom_input_field.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
-import 'package:lottie/lottie.dart';
+import 'package:difwa/utils/validators.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 
 class MobileNumberPage extends StatefulWidget {
   const MobileNumberPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _MobileNumberPageState createState() => _MobileNumberPageState();
 }
 
-class _MobileNumberPageState extends State<MobileNumberPage> {
+class _MobileNumberPageState extends State<MobileNumberPage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _staggeredController;
+  late List<Interval> _itemSlideIntervals;
+  late Interval _buttonInterval;
+
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -25,66 +30,36 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
   final AuthController authController = Get.put(AuthController());
   bool isLoading = false;
 
-  void _handlemail() async {
-    final email = emailController.text.trim();
-    final password = passwordController.text.trim();
+  final GlobalKey<FormState> _formKeyPhone = GlobalKey<FormState>();
+  String selectedCountryCode = "+91"; // Default country code
 
-    if (email.isEmpty ||
-        !RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
-            .hasMatch(email)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a valid email address'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
+  final _formKeyName = GlobalKey<FormState>();
+  final _formKeyEmail = GlobalKey<FormState>();
+  final _formKeyPassword = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _staggeredController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 1400));
+    _createAnimationIntervals();
+    _staggeredController.forward();
+  }
+
+  void _createAnimationIntervals() {
+    _itemSlideIntervals = [];
+    for (int i = 0; i < 4; i++) {
+      _itemSlideIntervals
+          .add(Interval(i * 0.2, (i + 1) * 0.2, curve: Curves.easeIn));
     }
 
-    if (password.isEmpty || password.length < 8) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Password must be at least 8 characters long'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
+    _buttonInterval = Interval(0.8, 1.0, curve: Curves.easeInOut);
+  }
 
-    String passwordPattern =
-        r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$';
-    if (!RegExp(passwordPattern).hasMatch(password)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-              'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    setState(() {
-      isLoading = true;
-    });
-
-    try {
-      await authController.signwithemail(email, password);
-      setState(() {
-        isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to log in: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+  @override
+  void dispose() {
+    _staggeredController.dispose();
+    super.dispose();
   }
 
   @override
@@ -96,18 +71,6 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Top background image
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: SvgPicture.asset(
-              'assets/bgimage/top.svg',
-              fit: BoxFit.cover,
-              width: MediaQuery.of(context).size.width,
-            ),
-          ),
-          // Bottom background image
           Positioned(
             bottom: 0,
             left: 0,
@@ -125,10 +88,9 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Logo Image (Placed above "Login" text)
                     SvgPicture.asset(
-                      'assets/logos/difwalogo1.svg', // Path to your SVG asset
-                      height: 100, // Adjust height as needed
+                      'assets/logos/difwalogo1.svg',
+                      height: 100,
                     ),
                     const SizedBox(height: 30),
                     Text(
@@ -147,110 +109,193 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 30),
-                    const SizedBox(height: 20),
-                    SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          CommonTextField(
-                            controller: nameController,
-                            inputType: InputType.email,
-                            onChanged: (String) {},
-                            label: 'Name',
-                            hint: 'Enter Your Name',
-                            icon: Icons.person,
-                          ),
-                          const SizedBox(height: 20),
-                          Column(
-                            children: [
-                              CommonTextField(
-                                controller: emailController,
-                                inputType: InputType.email,
-                                label: 'Email',
-                                hint: 'Enter Your Email',
-                                icon: Icons.email,
-                                onChanged: (String) {},
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 20),
-                          Column(
-                            children: [
-                              CommonTextField(
-                                controller: passwordController,
-                                inputType: InputType.visiblePassword,
-                                // ignore: avoid_types_as_parameter_names
-                                onChanged: (String) {},
-                                label: 'Password',
-                                hint: 'Enter Your Password',
-                                icon: Icons.lock,
-                                suffixIcon: Icons.visibility_off,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 20),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              CustomButton(
-                                onPressed: _handlemail,
-                                text: 'Register',
-                                baseTextColor: Colors.white,
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              const Text("Already have an account?"),
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const LoginScreenPage()));
+                    AnimatedBuilder(
+                      animation: _staggeredController,
+                      builder: (context, child) {
+                        return Opacity(
+                          opacity: _itemSlideIntervals[0]
+                              .transform(_staggeredController.value),
+                          child: child,
+                        );
+                      },
+                      child: Form(
+                        key: _formKeyPhone,
+                        child: Row(
+                          children: [
+                            CountryCodePicker(
+                              onChanged: (code) {
+                                setState(() {
+                                  selectedCountryCode = code.dialCode!;
+                                });
+                              },
+                              initialSelection: 'IN',
+                              favorite: ['+91', '+1'],
+                              showCountryOnly: false,
+                              showOnlyCountryWhenClosed: false,
+                              alignLeft: false,
+                            ),
+                            Expanded(
+                              child: CommonTextField(
+                                controller: phoneController,
+                                inputType: InputType.phone,
+                                label: 'Phone Number',
+                                hint: 'Enter Your Phone Number',
+                                icon: Icons.phone,
+                                onChanged: (String) {
+                                  _formKeyPhone.currentState!.validate();
                                 },
-                                child: const Text(
-                                  'LogIn',
-                                  style: TextStyle(
-                                    color: Colors.blueAccent,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                                validator: Validators.validatePhone,
                               ),
-                            ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    AnimatedBuilder(
+                      animation: _staggeredController,
+                      builder: (context, child) {
+                        return Opacity(
+                          opacity: _itemSlideIntervals[1]
+                              .transform(_staggeredController.value),
+                          child: child,
+                        );
+                      },
+                      child: Form(
+                        key: _formKeyName,
+                        child: CommonTextField(
+                          controller: nameController,
+                          inputType: InputType.name,
+                          onChanged: (String) {
+                            _formKeyName.currentState!.validate();
+                          },
+                          label: 'Name',
+                          hint: 'Enter Your Name',
+                          icon: Icons.person,
+                          validator: Validators.validateName,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    AnimatedBuilder(
+                      animation: _staggeredController,
+                      builder: (context, child) {
+                        return Opacity(
+                          opacity: _itemSlideIntervals[2]
+                              .transform(_staggeredController.value),
+                          child: child,
+                        );
+                      },
+                      child: Form(
+                        key: _formKeyEmail,
+                        child: CommonTextField(
+                          controller: emailController,
+                          inputType: InputType.email,
+                          label: 'Email',
+                          hint: 'Enter Your Email',
+                          icon: Icons.email,
+                          onChanged: (String) {
+                            _formKeyEmail.currentState!.validate();
+                          },
+                          validator: Validators.validateEmail,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    AnimatedBuilder(
+                      animation: _staggeredController,
+                      builder: (context, child) {
+                        return Opacity(
+                          opacity: _itemSlideIntervals[3]
+                              .transform(_staggeredController.value),
+                          child: child,
+                        );
+                      },
+                      child: Form(
+                        key: _formKeyPassword,
+                        child: CommonTextField(
+                          controller: passwordController,
+                          inputType: InputType.visiblePassword,
+                          onChanged: (String) {
+                            _formKeyPassword.currentState!.validate();
+                          },
+                          label: 'Password',
+                          hint: 'Enter Your Password',
+                          icon: Icons.lock,
+                          suffixIcon: Icons.visibility_off,
+                          validator: Validators.validatePassword,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    AnimatedBuilder(
+                      animation: _staggeredController,
+                      builder: (context, child) {
+                        return Opacity(
+                          opacity: _buttonInterval
+                              .transform(_staggeredController.value),
+                          child: child,
+                        );
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          CustomButton(
+                            onPressed: () async {
+                              if (_formKeyName.currentState!.validate() &&
+                                  _formKeyEmail.currentState!.validate() &&
+                                  _formKeyPassword.currentState!.validate()) {
+                                try {
+                                  await authController.signwithemail(
+                                      emailController.text,
+                                      nameController.text,
+                                      passwordController.text,
+                                      selectedCountryCode +
+                                          phoneController.text);
+                                } catch (e) {
+                                  print("Error: $e");
+                                }
+                                setState(() {
+                                  isLoading = true;
+                                });
+                              }
+                            },
+                            text: 'Register',
+                            baseTextColor: Colors.white,
                           ),
                         ],
                       ),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        const Text("Already have an account?"),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const LoginScreenPage()));
+                          },
+                          child: const Text(
+                            'LogIn',
+                            style: TextStyle(
+                              color: Colors.blueAccent,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
             ),
           ),
-          // Loader + Blur Effect (shown when isLoading is true)
-          if (isLoading)
-            Positioned.fill(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0), // Blur effect
-                child: Container(
-                  // ignore: deprecated_member_use
-                  color: Colors.black.withOpacity(0.5), // Semi-transparent overlay
-                  child: Center(
-                    child: Lottie.asset(
-                      'assets/lottie/loader.json', // Path to your Lottie file
-                      width: 200, // Set width of the animation
-                      height: 200, // Set height of the animation
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-              ),
-            ),
         ],
       ),
     );
   }
-
-  // Custom Tab Widget
 }

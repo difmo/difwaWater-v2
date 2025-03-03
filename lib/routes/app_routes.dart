@@ -1,6 +1,7 @@
 import 'package:difwa/routes/store_bottom_bar.dart';
 import 'package:difwa/routes/user_bottom_bar.dart';
 import 'package:difwa/screens/admin_screens/create_store_screen.dart';
+import 'package:difwa/screens/auth/adddress_page.dart';
 import 'package:difwa/screens/auth/signin_screen.dart';
 import 'package:difwa/screens/available_service_select.dart';
 import 'package:difwa/screens/book_now_screen.dart';
@@ -18,6 +19,7 @@ class AppRoutes {
   static const otp = '/otp';
   static const userbottom = '/userbottom';
   static const subscription = '/subscription';
+  static const address_page = '/address_page';
 
   //////// Admin stuff////////
   static const additem = '/additem';
@@ -30,46 +32,64 @@ class AppRoutes {
     GetPage(
       name: splash,
       page: () => const SplashScreen(),
+      transition: Transition.fadeIn, // Smooth fade-in for splash screen
+      transitionDuration: Duration(seconds: 1),
     ),
     GetPage(
       name: home,
       page: () => const BookNowScreen(),
+      transition: Transition.rightToLeftWithFade, // Smooth right-to-left with fade for home screen
+      transitionDuration: Duration(milliseconds: 800),
     ),
     GetPage(
       name: profile,
       page: () => const ProfileScreen(),
+      transition: Transition.fadeIn, // Fade transition for profile
+      transitionDuration: Duration(milliseconds: 600),
     ),
     GetPage(
       name: availableservices,
       page: () => const AvailableServiceSelect(),
+      transition: Transition.downToUp, // Slide-up transition for available services
+      transitionDuration: Duration(milliseconds: 700),
     ),
     GetPage(
       name: login,
-      page: () =>  MobileNumberPage(),
+      page: () => const MobileNumberPage(),
+      transition: Transition.circularReveal, // Circular reveal effect for login
+      transitionDuration: Duration(milliseconds: 1000),
     ),
-   
     GetPage(
       name: userbottom,
-      page: () =>  BottomUserHomePage(),
+      page: () => const BottomUserHomePage(),
+      transition: Transition.rightToLeft, // Slide transition from right for user dashboard
+      transitionDuration: Duration(milliseconds: 600),
     ),
     GetPage(
       name: subscription,
       page: () => const SubscriptionScreen(),
+      transition: Transition.zoom, // Zoom transition for subscription screen
+      transitionDuration: Duration(milliseconds: 800),
     ),
 
-/////////////////////////Admin Routes/////////////////
-    // GetPage(
-    //   name: additem,
-    //   page: () =>  AddItemPage(),
-    // ),
-// //
+    /////////////////////////Admin Routes/////////////////
     GetPage(
       name: createstore,
       page: () => const CreateStorePage(),
+      transition: Transition.fadeIn, // Smooth fade-in for create store page
+      transitionDuration: Duration(milliseconds: 500),
     ),
     GetPage(
       name: storebottombar,
       page: () => const BottomStoreHomePage(),
+      transition: Transition.leftToRight, // Slide transition from left for store dashboard
+      transitionDuration: Duration(milliseconds: 600),
+    ),
+    GetPage(
+      name: address_page,
+      page: () =>  AddressForm(),
+      transition: Transition.fadeIn, // Smooth fade-in for store home screen
+      transitionDuration: Duration(milliseconds: 500),
     ),
   ];
 }

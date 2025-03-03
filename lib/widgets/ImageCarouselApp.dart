@@ -1,5 +1,6 @@
+import 'package:difwa/config/app_color.dart';
+import 'package:difwa/utils/app__text_style.dart';
 import 'package:flutter/material.dart';
-
 
 class ImageCarouselPage extends StatefulWidget {
   const ImageCarouselPage({super.key});
@@ -26,7 +27,7 @@ class _ImageCarouselPageState extends State<ImageCarouselPage> {
       body: ListView(
         children: <Widget>[
           ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: height / 2),
+            constraints: BoxConstraints(maxHeight: height / 5),
             child: CarouselView.weighted(
               controller: controller,
               itemSnapping: true,
@@ -57,16 +58,30 @@ class HeroLayoutCard extends StatelessWidget {
           child: OverflowBox(
             maxWidth: width * 1.9,
             minWidth: width * 1.9,
-            child: Image(
-              fit: BoxFit.contain,
-              image: AssetImage(
-                '${imageInfo.url}', // Using local assets
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/cardbg8.png'), // Using local assets
+                  fit: BoxFit.contain, // You can change this as needed
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.mywhite,
+                    spreadRadius: 5,
+                    blurRadius: 7,
+                    offset: Offset(0, 3)
+                  ),
+                ]
               ),
+              // child: Image(
+              //   fit: BoxFit.contain,
+              //   image: AssetImage('${imageInfo.url}'), // Using local assets
+              // ),
             ),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(18.0),
+          padding: const EdgeInsets.all(19.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
@@ -75,15 +90,17 @@ class HeroLayoutCard extends StatelessWidget {
                 imageInfo.title,
                 overflow: TextOverflow.clip,
                 softWrap: false,
-                style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Colors.black),
+                style:AppTextStyle.Text28600.copyWith(color: AppColors.mywhite),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 10),
               Text(
                 imageInfo.subtitle,
                 overflow: TextOverflow.clip,
                 softWrap: false,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.black),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: Color(0xFF750F0F),),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -95,16 +112,21 @@ class HeroLayoutCard extends StatelessWidget {
 }
 
 enum ImageInfo {
-  image0('Drips Springs', 'Bottle water delivery | Season 1 Now Streaming', 'assets/scollerimg/image0.jpg'),
+  image0('Drips Springs', 'Bottle water delivery | Season 1 Now Streaming',
+      'assets/scollerimg/image0.jpg'),
   image1(
     'Through the Pane',
     'Sponsored | Season 1 Now Streaming',
     'assets/scollerimg/image1.png',
   ),
-  image2('Iridescence', 'Sponsored | Season 1 Now Streaming', 'assets/scollerimg/image2.png'),
-  image3('Sea Change', 'Sponsored | Season 1 Now Streaming', 'assets/images/water.jpg'),
-  image4('Blue Symphony', 'Sponsored | Season 1 Now Streaming', 'assets/images/water.jpg'),
-  image5('When It Rains', 'Sponsored | Season 1 Now Streaming', 'assets/images/water.jpg');
+  image2('Iridescence', 'Sponsored | Season 1 Now Streaming',
+      'assets/scollerimg/image2.png'),
+  image3('Sea Change', 'Sponsored | Season 1 Now Streaming',
+      'assets/images/water.jpg'),
+  image4('Blue Symphony', 'Sponsored | Season 1 Now Streaming',
+      'assets/images/water.jpg'),
+  image5('When It Rains', 'Sponsored | Season 1 Now Streaming',
+      'assets/images/water.jpg');
 
   const ImageInfo(this.title, this.subtitle, this.url);
   final String title;

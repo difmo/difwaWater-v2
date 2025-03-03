@@ -1,12 +1,13 @@
 import 'dart:ui';
 
+import 'package:difwa/config/app_color.dart';
 import 'package:difwa/controller/bottle_controller.dart';
 import 'package:difwa/routes/app_routes.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/widgets/custom_appbar.dart';
 import 'package:difwa/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 import '../widgets/ImageCarouselApp.dart';
@@ -22,109 +23,122 @@ class _BookNowScreenState extends State<BookNowScreen> {
   int _selectedIndex = -1;
   bool _hasEmptyBottle = false;
   int _quantity = 1;
+
   @override
   Widget build(BuildContext context) {
     final BottleController bottleController = Get.put(BottleController());
-final screenHeight = MediaQuery.of(context).size.height;
+    final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: ThemeConstants.whiteColor,
+      backgroundColor: Colors.white,
       appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
-          child: CustomAppbar(
-              onProfilePressed: () {},
-              onNotificationPressed: () {},
-              onMenuPressed: () {},
-              hasNotifications: true)),
-             
+        preferredSize: const Size.fromHeight(60),
+        child: CustomAppbar(
+            onProfilePressed: () {},
+            onNotificationPressed: () {},
+            onMenuPressed: () {},
+            hasNotifications: true),
+      ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(5.0),
           child: Column(
             children: [
-               SizedBox(
-                height: screenHeight * 0.5,
+              SizedBox(
+                height: screenHeight * 0.20,
                 child: const ImageCarouselPage(),
               ),
               Obx(() {
                 if (bottleController.bottleItems.isEmpty) {
                   return const CircularProgressIndicator();
                 }
-                return SizedBox(
-                  height: 200, // Card height
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: bottleController.bottleItems.length,
-                    // itemCount: bottleController.bottleItems.length,
-                    itemBuilder: (context, index) {
-                      var bottle = bottleController.bottleItems[index];
-                      bool isSelected = index == _selectedIndex;
 
-                      String imagePath;
-                      switch (bottle['size']) {
-                        case 15:
-                          imagePath = 'assets/images/water.jpg';
-                          break;
-                        case 20:
-                          imagePath = 'assets/images/water.jpg';
-                          break;
-                        case 10:
-                          imagePath = 'assets/images/water.jpg';
-                          break;
-                        default:
-                          imagePath = 'assets/images/water.jpg';
-                          break;
-                      }
+                return Column(
+                  children: [
+                    Divider(
+                      color: AppColors.darkGrey,
+                      thickness: 1,
+                      height: 20,
+                      indent: 10,
+                      endIndent: 10,
+                    ),
+                    SizedBox(
+                      height: 200, // Card height
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: bottleController.bottleItems.length,
+                        itemBuilder: (context, index) {
+                          var bottle = bottleController.bottleItems[index];
+                          bool isSelected = index == _selectedIndex;
 
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _selectedIndex = isSelected ? -1 : index;
-                          });
+                          String imagePath;
+                          switch (bottle['size']) {
+                            case 15:
+                              imagePath = 'assets/images/water.jpg';
+                              break;
+                            case 20:
+                              imagePath = 'assets/images/water.jpg';
+                              break;
+                            case 10:
+                              imagePath = 'assets/images/water.jpg';
+                              break;
+                            default:
+                              imagePath = 'assets/images/water.jpg';
+                              break;
+                          }
+
+                          return GestureDetector(
+                            
+                            onTap: () {
+                              setState(() {
+                                _selectedIndex = isSelected ? -1 : index;
+                              });
+                            },
+                            child: Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16.0),
+                                side: const BorderSide(
+                                  color: Colors.blue, // Border color
+                                  width: 1.0, // Border width
+                                ),
+                              ),
+                              elevation: 0,
+                              color: isSelected
+                                  ? ThemeConstants.whiteColor
+                                  : Colors.white,
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      imagePath,
+                                      width: 80,
+                                      height: 80,
+                                      fit: BoxFit.cover,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      '${bottle['size']}L',
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      '₹ ${bottle['price']}',
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
                         },
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16.0),
-                            side: const BorderSide(
-                              color: Colors.blue, // Border color
-                              width: 1.0, // Border width
-                            ),
-                          ),
-                          elevation: 0,
-                          color: isSelected
-                              ? ThemeConstants.secondaryLight
-                              : Colors.white,
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.asset(
-                                  imagePath,
-                                  width: 80,
-                                  height: 80,
-                                  fit: BoxFit.cover,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  '${bottle['size']}L',
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  '₹ ${bottle['price']}',
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                      ),
+                    ),
+                  ],
                 );
               }),
               const SizedBox(height: 16),
@@ -341,6 +355,7 @@ final screenHeight = MediaQuery.of(context).size.height;
                             _hasEmptyBottle ? bottle['vacantPrice'] : 0;
 
                         Get.toNamed(
+                          
                           AppRoutes.subscription,
                           arguments: {
                             'bottle': bottle,
@@ -349,6 +364,7 @@ final screenHeight = MediaQuery.of(context).size.height;
                             'vacantPrice': vacantPrice,
                             'hasEmptyBottle': _hasEmptyBottle,
                           },
+                          
                         );
                       }
                     },

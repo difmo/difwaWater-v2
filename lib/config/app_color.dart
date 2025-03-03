@@ -11,6 +11,9 @@ class AppColors {
   static const Color mywhite = Colors.white;
   static const Color myGreen = Colors.green;
   static const Color buttonbgColor = Color(0xFF096FCE);
+  static const Color buttontextcolor = Color(0xFF4878BB);
+  static const Color inputfield = Color(0xFFF3743D);
+
 
   static var primaryColor = const Color(0xFF6256CA);
 
@@ -19,4 +22,18 @@ class AppColors {
   static const Color redColor = Color.fromARGB(255, 240, 31, 31);
 
   AppColors(Color primaryColor);
+
+   // Custom Gradient for Button Background
+  static const LinearGradient buttonBgGradient = LinearGradient(
+    colors: [Color(0xFFFFA279), Color(0xFFF3743D)], // Custom gradient colors
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  // Custom Gradient for Background
+  static const LinearGradient iconbg = LinearGradient(
+    colors: [Color(0xFFFFA082), Color(0xFFF3743D)], // Custom gradient colors
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+  );
 }

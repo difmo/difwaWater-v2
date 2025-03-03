@@ -131,7 +131,7 @@ class _WalletScreenState extends State<WalletScreen> {
             ),
             const SizedBox(height: 16),
             SizedBox(
-                width: double.infinity,
+                
                 child: CustomButton(
                   baseTextColor: ThemeConstants.whiteColor,
                   text: "Add Money",

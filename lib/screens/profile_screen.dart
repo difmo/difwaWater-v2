@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:difwa/routes/app_routes.dart';
 import 'package:difwa/screens/admin_screens/store_onboarding_screen.dart';
+import 'package:difwa/screens/auth/adddress_page.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +39,7 @@ class _LoginScreenState extends State<ProfileScreen> {
                 children: [
                   CircleAvatar(
                     radius: 30,
-                    backgroundColor: ThemeConstants.primaryColorNew,
+                    backgroundColor: AppColors.inputfield,
                     child: Icon(
                       Icons.person,
                       color: Colors.white,
@@ -66,9 +67,12 @@ class _LoginScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-            const MenuOption(
-              icon: Icons.home,
-              title: 'Address',
+            GestureDetector(
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AddressForm())),
+              child: const MenuOption(
+                icon: Icons.home,
+                title: 'Address',
+              ),
             ),
             const MenuOption(
               icon: Icons.group_add,
@@ -150,7 +154,7 @@ class MenuOption extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(icon, size: 24, color: ThemeConstants.primaryColorNew),
+          Icon(icon, size: 24, color: AppColors.inputfield),
           const SizedBox(width: 16),
           Text(
             title,
@@ -158,7 +162,7 @@ class MenuOption extends StatelessWidget {
           ),
           const Spacer(),
           const Icon(Icons.arrow_forward,
-              size: 24, color: ThemeConstants.primaryColorNew),
+              size: 24, color: ThemeConstants.grey),
         ],
       ),
     );

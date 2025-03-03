@@ -12,7 +12,7 @@ class ThemeConstants {
 
   static const Color backgroundColor = Colors.white;
   static const Color blackColor = Color(0xFF0E0E0E);
-  static const Color whiteColor = Color(0xFFffffff);
+  static const Color whiteColor = Color.fromARGB(255, 255, 255, 255);
   static const Color textColor = Colors.black;
 
   static const Color red = Colors.red;
