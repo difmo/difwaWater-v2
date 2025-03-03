@@ -1,6 +1,6 @@
 import 'package:difwa/utils/app__text_style.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:get/get.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/controller/checkout_controller.dart'; // Import the controller
@@ -115,6 +115,7 @@ class CheckoutScreen extends StatelessWidget {
                   ),
                 ),
               ),
+
               const SizedBox(height: 16),
               Text('Total Days: $totalDays days'),
               const SizedBox(height: 16),
