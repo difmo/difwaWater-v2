@@ -86,15 +86,16 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
         children: [
           // Background SVG image when selected
           if (isSelected)
-            SvgPicture.asset(
-              'assets/icons/iconbg.svg', // Replace with your actual SVG asset path
-              width: 60, // Adjust size as per your requirement
-              height: 60, // Adjust size as per your requirement
-            ),
+            Image.asset(
+            'assets/icons/iconbg.png', // Replace with your actual PNG asset path
+            width: 50, // Adjust size as per your requirement
+            height: 50, // Adjust size as per your requirement
+            fit: BoxFit.cover, // Optional: Use this to make sure the image fits the container
+          ),
           // Icon on top of the SVG background
           Icon(
             iconData,
-            size: isSelected ? 40 : 30, // Zoom in when selected
+            size: isSelected ? 30 : 18, // Zoom in when selected
             color: isSelected ? Colors.white : Colors.black, // Change icon color when selected
           ),
         ],
