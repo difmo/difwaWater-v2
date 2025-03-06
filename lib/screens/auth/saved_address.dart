@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:difwa/controller/address_controller.dart';
 import 'package:difwa/config/app_color.dart';
-import 'package:difwa/screens/auth/adddress_page.dart';
+import 'package:difwa/screens/auth/adddress_form_page.dart';
 import 'package:difwa/models/address_model.dart'; // Your Address Model
 
 class SavveAddressPage extends StatelessWidget {
@@ -15,8 +15,8 @@ class SavveAddressPage extends StatelessWidget {
       body: GetBuilder<AddressController>(
         init: addressController,
         builder: (_) {
-          return FutureBuilder<List<Address>>(
-            future: addressController.getAddresses(), // Fetch addresses from the controller
+          return StreamBuilder<List<Address>>(
+            stream: addressController.getAddresses(), // Fetch addresses from the controller
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());
@@ -49,7 +49,8 @@ class SavveAddressPage extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => AddressForm(), // Pass the address to edit
+                                  builder: (context) => AddressForm(address: addresses[index],flag: 
+                                  'isEdit',) , // Pass the address to edit
                                 ),
                               );
                             },
@@ -61,7 +62,7 @@ class SavveAddressPage extends StatelessWidget {
                               bool? confirmDelete = await _showDeleteDialog(context);
                               if (confirmDelete == true) {
                                 // Delete the address if confirmed
-                                await addressController.deleteAddress(addresses[index].userId);
+                                await addressController.deleteAddress(addresses[index].docId);
                               }
                             },
                           ),
@@ -97,8 +98,8 @@ class SavveAddressPage extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => AddressForm()), // Navigate to the form to add a new address
-              );
+                MaterialPageRoute(builder: (context) => AddressForm(address: Address(docId: "", name: "", street: "", city: "", state: "", zip: "", isDeleted: false, country: "", phone: "", saveAddress: false, userId: ""),flag: "",), // Navigate to the form to add a new address
+              ));
             },
             child: Icon(
               Icons.add_business_sharp,
@@ -124,7 +125,9 @@ class SavveAddressPage extends StatelessWidget {
             child: Text('Cancel'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () => {Navigator.of(context).pop(true)
+            
+            },
             child: Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],

@@ -8,7 +8,7 @@ class AddressController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Method to save the address.
-  Future<void> saveAddress(Address address) async {
+  Future<bool> saveAddress(Address address) async {
     try {
       final user = _auth.currentUser;
 
@@ -16,57 +16,59 @@ class AddressController extends GetxController {
         address.userId = user.uid;
 
         // Save address to Firestore
-        await _firestore
+        DocumentReference docRef = _firestore
             .collection('difwa-users') // User-specific collection
             .doc(user.uid) // User document
             .collection('User-address') // Subcollection for addresses
-            .doc() // Creates a new document with a random ID
-            .set(address.toJson(), SetOptions(merge: true));
+            .doc(); // Creates a new document with a random ID
+
+        address.docId = docRef.id; // Set the document ID in the address object
+
+        await docRef.set(address.toJson(), SetOptions(merge: true));
 
         Get.snackbar('Success', 'Address saved successfully!');
+        return true;
       } else {
         Get.snackbar('Error', 'User not logged in.');
+        return false;
       }
     } catch (e) {
       Get.snackbar('Error', 'Failed to save the address: $e');
+      return false;
     }
   }
 
-  // Fetch the user's addresses.
-  Future<List<Address>> getAddresses() async {
-    try {
-      final user = _auth.currentUser;
-      if (user != null) {
-        // Fetch all addresses for the current user
-        QuerySnapshot querySnapshot = await _firestore
-            .collection('difwa-users') // User-specific collection
-            .doc(user.uid) // User document
-            .collection('User-address') // Subcollection for addresses
-            .get();
+  // Fetch the user's addresses in real-time.
+  Stream<List<Address>> getAddresses() {
+    final user = _auth.currentUser;
 
-        // Check if the user has any addresses
-        if (querySnapshot.docs.isNotEmpty) {
-          // Map the Firestore documents to Address objects
-          return querySnapshot.docs.map((doc) {
-            return Address.fromJson(doc.data() as Map<String, dynamic>);
-          }).toList();
-        } else {
-          return []; // Return an empty list if no addresses found
-        }
-      } else {
-        return []; // Return an empty list if no user is logged in
-      }
-    } catch (e) {
-      Get.snackbar('Error', 'Failed to fetch addresses: $e');
-      return []; // Return an empty list on error
+    if (user != null) {
+      // Fetch all addresses for the current user
+      return _firestore
+          .collection('difwa-users') // User-specific collection
+          .doc(user.uid) // User document
+          .collection('User-address') // Subcollection for addresses
+          .where('isDeleted', isEqualTo: false)
+          .snapshots() // Use snapshots() for real-time updates
+          .map((querySnapshot) {
+        // Map the Firestore documents to Address objects
+        return querySnapshot.docs.map((doc) {
+          return Address.fromJson(doc.data() as Map<String, dynamic>);
+        }).toList();
+      });
+    } else {
+      // If no user is logged in, return an empty list
+      return Stream.value([]);
     }
   }
 
   // Method to delete an address
   Future<void> deleteAddress(String addressId) async {
     try {
+      print("delete0");
       final user = _auth.currentUser;
       if (user != null) {
+        print("delete");
         // Delete the address from Firestore using the document ID
         await _firestore
             .collection('difwa-users') // User-specific collection
@@ -77,9 +79,11 @@ class AddressController extends GetxController {
 
         Get.snackbar('Success', 'Address deleted successfully!');
       } else {
+        print("delete1");
         Get.snackbar('Error', 'User not logged in.');
       }
     } catch (e) {
+      print("delete2");
       Get.snackbar('Error', 'Failed to delete the address: $e');
     }
   }
