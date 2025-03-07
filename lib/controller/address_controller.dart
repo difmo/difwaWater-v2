@@ -89,7 +89,7 @@ class AddressController extends GetxController {
   }
 
   // Method to update an existing address
-  Future<void> updateAddress(String addressId, Address address) async {
+  Future<void> updateAddress( Address address) async {
     try {
       final user = _auth.currentUser;
 
@@ -99,7 +99,7 @@ class AddressController extends GetxController {
             .collection('difwa-users') // User-specific collection
             .doc(user.uid) // User document
             .collection('User-address') // Subcollection for addresses
-            .doc(addressId) // Document ID to update
+            .doc(address.docId) // Document ID to update
             .update(address.toJson());
 
         Get.snackbar('Success', 'Address updated successfully!');

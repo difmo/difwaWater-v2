@@ -17,6 +17,8 @@ class CustomAppbar extends StatefulWidget {
     this.profileImageUrl,
   });
 
+  
+
   @override
   _CustomToolbarState createState() => _CustomToolbarState();
 }
@@ -59,7 +61,7 @@ class _CustomToolbarState extends State<CustomAppbar> {
                 child: const Icon(
                   Icons.water_drop,
                   color: Colors.white,
-                  size: 25, // Adjust the icon size
+                  size: 20, // Adjust the icon size
                 ),
               ),
               SizedBox(width: 4),
@@ -67,7 +69,7 @@ class _CustomToolbarState extends State<CustomAppbar> {
                 'FreshDropHydrate',
                 style: TextStyle(
                   color: AppColors.myblack,
-                  fontSize: 30,
+                  fontSize: 25,
                   fontWeight: FontWeight.bold,
                   
                 ),

@@ -88,7 +88,7 @@ class AppRoutes {
     ),
     GetPage(
       name: address_page,
-      page: () =>  AddressForm(address: Address(docId: "", name: "", street: "", city: "", state: "", zip: "", isDeleted: false, country: "", phone: "", saveAddress: false, userId: ""),flag: "",),
+      page: () =>  AddressForm(address: Address(docId: "", name: "", street: "", city: "", state: "", zip: "", isDeleted: false, country: "", phone: "", saveAddress: false, userId: "", floor: ""),flag: "",),
       transition: Transition.fadeIn, // Smooth fade-in for store home screen
       transitionDuration: Duration(milliseconds: 500),
     ),

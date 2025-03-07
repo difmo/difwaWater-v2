@@ -13,6 +13,8 @@ class AppColors {
   static const Color buttonbgColor = Color(0xFF096FCE);
   static const Color buttontextcolor = Color(0xFF4878BB);
 static const Color inputfield = Color(0xFF169DFF);
+static const Color cardbgcolor = Color(0xFFE9F5F9);
+
 
 
 

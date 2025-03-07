@@ -35,6 +35,7 @@ class _AddressFormState extends State<AddressForm> {
   final TextEditingController _countryController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _floorController = TextEditingController();
   bool _isChecked = false;
   bool _isdeleted = false; // Checkbox state
 
@@ -50,6 +51,7 @@ class _AddressFormState extends State<AddressForm> {
   final _formPin = GlobalKey<FormState>();
   final _formState = GlobalKey<FormState>();
   final _formCity = GlobalKey<FormState>();
+  final _formfloor = GlobalKey<FormState>();
 
   bool _isSubmitting = false; // State to handle submission progress
   bool _isAddressSaved = false;
@@ -66,6 +68,7 @@ class _AddressFormState extends State<AddressForm> {
     _phoneController.text = widget.address.phone;
     _isChecked = widget.address.saveAddress;
     _isdeleted = widget.address.isDeleted;
+    _floorController.text = widget.address.floor;
   }
 
 // Function to save a new address
@@ -86,6 +89,7 @@ class _AddressFormState extends State<AddressForm> {
           userId: "", // Dynamically get the userId if necessary
           isDeleted: _isdeleted,
           docId: "", // Empty for a new address
+          floor: _floorController.text,
         ),
       );
       return true; // Indicate success
@@ -101,21 +105,22 @@ class _AddressFormState extends State<AddressForm> {
     try {
       // Assuming _addressController.updateAddress() is returning void,
       // you need to change it to return a boolean indicating success or failure.
-      // await _addressController.updateAddress(
-      //   Address(
-      //     name: _nameController.text,
-      //     street: _streetController.text,
-      //     city: _cityController.text,
-      //     state: _stateController.text,
-      //     zip: _zipController.text,
-      //     country: _countryController.text,
-      //     phone: _phoneController.text,
-      //     saveAddress: _isChecked,
-      //     userId: "", // Dynamically get the userId if necessary
-      //     isDeleted: _isdeleted,
-      //     docId: widget.address.docId, // Pass the existing docId for update
-      //   ),
-      // );
+      await _addressController.updateAddress(
+        Address(
+          name: _nameController.text,
+          street: _streetController.text,
+          city: _cityController.text,
+          state: _stateController.text,
+          zip: _zipController.text,
+          country: _countryController.text,
+          phone: _phoneController.text,
+          saveAddress: _isChecked,
+          userId: "", // Dynamically get the userId if necessary
+          isDeleted: _isdeleted,
+          docId: widget.address.docId, // Pass the existing docId for update
+          floor: _floorController.text,
+        ),
+      );
       return true; // Indicate success
     } catch (e) {
       // If there's an error, log it and return false
@@ -201,8 +206,23 @@ class _AddressFormState extends State<AddressForm> {
                       _formKeyAddress.currentState!.validate();
                     },
                     label: 'Street Address',
-                    hint: 'Enter your street address',
+                    hint: 'Flat/Housse No./Building/Apartment',
                     validator: Validators.validatestreet,
+                  ),
+                ),
+                SizedBox(height: 20),
+                // Floor Address
+                Form(
+                  key: _formfloor,
+                  child: CommonTextField(
+                    inputType: InputType.phone,
+                    controller: _floorController,
+                    onChanged: (value) {
+                      _formfloor.currentState!.validate();
+                    },
+                    label: 'Floor',
+                    hint: 'Enter Floor No.',
+                    validator: Validators().validateFloor,
                   ),
                 ),
                 SizedBox(height: 20),
@@ -333,9 +353,11 @@ class _AddressFormState extends State<AddressForm> {
                             _formState.currentState!.validate();
                             _formPin.currentState!.validate();
                             _formCity.currentState!.validate();
+                            _formfloor.currentState!.validate();
 
                             // Check if all form fields are valid
                             if (_formKeyName.currentState!.validate() &&
+                                _formfloor.currentState!.validate() &&
                                 _formKeyPhone.currentState!.validate() &&
                                 _formKeyAddress.currentState!.validate() &&
                                 _formState.currentState!.validate() &&
@@ -363,7 +385,7 @@ class _AddressFormState extends State<AddressForm> {
                               });
                             }
                           },
-                          text: widget.flag != "isEdit" ? 'Save' : 'Update',
+                          text: widget.flag != "isEdit" ? 'SAVE' : 'UPDATE',
                         ),
                 ),
                 SizedBox(height: 20),
@@ -375,6 +397,7 @@ class _AddressFormState extends State<AddressForm> {
           if (_isSubmitting)
             Positioned.fill(
               child: Container(
+                // ignore: deprecated_member_use
                 color: Colors.black.withOpacity(0), // Semi-transparent overlay
                 child: Center(child: Loader()), // Your custom loader widget
               ),
