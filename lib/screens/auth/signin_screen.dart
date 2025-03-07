@@ -129,7 +129,7 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                                 });
                               },
                               initialSelection: 'IN',
-                              favorite: ['+91', '+1'],
+                              favorite: const ['+91', '+1'],
                               showCountryOnly: false,
                               showOnlyCountryWhenClosed: false,
                               alignLeft: false,

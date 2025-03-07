@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AddressForm extends StatefulWidget {
+  const AddressForm({super.key});
+
   @override
   _AddressFormState createState() => _AddressFormState();
 }
@@ -39,7 +41,7 @@ class _AddressFormState extends State<AddressForm> {
   final _formState = GlobalKey<FormState>();
   final _formCity = GlobalKey<FormState>();
 
-  bool _isSubmitting = false; // State to handle submission progress
+  final bool _isSubmitting = false; // State to handle submission progress
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +85,7 @@ class _AddressFormState extends State<AddressForm> {
                       });
                     },
                     initialSelection: 'IN',
-                    favorite: ['+91', '+1'],
+                    favorite: const ['+91', '+1'],
                     showCountryOnly: false,
                     showOnlyCountryWhenClosed: false,
                     alignLeft: false,
@@ -238,8 +240,8 @@ class _AddressFormState extends State<AddressForm> {
                   : CustomButton(
                       baseTextColor: ThemeConstants.whiteColor,
                       onPressed: () async {
-                        _formKeyName.currentState!.validate() ;
-                            _formKeyPhone.currentState!.validate();
+                        _formKeyName.currentState!.validate();
+                        _formKeyPhone.currentState!.validate();
                         _formKeyAddress.currentState!.validate();
                         _formState.currentState!.validate();
                         _formPin.currentState!.validate();

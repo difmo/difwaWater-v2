@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:difwa/config/app_color.dart';
 import 'package:difwa/config/app_styles.dart';
 import 'package:difwa/routes/app_routes.dart';
@@ -33,7 +31,6 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
       ),
     );
   }
-
 
   void _onNext() {
     if (_currentIndex < 2) {

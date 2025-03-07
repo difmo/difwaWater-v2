@@ -1,10 +1,9 @@
 import 'package:difwa/config/app_color.dart';
 import 'package:difwa/utils/theme_constant.dart';
-import 'package:difwa/utils/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-enum InputType { phone, email, name, address, visiblePassword ,pin}
+enum InputType { phone, email, name, address, visiblePassword, pin }
 
 class CommonTextField extends StatefulWidget {
   final InputType inputType;
@@ -20,7 +19,6 @@ class CommonTextField extends StatefulWidget {
   final IconData? icon;
   final IconData? suffixIcon;
   final String? Function(String?)? validator; // Accept a validator function
-
 
   const CommonTextField({
     super.key,
@@ -79,16 +77,15 @@ class _CommonTextFieldState extends State<CommonTextField> {
       case InputType.visiblePassword:
         _keyboardType = TextInputType.text;
         break;
-    
 
-    case InputType.pin:
+      case InputType.pin:
         _keyboardType = TextInputType.number;
         _inputFormatters = [
           FilteringTextInputFormatter.digitsOnly,
           LengthLimitingTextInputFormatter(6),
         ];
         break;
-        }
+    }
   }
 
   @override

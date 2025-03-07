@@ -16,8 +16,8 @@ class CheckoutScreen extends StatelessWidget {
     required this.totalPrice,
     required this.totalDays,
     required this.selectedDates,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +43,8 @@ class CheckoutScreen extends StatelessWidget {
               Card(
                 color: ThemeConstants.primaryColorNew,
                 shape: const RoundedRectangleBorder(
-                  side: BorderSide(width: 1, color: ThemeConstants.primaryColorNew),
+                  side: BorderSide(
+                      width: 1, color: ThemeConstants.primaryColorNew),
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                 ),
                 child: Padding(
@@ -52,7 +53,8 @@ class CheckoutScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       ClipRRect(
-                        borderRadius: const BorderRadius.all(Radius.circular(10)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(10)),
                       ),
                       Image.asset(
                         'assets/images/water.jpg',
@@ -65,12 +67,20 @@ class CheckoutScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('${orderData['bottle']['size']}L', style: AppTextStyle.Text12400.copyWith(color: ThemeConstants.whiteColor)),
+                            Text('${orderData['bottle']['size']}L',
+                                style: AppTextStyle.Text12400.copyWith(
+                                    color: ThemeConstants.whiteColor)),
                             const SizedBox(height: 8),
-                            Text('Price: ₹ ${orderData['price']} per bottle', style: AppTextStyle.Text12400.copyWith(color: ThemeConstants.whiteColor)),
+                            Text('Price: ₹ ${orderData['price']} per bottle',
+                                style: AppTextStyle.Text12400.copyWith(
+                                    color: ThemeConstants.whiteColor)),
                             const SizedBox(height: 8),
-                            Text('One Bottle Price: ₹ $totalPrice', style: AppTextStyle.Text12400.copyWith(color: ThemeConstants.whiteColor)),
-                            Text('Vacant Bottle Price: ₹ $vacantBottlePrice', style: AppTextStyle.Text12400.copyWith(color: ThemeConstants.whiteColor)),
+                            Text('One Bottle Price: ₹ $totalPrice',
+                                style: AppTextStyle.Text12400.copyWith(
+                                    color: ThemeConstants.whiteColor)),
+                            Text('Vacant Bottle Price: ₹ $vacantBottlePrice',
+                                style: AppTextStyle.Text12400.copyWith(
+                                    color: ThemeConstants.whiteColor)),
                           ],
                         ),
                       ),
@@ -97,7 +107,8 @@ class CheckoutScreen extends StatelessWidget {
                     lastDay: DateTime.utc(2100, 12, 31),
                     focusedDay: DateTime.now(),
                     selectedDayPredicate: (day) {
-                      return selectedDates.any((selectedDate) => isSameDay(selectedDate, day));
+                      return selectedDates
+                          .any((selectedDate) => isSameDay(selectedDate, day));
                     },
                     calendarStyle: const CalendarStyle(
                       selectedDecoration: BoxDecoration(
@@ -121,7 +132,10 @@ class CheckoutScreen extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 'Total Price: ₹ $totalAmount',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
+                style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue),
               ),
               const SizedBox(height: 16),
               const Text('Your Wallet Balance:'),
@@ -132,7 +146,10 @@ class CheckoutScreen extends StatelessWidget {
                     ? const CircularProgressIndicator()
                     : Text(
                         '₹ ${checkoutController.walletBalance.value.toStringAsFixed(2)}',
-                        style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 24),
+                        style: const TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24),
                       );
               }),
 
@@ -141,7 +158,8 @@ class CheckoutScreen extends StatelessWidget {
               // Payment Button
               ElevatedButton(
                 onPressed: () {
-                  checkoutController.processPayment(orderData, totalPrice, totalDays, vacantBottlePrice, selectedDates);
+                  checkoutController.processPayment(orderData, totalPrice,
+                      totalDays, vacantBottlePrice, selectedDates);
                 },
                 child: const Text('Pay using Wallet'),
               ),

@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
 class CongratulationsPage extends StatelessWidget {
+  const CongratulationsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     // ignore: deprecated_member_use

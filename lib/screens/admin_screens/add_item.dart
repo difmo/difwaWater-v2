@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:difwa/controller/admin_controller/add_items_controller.dart';
 import 'package:flutter/material.dart';
 
@@ -63,7 +61,7 @@ class _AdminScreenState extends State<AddItem> {
                       color: selectedBottleSize == bottle['size']
                           ? Colors.blue.shade100
                           : Colors.white,
-                      child: Padding( 
+                      child: Padding(
                         padding: const EdgeInsets.all(12.0),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,

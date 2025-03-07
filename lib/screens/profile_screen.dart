@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:difwa/routes/app_routes.dart';
 import 'package:difwa/screens/admin_screens/store_onboarding_screen.dart';
 import 'package:difwa/screens/auth/adddress_page.dart';
@@ -7,7 +5,6 @@ import 'package:difwa/utils/theme_constant.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 import '../config/app_color.dart';
 
@@ -68,7 +65,8 @@ class _LoginScreenState extends State<ProfileScreen> {
               ),
             ),
             GestureDetector(
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AddressForm())),
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => AddressForm())),
               child: const MenuOption(
                 icon: Icons.home,
                 title: 'Address',
@@ -161,8 +159,7 @@ class MenuOption extends StatelessWidget {
             style: const TextStyle(fontSize: 16),
           ),
           const Spacer(),
-          const Icon(Icons.arrow_forward,
-              size: 24, color: ThemeConstants.grey),
+          const Icon(Icons.arrow_forward, size: 24, color: ThemeConstants.grey),
         ],
       ),
     );

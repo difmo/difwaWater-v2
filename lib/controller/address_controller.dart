@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 class AddressController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -22,8 +21,9 @@ class AddressController extends GetxController {
 
       if (user != null) {
         await _firestore
-            .collection('difwa-users') 
-            .doc(user.uid) // Use user ID to save the address under the specific user
+            .collection('difwa-users')
+            .doc(user
+                .uid) // Use user ID to save the address under the specific user
             .collection('User-address') // Subcollection for address data
             .doc() // Can use 'address' or any unique ID if needed
             .set({
@@ -38,8 +38,6 @@ class AddressController extends GetxController {
         }, SetOptions(merge: true));
 
         Get.snackbar('Success', 'Address saved successfully!');
-
-
       } else {
         Get.snackbar('Error', 'User not logged in.');
       }

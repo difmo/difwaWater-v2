@@ -14,7 +14,8 @@ class CheckoutController extends GetxController {
     if (currentUser != null) {
       currentUserId = currentUser.uid;
       try {
-        DocumentSnapshot userDoc = await _firestore.collection('difwa-users').doc(currentUserId).get();
+        DocumentSnapshot userDoc =
+            await _firestore.collection('difwa-users').doc(currentUserId).get();
         if (userDoc.exists) {
           walletBalance.value = (userDoc['walletBalance'] is int)
               ? (userDoc['walletBalance'] as int).toDouble()
@@ -28,10 +29,12 @@ class CheckoutController extends GetxController {
 
   Future<void> fetchMerchantId() async {
     try {
-      DocumentSnapshot storeSnapshot = await _firestore.collection('stores').doc(currentUserId).get();
+      DocumentSnapshot storeSnapshot =
+          await _firestore.collection('stores').doc(currentUserId).get();
 
       if (!storeSnapshot.exists) {
-        print("Error fetching merchant ID: Store document does not exist for this user.");
+        print(
+            "Error fetching merchant ID: Store document does not exist for this user.");
         Get.snackbar("Error", "Store document does not exist for this user.");
         return; // Exit or create the store document
       }
@@ -47,8 +50,14 @@ class CheckoutController extends GetxController {
   // Get the latest order IDs and increment them
   Future<Map<String, int>> getNextOrderIds() async {
     try {
-      DocumentSnapshot bulkOrderDoc = await _firestore.collection('order-counters').doc('lastBulkOrderId').get();
-      DocumentSnapshot dailyOrderDoc = await _firestore.collection('order-counters').doc('lastDailyOrderId').get();
+      DocumentSnapshot bulkOrderDoc = await _firestore
+          .collection('order-counters')
+          .doc('lastBulkOrderId')
+          .get();
+      DocumentSnapshot dailyOrderDoc = await _firestore
+          .collection('order-counters')
+          .doc('lastDailyOrderId')
+          .get();
 
       int newBulkOrderId = 1;
       int newDailyOrderId = 1;
@@ -62,18 +71,29 @@ class CheckoutController extends GetxController {
       }
 
       // Update the Firestore with the new IDs
-      await _firestore.collection('order-counters').doc('lastBulkOrderId').set({'id': newBulkOrderId});
-      await _firestore.collection('order-counters').doc('lastDailyOrderId').set({'id': newDailyOrderId});
+      await _firestore
+          .collection('order-counters')
+          .doc('lastBulkOrderId')
+          .set({'id': newBulkOrderId});
+      await _firestore
+          .collection('order-counters')
+          .doc('lastDailyOrderId')
+          .set({'id': newDailyOrderId});
 
       return {'bulkOrderId': newBulkOrderId, 'dailyOrderId': newDailyOrderId};
     } catch (e) {
       print("Error fetching or updating order IDs: $e");
-      throw e;
+      rethrow;
     }
   }
 
   // Process the payment
-  Future<void> processPayment(Map<String, dynamic> orderData, double totalPrice, int totalDays, double vacantBottlePrice, List<DateTime> selectedDates) async {
+  Future<void> processPayment(
+      Map<String, dynamic> orderData,
+      double totalPrice,
+      int totalDays,
+      double vacantBottlePrice,
+      List<DateTime> selectedDates) async {
     double totalAmount = totalPrice * totalDays + vacantBottlePrice;
 
     if (walletBalance.value >= totalAmount) {
@@ -92,7 +112,8 @@ class CheckoutController extends GetxController {
             'date': selectedDates[i].toIso8601String(),
             'statusHistory': [
               {
-                'dailyOrderId': (newDailyOrderId + i).toString(), // Increment dailyOrderId for each day
+                'dailyOrderId': (newDailyOrderId + i)
+                    .toString(), // Increment dailyOrderId for each day
                 'status': 'pending',
                 'time': Timestamp.now(),
               }
@@ -101,7 +122,10 @@ class CheckoutController extends GetxController {
         }
 
         // Update wallet balance
-        await _firestore.collection('difwa-users').doc(currentUserId).update({'walletBalance': newBalance});
+        await _firestore
+            .collection('difwa-users')
+            .doc(currentUserId)
+            .update({'walletBalance': newBalance});
 
         // Create the order with the new bulkOrderId and dailyOrderId
         await _firestore.collection('difwa-orders').add({

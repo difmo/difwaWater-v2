@@ -60,19 +60,18 @@ class HeroLayoutCard extends StatelessWidget {
             minWidth: width * 1.9,
             child: Container(
               decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/cardbg8.png'), // Using local assets
-                  fit: BoxFit.contain, // You can change this as needed
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.mywhite,
-                    spreadRadius: 5,
-                    blurRadius: 7,
-                    offset: Offset(0, 3)
+                  image: DecorationImage(
+                    image:
+                        AssetImage('assets/cardbg8.png'), // Using local assets
+                    fit: BoxFit.contain, // You can change this as needed
                   ),
-                ]
-              ),
+                  boxShadow: const [
+                    BoxShadow(
+                        color: AppColors.mywhite,
+                        spreadRadius: 5,
+                        blurRadius: 7,
+                        offset: Offset(0, 3)),
+                  ]),
               // child: Image(
               //   fit: BoxFit.contain,
               //   image: AssetImage('${imageInfo.url}'), // Using local assets
@@ -90,17 +89,17 @@ class HeroLayoutCard extends StatelessWidget {
                 imageInfo.title,
                 overflow: TextOverflow.clip,
                 softWrap: false,
-                style:AppTextStyle.Text28600.copyWith(color: AppColors.mywhite),
+                style:
+                    AppTextStyle.Text28600.copyWith(color: AppColors.mywhite),
                 textAlign: TextAlign.center,
               ),
               Text(
                 imageInfo.subtitle,
                 overflow: TextOverflow.clip,
                 softWrap: false,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: Color(0xFF750F0F),),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Color(0xFF750F0F),
+                    ),
                 textAlign: TextAlign.center,
               ),
             ],

@@ -97,98 +97,97 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     }
   }
 
-Future<void> _selectCustomDatesDialog(BuildContext context) async {
-  getDatesBasedOnFrequency();
-  
-  // Create a temporary list to manage selection state
-  List<DateTime> tempSelectedDates = List.from(selectedDates);
+  Future<void> _selectCustomDatesDialog(BuildContext context) async {
+    getDatesBasedOnFrequency();
 
-  await showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Select Dates'),
-        content: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                width: 500,
-                height: 400,
-                child: TableCalendar(
-                  firstDay: DateTime.utc(2000, 1, 1),
-                  lastDay: DateTime.utc(2100, 12, 31),
-                  focusedDay: DateTime.now(),
-                  selectedDayPredicate: (day) {
-                    return tempSelectedDates.any((selectedDate) => isSameDay(selectedDate, day));
-                  },
-                  onDaySelected: (selectedDay, focusedDay) {
-                    setState(() {
-                      if (tempSelectedDates.contains(selectedDay)) {
-                        tempSelectedDates.remove(selectedDay);
-                      } else {
-                        tempSelectedDates.add(selectedDay);
-                      }
-                    });
-                  },
-                  calendarStyle: const CalendarStyle(
-                    selectedDecoration: BoxDecoration(
-                      color: Colors.blue,
-                      shape: BoxShape.circle,
+    // Create a temporary list to manage selection state
+    List<DateTime> tempSelectedDates = List.from(selectedDates);
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select Dates'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(
+                  width: 500,
+                  height: 400,
+                  child: TableCalendar(
+                    firstDay: DateTime.utc(2000, 1, 1),
+                    lastDay: DateTime.utc(2100, 12, 31),
+                    focusedDay: DateTime.now(),
+                    selectedDayPredicate: (day) {
+                      return tempSelectedDates
+                          .any((selectedDate) => isSameDay(selectedDate, day));
+                    },
+                    onDaySelected: (selectedDay, focusedDay) {
+                      setState(() {
+                        if (tempSelectedDates.contains(selectedDay)) {
+                          tempSelectedDates.remove(selectedDay);
+                        } else {
+                          tempSelectedDates.add(selectedDay);
+                        }
+                      });
+                    },
+                    calendarStyle: const CalendarStyle(
+                      selectedDecoration: BoxDecoration(
+                        color: Colors.blue,
+                        shape: BoxShape.circle,
+                      ),
+                      todayDecoration: BoxDecoration(
+                        color: Colors.orange,
+                        shape: BoxShape.circle,
+                      ),
+                      defaultDecoration: BoxDecoration(
+                        color: Colors.transparent,
+                      ),
+                      outsideDecoration: BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
                     ),
-                    todayDecoration: BoxDecoration(
-                      color: Colors.orange,
-                      shape: BoxShape.circle,
+                    daysOfWeekStyle: const DaysOfWeekStyle(
+                      weekdayStyle: TextStyle(color: Colors.black),
+                      weekendStyle: TextStyle(color: Colors.black),
                     ),
-                    defaultDecoration: BoxDecoration(
-                      color: Colors.transparent,
-                    ),
-                    outsideDecoration: BoxDecoration(
-                      color: Colors.red, 
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  daysOfWeekStyle: const DaysOfWeekStyle(
-                    weekdayStyle: TextStyle(color: Colors.black),
-                    weekendStyle: TextStyle(color: Colors.black),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-            ],
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              setState(() {
-                selectedDates = tempSelectedDates;
-              });
-              Navigator.of(context).pop();
-            },
-            child: const Text('OK'),
-          ),
-          TextButton(
-            onPressed: () {
-              setState(() {
-                tempSelectedDates.clear(); // Clear selection if needed
-              });
-            },
-            child: const Text('Clear Selection'),
-          ),
-        ],
-      );
-    },
-  );
+          actions: [
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  selectedDates = tempSelectedDates;
+                });
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  tempSelectedDates.clear(); // Clear selection if needed
+                });
+              },
+              child: const Text('Clear Selection'),
+            ),
+          ],
+        );
+      },
+    );
 
-  // Update totalDays and totalPrice after selection
-  totalDays = getTotalDays();
-  totalPrice = bottlePrice * orderData['quantity'];
-  if (orderData['hasEmptyBottle']) {
-    totalPrice += orderData['vacantPrice'] * orderData['quantity'];
+    // Update totalDays and totalPrice after selection
+    totalDays = getTotalDays();
+    totalPrice = bottlePrice * orderData['quantity'];
+    if (orderData['hasEmptyBottle']) {
+      totalPrice += orderData['vacantPrice'] * orderData['quantity'];
+    }
   }
-}
-
-
 
   List<DateTime> getDatesBasedOnFrequency() {
     List<DateTime> dates = [];

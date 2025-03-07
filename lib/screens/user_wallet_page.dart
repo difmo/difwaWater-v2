@@ -7,7 +7,7 @@ import 'package:difwa/widgets/custom_button.dart';
 import 'dart:async';
 
 class WalletScreen extends StatefulWidget {
-  const WalletScreen({Key? key}) : super(key: key);
+  const WalletScreen({super.key});
 
   @override
   _WalletScreenState createState() => _WalletScreenState();
@@ -17,7 +17,7 @@ class _WalletScreenState extends State<WalletScreen> {
   TextEditingController amountController = TextEditingController();
   WalletController? walletController;
   late StreamSubscription _sub;
-  final AppLinks _appLinks = AppLinks(); 
+  final AppLinks _appLinks = AppLinks();
 
   @override
   void initState() {
@@ -131,16 +131,14 @@ class _WalletScreenState extends State<WalletScreen> {
             ),
             const SizedBox(height: 16),
             SizedBox(
-                
                 child: CustomButton(
-                  baseTextColor: ThemeConstants.whiteColor,
-                  text: "Add Money",
-                  onPressed: () {
-                    double amount =
-                        double.tryParse(amountController.text) ?? 0.0;
-                    walletController?.redirectToPaymentWebsite(amount);
-                  },
-                )),
+              baseTextColor: ThemeConstants.whiteColor,
+              text: "Add Money",
+              onPressed: () {
+                double amount = double.tryParse(amountController.text) ?? 0.0;
+                walletController?.redirectToPaymentWebsite(amount);
+              },
+            )),
           ],
         ),
       ),
