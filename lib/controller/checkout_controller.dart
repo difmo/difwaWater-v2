@@ -26,7 +26,7 @@ class CheckoutController extends GetxController {
       }
     }
   }
-
+// dsfsfs
   // Future<void> fetchMerchantId() async {
   //   try {
   //     DocumentSnapshot storeSnapshot =
