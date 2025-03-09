@@ -67,7 +67,7 @@ class _CustomToolbarState extends State<CustomAppbar> {
                 'FreshDropHydrate',
                 style: TextStyle(
                   color: AppColors.myblack,
-                  fontSize: 30,
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
                   
                 ),
