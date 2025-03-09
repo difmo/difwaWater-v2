@@ -23,7 +23,7 @@ class CheckoutScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final CheckoutController checkoutController = Get.put(CheckoutController());
     checkoutController.fetchWalletBalance();
-    checkoutController.fetchMerchantId();
+    // checkoutController.fetchMerchantId();
 
     double vacantBottlePrice = orderData['vacantPrice'] * orderData['quantity'];
     double totalAmount = totalPrice * totalDays + vacantBottlePrice;
