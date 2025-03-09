@@ -16,7 +16,6 @@ class AddressForm extends StatefulWidget {
 
 class _AddressFormState extends State<AddressForm> {
   // Controllers for text fields
-  final _formKey = GlobalKey<FormState>();
   final TextEditingController _streetController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
@@ -31,7 +30,6 @@ class _AddressFormState extends State<AddressForm> {
   String selectedCountryCode = "+91"; // Default country code
   Country? selectedCountry; // To store the selected country
 
-  // Form keys for each section (if you want separate validation for each)
   final _formKeyName = GlobalKey<FormState>();
   final _formKeyPhone = GlobalKey<FormState>();
   final _formKeyAddress = GlobalKey<FormState>();

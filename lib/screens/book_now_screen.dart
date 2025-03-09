@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:difwa/config/app_color.dart';
 import 'package:difwa/controller/bottle_controller.dart';
 import 'package:difwa/routes/app_routes.dart';
@@ -88,7 +86,6 @@ class _BookNowScreenState extends State<BookNowScreen> {
                           }
 
                           return GestureDetector(
-                            
                             onTap: () {
                               setState(() {
                                 _selectedIndex = isSelected ? -1 : index;
@@ -355,7 +352,6 @@ class _BookNowScreenState extends State<BookNowScreen> {
                             _hasEmptyBottle ? bottle['vacantPrice'] : 0;
 
                         Get.toNamed(
-                          
                           AppRoutes.subscription,
                           arguments: {
                             'bottle': bottle,
@@ -364,7 +360,6 @@ class _BookNowScreenState extends State<BookNowScreen> {
                             'vacantPrice': vacantPrice,
                             'hasEmptyBottle': _hasEmptyBottle,
                           },
-                          
                         );
                       }
                     },

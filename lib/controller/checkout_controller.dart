@@ -26,26 +26,6 @@ class CheckoutController extends GetxController {
       }
     }
   }
-// dsfsfs
-  // Future<void> fetchMerchantId() async {
-  //   try {
-  //     DocumentSnapshot storeSnapshot =
-  //         await _firestore.collection('stores').doc(currentUserId).get();
-
-  //     if (!storeSnapshot.exists) {
-  //       print(
-  //           "Error fetching merchant ID: Store document does not exist for this user.");
-  //       Get.snackbar("Error", "Store document does not exist for this user.");
-  //       return;
-  //     }
-
-  //     merchantId = storeSnapshot['merchantId'];
-  //     print("Merchant ID: $merchantId");
-  //   } catch (e) {
-  //     print("Error fetching merchant ID: $e");
-  //     Get.snackbar("Error", "Failed to fetch merchant ID: $e");
-  //   }
-  // }
 
   Future<Map<String, String>> getNextOrderIds() async {
     try {
@@ -95,7 +75,12 @@ class CheckoutController extends GetxController {
     }
   }
 
-  Future<void> processPayment(Map<String, dynamic> orderData, double totalPrice, int totalDays, double vacantBottlePrice, List<DateTime> selectedDates) async {
+  Future<void> processPayment(
+      Map<String, dynamic> orderData,
+      double totalPrice,
+      int totalDays,
+      double vacantBottlePrice,
+      List<DateTime> selectedDates) async {
     double totalAmount = totalPrice * totalDays + vacantBottlePrice;
 
     if (walletBalance.value >= totalAmount) {
@@ -108,22 +93,32 @@ class CheckoutController extends GetxController {
 
         List<Map<String, dynamic>> selectedDatesWithHistory = [];
         for (int i = 0; i < selectedDates.length; i++) {
-          String formattedDailyOrderId = 'DIF' + DateTime.now().year.toString() + (int.parse(newDailyOrderId.split(DateTime.now().year.toString())[1]) + i).toString().padLeft(6, '0');
+          String formattedDailyOrderId = 'DIF' +
+              DateTime.now().year.toString() +
+              (int.parse(newDailyOrderId
+                          .split(DateTime.now().year.toString())[1]) +
+                      i)
+                  .toString()
+                  .padLeft(6, '0');
           selectedDatesWithHistory.add({
             'date': selectedDates[i].toIso8601String(),
-            'statusHistory': [
-              {
-                'dailyOrderId': formattedDailyOrderId,
-                'status': 'pending',
-                'time': Timestamp.now(),
-              }
-            ],
+            'dailyOrderId': formattedDailyOrderId,
+            'statusHistory': {
+              'status': 'pending',
+              'pendingTime': Timestamp.now(),
+              'ongoingTime': "",
+              'confirmedTime': "",
+              'cancelledTime': "",
+            },
           });
         }
 
-        await _firestore.collection('difwa-users').doc(currentUserId).update({'walletBalance': newBalance});
+        await _firestore
+            .collection('difwa-users')
+            .doc(currentUserId)
+            .update({'walletBalance': newBalance});
 
-        await _firestore.collection('difwa-orders').add({
+        await _firestore.collection('difwa-orders').doc(newBulkOrderId).set({
           'bulkOrderId': newBulkOrderId,
           'userId': currentUserId,
           'totalPrice': totalAmount,
@@ -137,8 +132,14 @@ class CheckoutController extends GetxController {
 
         Get.to(() => CongratulationsPage());
 
-        await _firestore.collection('difwa-order-counters').doc('lastDailyOrderId').update({
-          'id': int.parse(newDailyOrderId.split(DateTime.now().year.toString())[1]) + totalDays - 1,
+        await _firestore
+            .collection('difwa-order-counters')
+            .doc('lastDailyOrderId')
+            .update({
+          'id': int.parse(
+                  newDailyOrderId.split(DateTime.now().year.toString())[1]) +
+              totalDays -
+              1,
         });
       } catch (e) {
         print("Error processing payment: $e");
