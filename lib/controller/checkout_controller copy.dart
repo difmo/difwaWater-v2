@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:difwa/controller/admin_controller/add_items_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:difwa/screens/congratulations_page.dart';
@@ -7,10 +6,10 @@ import 'package:difwa/screens/congratulations_page.dart';
 class CheckoutController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String currentUserId = ''; 
-  String? merchantId;
+  String? merchantId; 
   RxDouble walletBalance = 0.0.obs;
 
-  void fetchWalletBalance() async {
+  Future<void> fetchWalletBalance() async {
     User? currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null) {
       currentUserId = currentUser.uid;
@@ -27,40 +26,52 @@ class CheckoutController extends GetxController {
     }
   }
 
+  // Fetch the merchant ID for the current user
   Future<void> fetchMerchantId() async {
     try {
-      FirebaseController firebaseController = FirebaseController();
-      merchantId = await firebaseController.fetchMerchantId(currentUserId);
+      DocumentSnapshot storeSnapshot = await _firestore.collection('stores').doc(currentUserId).get();
+
+      if (!storeSnapshot.exists) {
+        print("Error fetching merchant ID: Store document does not exist for this user.");
+        Get.snackbar("Error", "Store document does not exist for this user.");
+        return; // Exit or create the store document
+      }
+
+      merchantId = storeSnapshot['merchantId'];
+      print("Merchant ID: $merchantId");
     } catch (e) {
       print("Error fetching merchant ID: $e");
+      Get.snackbar("Error", "Failed to fetch merchant ID: $e");
     }
   }
 
-  // Get next bulk order ID
-  Future<String> getNextBulkOrderId() async {
+  // Get the latest order IDs and increment them globally
+  Future<Map<String, int>> getNextOrderIds() async {
     try {
-      DocumentSnapshot snapshot = await _firestore.collection('orderCounters').doc('counters').get();
-      int currentBulkOrderId = snapshot['difwa-bulkOrderCounter'];
-      int nextBulkOrderId = currentBulkOrderId + 1;
-      await _firestore.collection('orderCounters').doc('counters').update({'difwa-bulkOrderCounter': nextBulkOrderId});
-      return nextBulkOrderId.toString();
-    } catch (e) {
-      print("Error getting next bulkOrderId: $e");
-      return '';
-    }
-  }
+      // Fetch the last Bulk and Daily Order ID from Firestore
+      DocumentSnapshot bulkOrderDoc = await _firestore.collection('difwa-order-counters').doc('lastBulkOrderId').get();
+      DocumentSnapshot dailyOrderDoc = await _firestore.collection('difwa-order-counters').doc('lastDailyOrderId').get();
 
-  // Get next daily order ID
-  Future<String> getNextDailyOrderId() async {
-    try {
-      DocumentSnapshot snapshot = await _firestore.collection('difwa-orderCounters').doc('counters').get();
-      int currentDailyOrderId = snapshot['difwa-dailyOrderCounter'];
-      int nextDailyOrderId = currentDailyOrderId + 1;
-      await _firestore.collection('orderCounters').doc('counters').update({'dailyOrderCounter': nextDailyOrderId});
-      return nextDailyOrderId.toString();
+      int newBulkOrderId = 1;
+      int newDailyOrderId = 1;
+
+      if (bulkOrderDoc.exists) {
+        newBulkOrderId = (bulkOrderDoc['id'] as int) + 1;
+      }
+
+      if (dailyOrderDoc.exists) {
+        newDailyOrderId = (dailyOrderDoc['id'] as int) + 1;
+      }
+
+      // Update Firestore with the new Bulk and Daily Order IDs
+      await _firestore.collection('difwa-order-counters').doc('lastBulkOrderId').set({'id': newBulkOrderId});
+      await _firestore.collection('difwa-order-counters').doc('lastDailyOrderId').set({'id': newDailyOrderId});
+
+      // Return the new order IDs
+      return {'bulkOrderId': newBulkOrderId, 'dailyOrderId': newDailyOrderId};
     } catch (e) {
-      print("Error getting next dailyOrderId: $e");
-      return '';
+      print("Error fetching or updating order IDs: $e");
+      throw e;
     }
   }
 
@@ -70,29 +81,34 @@ class CheckoutController extends GetxController {
 
     if (walletBalance.value >= totalAmount) {
       double newBalance = walletBalance.value - totalAmount;
+
       try {
-        Timestamp currentTimestamp = Timestamp.now();
+        // Get the next order IDs
+        Map<String, int> orderIds = await getNextOrderIds();
+        int newBulkOrderId = orderIds['bulkOrderId']!;
+        int newDailyOrderId = orderIds['dailyOrderId']!;
 
-        String nextBulkOrderId = await getNextBulkOrderId();
-        String nextDailyOrderId = await getNextDailyOrderId();
+        // For each selected date, assign a unique dailyOrderId
+        List<Map<String, dynamic>> selectedDatesWithHistory = [];
+        for (int i = 0; i < selectedDates.length; i++) {
+          selectedDatesWithHistory.add({
+            'date': selectedDates[i].toIso8601String(),
+            'statusHistory': [
+              {
+                'dailyOrderId': (newDailyOrderId + i).toString(), // Increment dailyOrderId for each day
+                'status': 'pending',
+                'time': Timestamp.now(),
+              }
+            ],
+          });
+        }
 
+        // Update wallet balance
         await _firestore.collection('difwa-users').doc(currentUserId).update({'walletBalance': newBalance});
 
-        List<Map<String, dynamic>> selectedDatesWithHistory = selectedDates
-            .map((date) => {
-                  'date': date.toIso8601String(),
-                  'statusHistory': [
-                    {
-                      'dailyOrderId': nextDailyOrderId,
-                      'status': 'pending',
-                      'time': currentTimestamp,
-                    }
-                  ],
-                })
-            .toList();
-
+        // Create the order with the new bulkOrderId and dailyOrderId
         await _firestore.collection('difwa-orders').add({
-          'bulkOrderId': nextBulkOrderId,
+          'bulkOrderId': newBulkOrderId,
           'userId': currentUserId,
           'totalPrice': totalAmount,
           'totalDays': totalDays,
@@ -104,6 +120,10 @@ class CheckoutController extends GetxController {
         });
 
         Get.to(() => CongratulationsPage());
+
+        await _firestore.collection('difwa-order-counters').doc('lastDailyOrderId').update({
+          'id': newDailyOrderId-1 + totalDays, 
+        });
       } catch (e) {
         print("Error processing payment: $e");
         Get.snackbar("Error", "Error processing payment: $e");

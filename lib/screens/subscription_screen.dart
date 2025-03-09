@@ -392,7 +392,7 @@ Future<void> _selectCustomDatesDialog(BuildContext context) async {
                     onSelected: (bool selected) {
                       setState(() {
                         selectedFrequencyIndex = 1;
-                        _generateDates(); // Recalculate dates
+                        _generateDates();
                       });
                     },
                   ),
