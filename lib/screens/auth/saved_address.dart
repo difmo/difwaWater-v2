@@ -1,11 +1,9 @@
-import 'package:animated_icon/animated_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:difwa/controller/address_controller.dart';
 import 'package:difwa/config/app_color.dart';
 import 'package:difwa/screens/auth/adddress_form_page.dart';
 import 'package:difwa/models/address_model.dart';
-import 'package:icons_plus/icons_plus.dart'; // Your Address Model
 
 class SavveAddressPage extends StatelessWidget {
   @override
@@ -65,8 +63,7 @@ class SavveAddressPage extends StatelessWidget {
                           ),
                           // Displaying the floor number if available
                           Text(
-                            addresses[index].saveAddress != null &&
-                                    addresses[index].saveAddress
+                            addresses[index].saveAddress
                                 ? 'Address: ${addresses[index].floor} ${addresses[index].saveAddress}, ${addresses[index].street}, ${addresses[index].city}, ${addresses[index].country}'
                                 : '',
                             style: TextStyle(
@@ -88,8 +85,7 @@ class SavveAddressPage extends StatelessWidget {
                           children: [
                             // Phone number on the left
                             Text(
-                              addresses[index].phone != null &&
-                                      addresses[index].phone.isNotEmpty
+                              addresses[index].phone.isNotEmpty
                                   ? 'Phone Number: ${addresses[index].phone}'
                                   : '',
                               style: TextStyle(

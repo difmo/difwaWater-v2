@@ -4,7 +4,6 @@ import 'package:difwa/screens/admin_screens/store_home.dart';
 import 'package:difwa/screens/admin_screens/admin_orders_page.dart';
 import 'package:difwa/screens/admin_screens/store_items.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';  // Import flutter_svg package
 
 class BottomStoreHomePage extends StatefulWidget {
   const BottomStoreHomePage({super.key});

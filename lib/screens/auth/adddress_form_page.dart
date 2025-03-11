@@ -27,7 +27,6 @@ class AddressForm extends StatefulWidget {
 
 class _AddressFormState extends State<AddressForm> {
   // Controllers for text fields
-  final _formKey = GlobalKey<FormState>();
   final TextEditingController _streetController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
@@ -54,7 +53,6 @@ class _AddressFormState extends State<AddressForm> {
   final _formfloor = GlobalKey<FormState>();
 
   bool _isSubmitting = false; // State to handle submission progress
-  bool _isAddressSaved = false;
 
   @override
   void initState() {

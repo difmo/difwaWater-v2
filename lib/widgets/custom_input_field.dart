@@ -1,6 +1,5 @@
 import 'package:difwa/config/app_color.dart';
 import 'package:difwa/utils/theme_constant.dart';
-import 'package:difwa/utils/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -93,7 +92,6 @@ class _CommonTextFieldState extends State<CommonTextField> {
 
   @override
   Widget build(BuildContext context) {
-    Color defaultBorderColor = widget.borderColor ?? ThemeConstants.borderColor;
 
     return TextFormField(
       autofocus: widget.autofocus,
