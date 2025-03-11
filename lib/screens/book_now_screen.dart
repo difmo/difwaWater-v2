@@ -37,7 +37,9 @@ class _BookNowScreenState extends State<BookNowScreen> {
               Get.toNamed(AppRoutes.notification);
             },
             onMenuPressed: () {},
-            hasNotifications: true),
+            hasNotifications: true, 
+            badgeCount: 0,
+          ),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -100,9 +102,14 @@ class _BookNowScreenState extends State<BookNowScreen> {
                             child: Card(
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16.0),
-                                side: const BorderSide(
-                                  color: Colors.blue, // Border color
-                                  width: 1.0, // Border width
+                                side: BorderSide(
+                                  color: isSelected
+                                      ? Colors.blue
+                                      : Colors
+                                          .grey, // Apply blue border when selected, grey when unselected
+                                  width: isSelected
+                                      ? 2.0
+                                      : 1.0, // Thicker border when selected, thinner when unselected
                                 ),
                               ),
                               elevation: 0,
@@ -168,7 +175,7 @@ class _BookNowScreenState extends State<BookNowScreen> {
                     ),
                   ),
                   elevation: 0,
-                  color: const Color(0xFF00597A),
+                  color: const Color.fromARGB(255, 22, 174, 229),
                   child: Stack(
                     children: [
                       Positioned(
@@ -251,8 +258,7 @@ class _BookNowScreenState extends State<BookNowScreen> {
                                 children: [
                                   Checkbox(
                                     activeColor: ThemeConstants.whiteColor,
-                                    checkColor: Colors
-                                        .white, // Ensure checkmark is white
+                                    checkColor: Colors.blue, // Ensure checkmark is white
                                     value:
                                         _hasEmptyBottle, // Bind the checkbox state
                                     onChanged: (value) {

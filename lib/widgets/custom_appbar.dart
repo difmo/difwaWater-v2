@@ -1,12 +1,13 @@
 import 'package:difwa/config/app_color.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomAppbar extends StatefulWidget {
   final VoidCallback onProfilePressed;
   final VoidCallback onNotificationPressed;
   final VoidCallback onMenuPressed;
   final bool hasNotifications;
+  final int badgeCount; // Badge count for notifications
   final String? profileImageUrl;
 
   const CustomAppbar({
@@ -15,6 +16,7 @@ class CustomAppbar extends StatefulWidget {
     required this.onNotificationPressed,
     required this.onMenuPressed,
     required this.hasNotifications,
+    required this.badgeCount, // Pass badge count
     this.profileImageUrl,
   });
 
@@ -24,6 +26,7 @@ class CustomAppbar extends StatefulWidget {
 
 class _CustomToolbarState extends State<CustomAppbar> {
   bool get hasNotifications => widget.hasNotifications;
+  int get badgeCount => widget.badgeCount;
   String? get profileImageUrl => widget.profileImageUrl;
 
   @override
@@ -52,10 +55,8 @@ class _CustomToolbarState extends State<CustomAppbar> {
           Row(
             children: [
               Container(
-                padding:
-                    EdgeInsets.all(0), 
                 child: SvgPicture.asset(
-                  'assets/images/dlogo.svg', 
+                  'assets/images/dlogo.svg', // Your logo image path
                 ),
               ),
             ],
@@ -63,42 +64,44 @@ class _CustomToolbarState extends State<CustomAppbar> {
           // Right side - Notification, Menu, Profile
           Row(
             children: [
+              // Notification Icon with Badge
               Stack(
                 clipBehavior: Clip.none,
                 children: [
                   IconButton(
                     icon: Icon(
-                      Icons.circle_notifications,
-                      color:
-                          hasNotifications ? AppColors.myblack : Colors.black,
+                      Icons.notifications,
+                      color: AppColors.logoprimary,
                       size: 30,
                     ),
                     onPressed: widget.onNotificationPressed,
                   ),
-                  if (hasNotifications)
+                  if (badgeCount >= 0)
                     Positioned(
-                      top: 0,
-                      right: 0,
-                      child: CircleAvatar(
-                        radius: 6,
-                        backgroundColor: AppColors.primary,
+                      right: 10,
+                      top: 7,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        constraints: BoxConstraints(
+                          minWidth: 15,
+                          minHeight: 5,
+                        ),
+                        child: Text(
+                          '$badgeCount',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
                 ],
               ),
-              // IconButton(
-              //   icon: const Icon(Icons.grid_view),
-              //   onPressed: widget.onMenuPressed,
-              // ),
-              // IconButton(
-              //   icon: const Icon(Icons.person),
-              //   onPressed: widget.onProfilePressed,
-              // ),
-              if (profileImageUrl != null)
-                CircleAvatar(
-                  radius: 16,
-                  backgroundImage: NetworkImage(profileImageUrl!),
-                ),
             ],
           ),
         ],
@@ -106,3 +109,28 @@ class _CustomToolbarState extends State<CustomAppbar> {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+   // IconButton(
+              //   icon: const Icon(Icons.grid_view),
+              //   onPressed: widget.onMenuPressed,
+              // ),
+              // IconButton(
+              //   icon: const Icon(Icons.person),
+              //   onPressed: widget.onProfilePressed,
+              // ),
+              // if (profileImageUrl != null)
+              //   CircleAvatar(
+              //     radius: 16,
+              //     backgroundImage: NetworkImage(profileImageUrl!),
+              //   ),
