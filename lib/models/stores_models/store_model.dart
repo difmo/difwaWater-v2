@@ -9,7 +9,7 @@ class UserModel {
   final String uid;
   final String? imageUrl; // Add this line
   final String? storeaddress; // Add this line
-
+  
   UserModel({
     required this.userId,
     required this.upiId,

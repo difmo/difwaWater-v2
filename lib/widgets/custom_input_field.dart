@@ -90,7 +90,6 @@ class _CommonTextFieldState extends State<CommonTextField> {
 
   @override
   Widget build(BuildContext context) {
-    Color defaultBorderColor = widget.borderColor ?? ThemeConstants.borderColor;
 
     return TextFormField(
       autofocus: widget.autofocus,

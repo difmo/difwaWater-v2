@@ -2,6 +2,7 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:difwa/config/app_color.dart';
 import 'package:difwa/controller/address_controller.dart';
+import 'package:difwa/models/address_model.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/utils/validators.dart';
 import 'package:difwa/widgets/custom_button.dart';
@@ -18,7 +19,6 @@ class AddressForm extends StatefulWidget {
 
 class _AddressFormState extends State<AddressForm> {
   // Controllers for text fields
-  final _formKey = GlobalKey<FormState>();
   final TextEditingController _streetController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
@@ -33,7 +33,6 @@ class _AddressFormState extends State<AddressForm> {
   String selectedCountryCode = "+91"; // Default country code
   Country? selectedCountry; // To store the selected country
 
-  // Form keys for each section (if you want separate validation for each)
   final _formKeyName = GlobalKey<FormState>();
   final _formKeyPhone = GlobalKey<FormState>();
   final _formKeyAddress = GlobalKey<FormState>();
@@ -254,13 +253,20 @@ class _AddressFormState extends State<AddressForm> {
                             _formPin.currentState!.validate() &&
                             _formCity.currentState!.validate()) {
                           await _addressController.saveAddress(
-                            _streetController.text,
-                            _cityController.text,
-                            _stateController.text,
-                            _zipController.text,
-                            _countryController.text,
-                            _phoneController.text,
-                            _isChecked,
+                        Address(
+                        name: _nameController.text,
+                        docId: '', // Add appropriate value
+                        street: _streetController.text,
+                        city: _cityController.text,
+                        state: _stateController.text,
+                        zip: _zipController.text,
+                        isDeleted: false, // Add appropriate value
+                        country: _countryController.text,
+                        phone: _phoneController.text,
+                        saveAddress: _isChecked,
+                        userId: '', // Add appropriate value
+                        floor: '', // Add appropriate value
+                        )
                           );
                         }
                       },

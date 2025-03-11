@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:difwa/models/address_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
@@ -7,68 +8,106 @@ class AddressController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Method to save the address.
-  Future<void> saveAddress(
-    String street,
-    String city,
-    String state,
-    String zip,
-    String country,
-    String phone,
-    bool isChecked,
-  ) async {
+  Future<bool> saveAddress(Address address) async {
     try {
       final user = _auth.currentUser;
 
       if (user != null) {
-        await _firestore
-            .collection('difwa-users')
-            .doc(user
-                .uid) // Use user ID to save the address under the specific user
-            .collection('User-address') // Subcollection for address data
-            .doc() // Can use 'address' or any unique ID if needed
-            .set({
-          'street': street,
-          'city': city,
-          'state': state,
-          'zip': zip,
-          'country': country,
-          'phone': phone,
-          'saveAddress': isChecked,
-          'userId': user.uid,
-        }, SetOptions(merge: true));
+        address.userId = user.uid;
+
+        // Save address to Firestore
+        DocumentReference docRef = _firestore
+            .collection('difwa-users') // User-specific collection
+            .doc(user.uid) // User document
+            .collection('User-address') // Subcollection for addresses
+            .doc(); // Creates a new document with a random ID
+
+        address.docId = docRef.id; // Set the document ID in the address object
+
+        await docRef.set(address.toJson(), SetOptions(merge: true));
 
         Get.snackbar('Success', 'Address saved successfully!');
+        return true;
+      } else {
+        Get.snackbar('Error', 'User not logged in.');
+        return false;
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to save the address: $e');
+      return false;
+    }
+  }
+
+  // Fetch the user's addresses in real-time.
+  Stream<List<Address>> getAddresses() {
+    final user = _auth.currentUser;
+
+    if (user != null) {
+      // Fetch all addresses for the current user
+      return _firestore
+          .collection('difwa-users') // User-specific collection
+          .doc(user.uid) // User document
+          .collection('User-address') // Subcollection for addresses
+          .where('isDeleted', isEqualTo: false)
+          .snapshots() // Use snapshots() for real-time updates
+          .map((querySnapshot) {
+        // Map the Firestore documents to Address objects
+        return querySnapshot.docs.map((doc) {
+          return Address.fromJson(doc.data());
+        }).toList();
+      });
+    } else {
+      // If no user is logged in, return an empty list
+      return Stream.value([]);
+    }
+  }
+
+  // Method to delete an address
+  Future<void> deleteAddress(String addressId) async {
+    try {
+      print("delete0");
+      final user = _auth.currentUser;
+      if (user != null) {
+        print("delete");
+        // Delete the address from Firestore using the document ID
+        await _firestore
+            .collection('difwa-users') // User-specific collection
+            .doc(user.uid) // User document
+            .collection('User-address') // Subcollection for addresses
+            .doc(addressId) // Document ID to delete
+            .delete();
+
+        Get.snackbar('Success', 'Address deleted successfully!');
+      } else {
+        print("delete1");
+        Get.snackbar('Error', 'User not logged in.');
+      }
+    } catch (e) {
+      print("delete2");
+      Get.snackbar('Error', 'Failed to delete the address: $e');
+    }
+  }
+
+  // Method to update an existing address
+  Future<void> updateAddress( Address address) async {
+    try {
+      final user = _auth.currentUser;
+
+      if (user != null) {
+        // Update the address document in Firestore using the addressId
+        await _firestore
+            .collection('difwa-users') // User-specific collection
+            .doc(user.uid) // User document
+            .collection('User-address') // Subcollection for addresses
+            .doc(address.docId) // Document ID to update
+            .update(address.toJson());
+
+        Get.snackbar('Success', 'Address updated successfully!');
       } else {
         Get.snackbar('Error', 'User not logged in.');
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to save the address: $e');
-    }
-  }
-
-  // Fetch the data address.
-  Future<Map<String, dynamic>?> getAddress() async {
-    try {
-      final user = _auth.currentUser;
-      if (user != null) {
-        DocumentSnapshot addressDoc = await _firestore
-            .collection('difwa-user') // Collection for user data
-            .doc() // Use user ID to fetch the address for the specific user
-            .collection('User-address') // Subcollection for address data
-            .doc('address') // Assuming only one address for each user
-            .get();
-
-        if (addressDoc.exists) {
-          return addressDoc.data() as Map<String, dynamic>;
-        } else {
-          return null;
-        }
-      } else {
-        return null;
-      }
-    } catch (e) {
-      Get.snackbar('Error', 'Failed to fetch address: $e');
-      return null;
+      Get.snackbar('Error', 'Failed to update the address: $e');
     }
   }
 }

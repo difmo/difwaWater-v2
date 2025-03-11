@@ -25,7 +25,7 @@ class AuthController extends GetxController {
       );
 
       // Save additional user details in Firestore
-      await _saveUserDataemail(userCredential.user!.uid, email, name, number);
+      await _saveUserDataemail(userCredential.user!.uid, email, name, number, 'defaultFloor');
       await _fetchUserRole();
       _navigateToDashboard();
     } on FirebaseAuthException catch (e) {
@@ -93,7 +93,7 @@ class AuthController extends GetxController {
   }
 
 ///////////////////////////////////////////////////////////////////////// SAVE USER DETAILS ////////////////////////////////////////////////////////////////////
-  Future<void> _saveUserDataemail(String uid, String email, String name, String number) async {
+  Future<void> _saveUserDataemail(String uid, String email, String name, String number,String floor) async {
     DocumentSnapshot userDoc = await _firestore.collection('difwa-users').doc(uid).get();
     
     if (!userDoc.exists) {
@@ -102,6 +102,7 @@ class AuthController extends GetxController {
         'name': name,
         'number': number,
         'email': email,
+        'floor': floor,
         'role': 'isUser',
         'walletBalance': 0.0,
       }, SetOptions(merge: true));
@@ -109,6 +110,7 @@ class AuthController extends GetxController {
       await _firestore.collection('difwa-users').doc(uid).update({
         'name': name,
         'number': number,
+        'floor': floor,
       });
     }
   }

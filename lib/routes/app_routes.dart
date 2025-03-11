@@ -1,7 +1,8 @@
+import 'package:difwa/models/address_model.dart';
 import 'package:difwa/routes/store_bottom_bar.dart';
 import 'package:difwa/routes/user_bottom_bar.dart';
 import 'package:difwa/screens/admin_screens/create_store_screen.dart';
-import 'package:difwa/screens/auth/adddress_page.dart';
+import 'package:difwa/screens/auth/adddress_form_page.dart';
 import 'package:difwa/screens/auth/signin_screen.dart';
 import 'package:difwa/screens/available_service_select.dart';
 import 'package:difwa/screens/book_now_screen.dart';
@@ -87,7 +88,7 @@ class AppRoutes {
     ),
     GetPage(
       name: address_page,
-      page: () =>  AddressForm(),
+      page: () =>  AddressForm(address: Address(docId: "", name: "", street: "", city: "", state: "", zip: "", isDeleted: false, country: "", phone: "", saveAddress: false, userId: "", floor: ""),flag: "",),
       transition: Transition.fadeIn, // Smooth fade-in for store home screen
       transitionDuration: Duration(milliseconds: 500),
     ),
