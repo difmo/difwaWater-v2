@@ -1,11 +1,10 @@
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:difwa/controller/admin_controller/add_items_controller.dart';
-// import 'package:difwa/routes/app_routes.dart';
+// import 'package:difwa/screens/congratulations_page.dart';
 // import 'package:difwa/utils/app__text_style.dart';
 // import 'package:difwa/utils/theme_constant.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
 // import 'package:table_calendar/table_calendar.dart';
 
 // class CheckoutScreen extends StatefulWidget {
@@ -109,7 +108,6 @@
 //                       'date': date.toIso8601String(),
 //                       'statusHistory': [
 //                         {
-//                           'dailyOrderId':"",
 //                           'status': 'pending',
 //                           'time': currentTimestamp,
 //                         }
@@ -118,7 +116,6 @@
 //                 .toList();
 
 //         await FirebaseFirestore.instance.collection('difwa-orders').add({
-//           'bulkOrderId':"",
 //           'userId': currentUserId,
 //           'totalPrice': totalAmount,
 //           'totalDays': widget.totalDays,
@@ -217,13 +214,7 @@
 //                 ),
 //               ),
 //               const SizedBox(height: 16),
-//               //////////////////////////////////////////
-//               // const Text('Selected Dates:'),
-//               // ...widget.selectedDates
-//               //     .map((date) => Text(DateFormat('yyyy-MM-dd').format(date)))
-//               //     .toList(),
-
-//               ///////////////////////////////////
+           
 //               Padding(
 //                 padding: const EdgeInsets.all(8.0),
 //                 child: Container(
@@ -260,40 +251,7 @@
 //                       color: Colors.transparent,
 //                     ),
                     
-//                     // Text styles set to white for all day cells
-//                     // todayTextStyle: TextStyle(
-//                     //   color: Colors.white, // White text for today
-//                     // ),
-//                     // selectedTextStyle: TextStyle(
-//                     //   color: Colors.white, // White text for selected day
-//                     // ),
-//                     // defaultTextStyle: TextStyle(
-//                     //   color: Colors.white, // White text for default days
-//                     // ),
-//                     // rangeStartTextStyle: TextStyle(
-//                     //   color: Colors.white, // White text for range start day
-//                     // ),
-//                     // rangeEndTextStyle: TextStyle(
-//                     //   color: Colors.white, // White text for range end day
-//                     // ),
-//                     // withinRangeTextStyle: TextStyle(
-//                     //   color: Colors.white, // White text for within range days
-//                     // ),
-//                     // outsideTextStyle: TextStyle(
-//                     //   color: Colors.white, // White text for outside month days
-//                     // ),
-//                     // disabledTextStyle: TextStyle(
-//                     //   color: Colors.white, // White text for disabled days
-//                     // ),
-//                     // holidayTextStyle: TextStyle(
-//                     //   color: Colors.white, // White text for holidays
-//                     // ),
-//                     // weekendTextStyle: TextStyle(
-//                     //   color: Colors.white, // White text for weekends
-//                     // ),
-//                     // weekNumberTextStyle: TextStyle(
-//                     //   color: Colors.white, // White text for week numbers
-//                     // ),
+                  
 //                   ),
 //                 )
                 
@@ -351,30 +309,6 @@
 //                 child: const Text('Pay using Wallet'),
 //               ),
 //             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-// class CongratulationsPage extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     // ignore: deprecated_member_use
-//     return WillPopScope(
-//       onWillPop: () async {
-//         Get.offAllNamed(AppRoutes
-//             .userbottom); // This will navigate to home and remove all previous routes
-//         return false;
-//       },
-//       child: Scaffold(
-//         appBar: AppBar(title: const Text('Congratulations')),
-//         body: const Center(
-//           child: Text(
-//             'Your payment was successful!\nThank you for your order.',
-//             textAlign: TextAlign.center,
-//             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
 //           ),
 //         ),
 //       ),

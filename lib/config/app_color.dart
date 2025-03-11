@@ -12,7 +12,10 @@ class AppColors {
   static const Color myGreen = Colors.green;
   static const Color buttonbgColor = Color(0xFF096FCE);
   static const Color buttontextcolor = Color(0xFF4878BB);
-  static const Color inputfield = Color(0xFFF3743D);
+static const Color inputfield = Color(0xFF169DFF);
+static const Color cardbgcolor = Color(0xFFE9F5F9);
+
+
 
 
   static var primaryColor = const Color(0xFF6256CA);
@@ -25,15 +28,19 @@ class AppColors {
 
    // Custom Gradient for Button Background
   static const LinearGradient buttonBgGradient = LinearGradient(
-    colors: [Color(0xFFFFA279), Color(0xFFF3743D)], // Custom gradient colors
+    colors: [Color(0xFF3EFFFF), Color(0xFF169DFF)]
+, // Custom gradient colors
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   // Custom Gradient for Background
   static const LinearGradient iconbg = LinearGradient(
-    colors: [Color(0xFFFFA082), Color(0xFFF3743D)], // Custom gradient colors
+    colors: [Color(0xFF3EFFFF), Color(0xFF169DFF)], // Custom gradient colors
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
+
+  static const Color iconbgStart = Color(0xFF3EFFFF); // Start color
+  static const Color iconbgEnd = Color(0xFF169DFF);   // End color
 }

@@ -27,11 +27,11 @@ class _ImageCarouselPageState extends State<ImageCarouselPage> {
       body: ListView(
         children: <Widget>[
           ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: height / 5),
+            constraints: BoxConstraints(maxHeight: height / 5.5),
             child: CarouselView.weighted(
               controller: controller,
               itemSnapping: true,
-              flexWeights: const <int>[1, 7, 1],
+              flexWeights: const <int>[1, 6, 1],
               children: ImageInfo.values.map((ImageInfo image) {
                 return HeroLayoutCard(imageInfo: image);
               }).toList(),
@@ -61,7 +61,7 @@ class HeroLayoutCard extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('assets/cardbg8.png'), // Using local assets
+                  image: AssetImage('assets/imagebg.png'), // Using local assets
                   fit: BoxFit.contain, // You can change this as needed
                 ),
                 boxShadow: [

@@ -41,11 +41,10 @@ class WalletController {
   void redirectToPaymentWebsite(double amount) async {
     if (amount >= 30.0) {
       String url =
-          'https://www.difwa.com/payment-page?amount=$amount&userId=$currentUserId';
+          'https://www.difwa.com/payment-page?amount=$amount&userId=$currentUserId&returnUrl=app://payment-result';
 
       try {
         await launch(url);
-        throw 'Could not launch $url';
       } catch (e) {
         print("Error launching payment page: $e");
       }

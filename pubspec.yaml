@@ -32,6 +32,9 @@ dependencies:
   fluttertoast: ^8.2.12
   dio: ^5.8.0+1
   country_picker: ^2.0.0
+  app_links: ^6.4.0
+  icons_plus: ^5.0.0
+  animated_icon: ^0.0.9
 
 dev_dependencies:
   flutter_test:
@@ -100,3 +103,8 @@ flutter:
     - assets/button/blbg.png
     - assets/button/trbg.png
     - assets/icons/iconbg.svg
+    - assets/icons/iconbg.png
+
+    - assets/bgimage.png
+    - assets/imagebg.png
+

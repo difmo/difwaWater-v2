@@ -1,8 +1,10 @@
+import 'package:flutter/material.dart';
+import 'package:app_links/app_links.dart'; // Import the app_links package
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:difwa/controller/wallet_controller.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/widgets/custom_button.dart';
-import 'package:flutter/material.dart';
+import 'dart:async';
 
 class WalletScreen extends StatefulWidget {
   const WalletScreen({Key? key}) : super(key: key);
@@ -14,6 +16,8 @@ class WalletScreen extends StatefulWidget {
 class _WalletScreenState extends State<WalletScreen> {
   TextEditingController amountController = TextEditingController();
   WalletController? walletController;
+  late StreamSubscription _sub;
+  final AppLinks _appLinks = AppLinks(); 
 
   @override
   void initState() {
@@ -23,6 +27,44 @@ class _WalletScreenState extends State<WalletScreen> {
       amountController: amountController,
     );
     walletController?.fetchUserWalletBalance();
+    _initAppLinks();
+  }
+
+  Future<void> _initAppLinks() async {
+    _sub = _appLinks.uriLinkStream.listen((Uri? uri) {
+      _handleDeepLink(uri);
+    });
+
+    Uri? initialLink = await _appLinks.getInitialLink();
+    _handleDeepLink(initialLink);
+  }
+
+  void _handleDeepLink(Uri? uri) {
+    if (uri != null && uri.toString().contains('app://payment-result')) {
+      bool paymentSuccess = _checkPaymentStatus(uri.toString());
+      if (paymentSuccess) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Payment successful!"),
+        ));
+        // Update wallet balance or any other relevant data
+        walletController?.updateWalletBalance(50.0); // Example value
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Payment failed. Please try again."),
+        ));
+      }
+    }
+  }
+
+  bool _checkPaymentStatus(String link) {
+    // Assuming that the URL contains the word "success" if payment was successful
+    return link.contains("success");
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _sub.cancel();
   }
 
   @override

@@ -2,7 +2,8 @@ import 'dart:ui';
 
 import 'package:difwa/routes/app_routes.dart';
 import 'package:difwa/screens/admin_screens/store_onboarding_screen.dart';
-import 'package:difwa/screens/auth/adddress_page.dart';
+import 'package:difwa/screens/auth/adddress_form_page.dart';
+import 'package:difwa/screens/auth/saved_address.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -68,7 +69,7 @@ class _LoginScreenState extends State<ProfileScreen> {
               ),
             ),
             GestureDetector(
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AddressForm())),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SavveAddressPage())),
               child: const MenuOption(
                 icon: Icons.home,
                 title: 'Address',
@@ -147,7 +148,7 @@ class MenuOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
+      margin: const EdgeInsets.symmetric(horizontal: 1.0, vertical: 2.0),
       padding: const EdgeInsets.all(12.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10.0),

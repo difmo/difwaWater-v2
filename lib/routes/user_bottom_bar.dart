@@ -76,7 +76,7 @@ class _HomeScreenState extends State<BottomUserHomePage> {
           onTap: _onItemTapped,
           type: BottomNavigationBarType.fixed,
           selectedItemColor: AppColors.inputfield, // Color when selected
-          unselectedItemColor: Colors.grey, // Color when not selected
+          unselectedItemColor: Colors.white, // Color when not selected
         ),
       ),
     );
@@ -95,17 +95,18 @@ class _HomeScreenState extends State<BottomUserHomePage> {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Background SVG image when selected
+          // Background SVG image when selected, change color dynamically
           if (isSelected)
-            SvgPicture.asset(
-              'assets/icons/iconbg.svg', // Replace with your actual SVG asset path
-              width: 60, // Adjust size as per your requirement
-              height: 60, // Adjust size as per your requirement
-            ),
+            Image.asset(
+            'assets/icons/iconbg.png', // Replace with your actual PNG asset path
+            width: 50, // Adjust size as per your requirement
+            height: 50, // Adjust size as per your requirement
+            fit: BoxFit.cover, // Optional: Use this to make sure the image fits the container
+          ),
           // Icon on top of the SVG background
           Icon(
             iconData,
-            size: isSelected ? 35 : 30, // Zoom in when selected
+            size: isSelected ? 30 : 18, // Zoom in when selected
             color: isSelected ? Colors.white : Colors.black, // Change icon color when selected
           ),
         ],

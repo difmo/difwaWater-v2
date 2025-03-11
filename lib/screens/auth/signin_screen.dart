@@ -260,7 +260,7 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                                 });
                               }
                             },
-                            text: 'Register',
+                            text: 'SignUp',
                             baseTextColor: Colors.white,
                           ),
                         ],

@@ -69,4 +69,15 @@ class Validators {
 
     return null;
   }
+
+  String? validateFloor(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Floor must be a number';
+    }
+    final number = int.tryParse(value);
+    if (number == null) {
+      return 'Floor must be a number';
+    }
+    return null;
+  }
 }
