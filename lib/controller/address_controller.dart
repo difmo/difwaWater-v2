@@ -53,7 +53,7 @@ class AddressController extends GetxController {
           .map((querySnapshot) {
         // Map the Firestore documents to Address objects
         return querySnapshot.docs.map((doc) {
-          return Address.fromJson(doc.data() as Map<String, dynamic>);
+          return Address.fromJson(doc.data());
         }).toList();
       });
     } else {
