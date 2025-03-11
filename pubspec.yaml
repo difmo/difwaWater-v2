@@ -16,6 +16,8 @@ dependencies:
   firebase_auth:
   firebase_storage:
   get: ^4.6.6
+  order_tracker:
+  order_tracker_zen:
   flutter_svg: any
   intl: ^0.19.0
   lottie: ^3.3.1

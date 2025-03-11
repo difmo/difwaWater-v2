@@ -210,7 +210,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                   ),
                                   Text(
                                     'Updated At: ${statusHistory['pendingTime']}',
-                                    style: const TextStyle(fontSize: 12),
+                                    style: const TextStyle(fontSize: 12, color: Colors.deepOrange),
                                   ),
                                 ],
                               ),
