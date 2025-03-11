@@ -1,5 +1,6 @@
 import 'package:difwa/config/app_color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 class CustomAppbar extends StatefulWidget {
   final VoidCallback onProfilePressed;
@@ -16,8 +17,6 @@ class CustomAppbar extends StatefulWidget {
     required this.hasNotifications,
     this.profileImageUrl,
   });
-
-  
 
   @override
   _CustomToolbarState createState() => _CustomToolbarState();
@@ -53,25 +52,10 @@ class _CustomToolbarState extends State<CustomAppbar> {
           Row(
             children: [
               Container(
-                decoration: const BoxDecoration(
-                  color: AppColors.myblack, // Black background
-                  shape: BoxShape.circle, // Circular shape
-                ),
-                padding: EdgeInsets.all(4), // Adjust padding to fit the icon
-                child: const Icon(
-                  Icons.water_drop,
-                  color: Colors.white,
-                  size: 20, // Adjust the icon size
-                ),
-              ),
-              SizedBox(width: 4),
-              const Text(
-                'FreshDropHydrate',
-                style: TextStyle(
-                  color: AppColors.myblack,
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                  
+                padding:
+                    EdgeInsets.all(0), 
+                child: SvgPicture.asset(
+                  'assets/images/dlogo.svg', 
                 ),
               ),
             ],
@@ -85,7 +69,8 @@ class _CustomToolbarState extends State<CustomAppbar> {
                   IconButton(
                     icon: Icon(
                       Icons.circle_notifications,
-                      color: hasNotifications ? AppColors.myblack : Colors.black,
+                      color:
+                          hasNotifications ? AppColors.myblack : Colors.black,
                       size: 30,
                     ),
                     onPressed: widget.onNotificationPressed,
