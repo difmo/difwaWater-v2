@@ -33,7 +33,9 @@ class _BookNowScreenState extends State<BookNowScreen> {
         preferredSize: const Size.fromHeight(60),
         child: CustomAppbar(
             onProfilePressed: () {},
-            onNotificationPressed: () {},
+            onNotificationPressed: () {
+              Get.toNamed(AppRoutes.notification);
+            },
             onMenuPressed: () {},
             hasNotifications: true),
       ),

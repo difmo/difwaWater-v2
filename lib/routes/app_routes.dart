@@ -6,6 +6,7 @@ import 'package:difwa/screens/auth/adddress_form_page.dart';
 import 'package:difwa/screens/auth/signin_screen.dart';
 import 'package:difwa/screens/available_service_select.dart';
 import 'package:difwa/screens/book_now_screen.dart';
+import 'package:difwa/screens/notification_page.dart';
 import 'package:difwa/screens/profile_screen.dart';
 import 'package:difwa/screens/splash_screen.dart';
 import 'package:difwa/screens/subscription_screen.dart';
@@ -21,6 +22,7 @@ class AppRoutes {
   static const userbottom = '/userbottom';
   static const subscription = '/subscription';
   static const address_page = '/address_page';
+  static const notification = '/notification_page';
 
   //////// Admin stuff////////
   static const additem = '/additem';
@@ -46,6 +48,12 @@ class AppRoutes {
     GetPage(
       name: profile,
       page: () => const ProfileScreen(),
+      transition: Transition.fadeIn, // Fade transition for profile
+      transitionDuration: Duration(milliseconds: 600),
+    ),
+    GetPage(
+      name: notification,
+      page: () => const NotificationScreen(),
       transition: Transition.fadeIn, // Fade transition for profile
       transitionDuration: Duration(milliseconds: 600),
     ),

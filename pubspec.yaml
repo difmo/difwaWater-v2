@@ -59,6 +59,7 @@ flutter:
     - assets/posters/1.jpg
     - assets/posters/5.png
     - assets/posters/tiffin.svg
+    - assets/images/
     - assets/images/otp.svg
     - assets/images/logo.svg
     - assets/images/error.svg
