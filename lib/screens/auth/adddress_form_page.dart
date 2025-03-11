@@ -36,7 +36,8 @@ class _AddressFormState extends State<AddressForm> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _floorController = TextEditingController();
   bool _isChecked = false;
-  bool _isdeleted = false; // Checkbox state
+  bool _isdeleted = false;
+  bool _isSelected = false; // Checkbox state
 
   final AddressController _addressController = Get.put(AddressController());
 
@@ -86,6 +87,7 @@ class _AddressFormState extends State<AddressForm> {
           saveAddress: _isChecked,
           userId: "", // Dynamically get the userId if necessary
           isDeleted: _isdeleted,
+          isSelected: _isSelected,
           docId: "", // Empty for a new address
           floor: _floorController.text,
         ),
@@ -115,6 +117,7 @@ class _AddressFormState extends State<AddressForm> {
           saveAddress: _isChecked,
           userId: "", // Dynamically get the userId if necessary
           isDeleted: _isdeleted,
+          isSelected: _isSelected,
           docId: widget.address.docId, // Pass the existing docId for update
           floor: _floorController.text,
         ),

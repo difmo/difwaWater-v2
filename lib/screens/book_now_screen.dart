@@ -72,16 +72,20 @@ class _BookNowScreenState extends State<BookNowScreen> {
                           String imagePath;
                           switch (bottle['size']) {
                             case 15:
-                              imagePath = 'assets/images/water.jpg';
+                              imagePath =
+                                  'https://5.imimg.com/data5/RK/MM/MY-26385841/ff-1000x1000.jpg';
                               break;
                             case 20:
-                              imagePath = 'assets/images/water.jpg';
+                              imagePath =
+                                  'https://5.imimg.com/data5/RK/MM/MY-26385841/ff-1000x1000.jpg';
                               break;
                             case 10:
-                              imagePath = 'assets/images/water.jpg';
+                              imagePath =
+                                  'https://5.imimg.com/data5/RK/MM/MY-26385841/ff-1000x1000.jpg';
                               break;
                             default:
-                              imagePath = 'assets/images/water.jpg';
+                              imagePath =
+                                  'https://5.imimg.com/data5/RK/MM/MY-26385841/ff-1000x1000.jpg';
                               break;
                           }
 
@@ -108,12 +112,24 @@ class _BookNowScreenState extends State<BookNowScreen> {
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Image.asset(
+                                    Image.network(
                                       imagePath,
                                       width: 80,
                                       height: 80,
                                       fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return Icon(Icons.image_not_supported,
+                                            size: 80, color: Colors.grey);
+                                      },
                                     ),
+
+                                    // Image.asset(
+                                    //   imagePath,
+                                    //   width: 80,
+                                    //   height: 80,
+                                    //   fit: BoxFit.cover,
+                                    // ),
                                     const SizedBox(height: 8),
                                     Text(
                                       '${bottle['size']}L',

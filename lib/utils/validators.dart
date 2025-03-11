@@ -26,9 +26,9 @@ class Validators {
     if (value == null || value.isEmpty) {
       return 'Name is required';
     }
-    if (!RegExp(r'^[A-Z][a-zA-Z ]*$').hasMatch(value)) {
-      return 'Name must start with a capital letter and contain only letters';
-    }
+    // if (!RegExp(r'^[A-Z][a-zA-Z ]*$').hasMatch(value)) {
+    //   return 'Name must start with a capital letter and contain only letters';
+    // }
     return null;
   }
 

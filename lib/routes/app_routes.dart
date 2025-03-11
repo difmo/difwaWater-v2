@@ -39,7 +39,8 @@ class AppRoutes {
     GetPage(
       name: home,
       page: () => const BookNowScreen(),
-      transition: Transition.rightToLeftWithFade, // Smooth right-to-left with fade for home screen
+      transition: Transition
+          .rightToLeftWithFade, // Smooth right-to-left with fade for home screen
       transitionDuration: Duration(milliseconds: 800),
     ),
     GetPage(
@@ -51,7 +52,8 @@ class AppRoutes {
     GetPage(
       name: availableservices,
       page: () => const AvailableServiceSelect(),
-      transition: Transition.downToUp, // Slide-up transition for available services
+      transition:
+          Transition.downToUp, // Slide-up transition for available services
       transitionDuration: Duration(milliseconds: 700),
     ),
     GetPage(
@@ -63,7 +65,8 @@ class AppRoutes {
     GetPage(
       name: userbottom,
       page: () => const BottomUserHomePage(),
-      transition: Transition.rightToLeft, // Slide transition from right for user dashboard
+      transition: Transition
+          .rightToLeft, // Slide transition from right for user dashboard
       transitionDuration: Duration(milliseconds: 600),
     ),
     GetPage(
@@ -83,12 +86,29 @@ class AppRoutes {
     GetPage(
       name: storebottombar,
       page: () => const BottomStoreHomePage(),
-      transition: Transition.leftToRight, // Slide transition from left for store dashboard
+      transition: Transition
+          .leftToRight, // Slide transition from left for store dashboard
       transitionDuration: Duration(milliseconds: 600),
     ),
     GetPage(
       name: address_page,
-      page: () =>  AddressForm(address: Address(docId: "", name: "", street: "", city: "", state: "", zip: "", isDeleted: false, country: "", phone: "", saveAddress: false, userId: "", floor: ""),flag: "",),
+      page: () => AddressForm(
+        address: Address(
+            docId: "",
+            name: "",
+            street: "",
+            city: "",
+            state: "",
+            zip: "",
+            isDeleted: false,
+            isSelected: false,
+            country: "",
+            phone: "",
+            saveAddress: false,
+            userId: "",
+            floor: ""),
+        flag: "",
+      ),
       transition: Transition.fadeIn, // Smooth fade-in for store home screen
       transitionDuration: Duration(milliseconds: 500),
     ),

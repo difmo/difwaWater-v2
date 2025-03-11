@@ -260,7 +260,8 @@ class _AddressFormState extends State<AddressForm> {
                         city: _cityController.text,
                         state: _stateController.text,
                         zip: _zipController.text,
-                        isDeleted: false, // Add appropriate value
+                        isDeleted: false,
+                        isSelected: false, // Add appropriate value
                         country: _countryController.text,
                         phone: _phoneController.text,
                         saveAddress: _isChecked,
