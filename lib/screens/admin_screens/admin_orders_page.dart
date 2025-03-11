@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:difwa/controller/admin_controller/add_items_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 class AdminPanelScreen extends StatefulWidget {
   const AdminPanelScreen({super.key});
@@ -11,11 +14,21 @@ class AdminPanelScreen extends StatefulWidget {
 class _AdminPanelScreenState extends State<AdminPanelScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final FirebaseController _authController = Get.put(FirebaseController());
+  String merchantIdd = "";
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    print("hello");
+    _authController.fetchMerchantId("").then((merchantId) {
+      print(merchantId);
+      setState(() {
+        merchantIdd = merchantId!;
+      });
+      print("hello");
+    });
   }
 
   @override
@@ -43,10 +56,10 @@ class _AdminPanelScreenState extends State<AdminPanelScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: const [
-          OrderListPage(status: 'pending'),
-          OrderListPage(status: 'completed'),
-          OrderListPage(status: 'cancelled'),
+        children: [
+          OrderListPage(status: 'pending', merchantId: merchantIdd),
+          OrderListPage(status: 'completed', merchantId: merchantIdd),
+          OrderListPage(status: 'cancelled', merchantId: merchantIdd),
         ],
       ),
     );
@@ -55,13 +68,17 @@ class _AdminPanelScreenState extends State<AdminPanelScreen>
 
 class OrderListPage extends StatelessWidget {
   final String status;
+  final String merchantId;
 
-  const OrderListPage({super.key, required this.status});
+  OrderListPage({super.key, required this.status, required this.merchantId});
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('difwa-orders').snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection('difwa-orders')
+          .where('merchantId', isEqualTo: merchantId)
+          .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -86,6 +103,7 @@ class OrderListPage extends StatelessWidget {
           itemBuilder: (context, index) {
             final order = orders[index].data() as Map<String, dynamic>;
             final orderId = orders[index].id;
+            // print(dailyOrderid);
 
             return Card(
               margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -113,8 +131,10 @@ class OrderListPage extends StatelessWidget {
                           subtitle: Text('Status: $dateStatus'),
                           trailing: PopupMenuButton<String>(
                             onSelected: (value) async {
-                              await changeDateStatus(
-                                  orderId, dateData['date'], value);
+                              print("daily order id");
+                              print(dateData['dailyOrderId']);
+                              await changeDateStatus(orderId, dateData['date'],
+                                  value, dateData['dailyOrderId']);
                             },
                             itemBuilder: (context) => [
                               if (dateStatus != 'cancelled')
@@ -126,6 +146,11 @@ class OrderListPage extends StatelessWidget {
                                 const PopupMenuItem<String>(
                                   value: 'completed',
                                   child: Text('Mark as Completed'),
+                                ),
+                              if (dateStatus != 'ontheway')
+                                const PopupMenuItem<String>(
+                                  value: 'ontheway',
+                                  child: Text('Mark as ontheway'),
                                 ),
                               if (dateStatus != 'pending')
                                 const PopupMenuItem<String>(
@@ -175,17 +200,15 @@ class OrderListPage extends StatelessWidget {
 
   Future<void> changeOrderStatus(String orderId, String newStatus) async {
     try {
-      DateTime currentTime = DateTime.now(); // Get current local time
-
+      DateTime currentTime = DateTime.now();
       await FirebaseFirestore.instance
           .collection('difwa-orders')
           .doc(orderId)
-          .update({
+          .set({
         'statusHistory': FieldValue.arrayUnion([
           {
             'status': newStatus,
-            'timestamp':
-                currentTime, // Use local time here instead of serverTimestamp
+            'timestamp': currentTime,
           }
         ]),
       });
@@ -194,34 +217,59 @@ class OrderListPage extends StatelessWidget {
     }
   }
 
-  Future<void> changeDateStatus(
-      String orderId, String date, String newStatus) async {
-    DateTime currentTime = DateTime.now(); // Get current local time
+  Future<void> changeDateStatus(String orderId, String date, String newStatus,
+      String dailyOrderId) async {
+    DateTime currentTime = DateTime.now();
 
     try {
       final orderDoc =
           FirebaseFirestore.instance.collection('difwa-orders').doc(orderId);
       final orderSnapshot = await orderDoc.get();
+
+      if (!orderSnapshot.exists) {
+        print('Order not found');
+        return;
+      }
+
       final orderData = orderSnapshot.data() as Map<String, dynamic>;
+
+      if (orderData['selectedDates'] == null ||
+          orderData['selectedDates'] is! List) {
+        print('Selected dates not found or invalid');
+        return;
+      }
 
       final selectedDates =
           List<Map<String, dynamic>>.from(orderData['selectedDates']);
-      final dateIndex =
-          selectedDates.indexWhere((item) => item['date'] == date);
 
+      // Find the index of the date in selectedDates list based on dailyOrderId
+      final dateIndex = selectedDates
+          .indexWhere((item) => item['dailyOrderId'] == dailyOrderId);
+
+      // If the date is found, update the status and add to statusHistory
       if (dateIndex != -1) {
         selectedDates[dateIndex]['status'] = newStatus;
+        // Update the status for the specific date
+        selectedDates[dateIndex]['statusHistory']['status'] = newStatus;
 
+        // Check if statusHistory exists, if not, initialize it as an empty map
+        if (selectedDates[dateIndex]['statusHistory'] == null) {
+          selectedDates[dateIndex]['statusHistory'] = {};
+        }
+
+        // Add the new status change to statusHistory with the current timestamp
+        selectedDates[dateIndex]['statusHistory'][newStatus + 'Time'] =
+            currentTime;
+
+        // Update the Firestore document with the modified selectedDates list
         await orderDoc.update({
           'selectedDates': selectedDates,
-          'statusHistory': FieldValue.arrayUnion([
-            {
-              'status': newStatus,
-              'date': date,
-              'timestamp': currentTime,
-            }
-          ]),
         });
+
+        print('Order date status updated successfully');
+      } else {
+        print(
+            'Date with dailyOrderId $dailyOrderId not found in selectedDates');
       }
     } catch (e) {
       print('Error updating date status: $e');
