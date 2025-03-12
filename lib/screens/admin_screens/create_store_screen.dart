@@ -1,6 +1,9 @@
 import 'dart:io';
 import 'package:difwa/config/app_styles.dart';
 import 'package:difwa/controller/admin_controller/add_store_controller.dart';
+import 'package:difwa/routes/app_routes.dart';
+import 'package:difwa/routes/store_bottom_bar.dart';
+import 'package:difwa/screens/admin_screens/store_home.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -129,7 +132,15 @@ class _CreateStorePageState extends State<CreateStorePage> {
 
                     ElevatedButton(
                       onPressed: () async {
-                        await controller.submitForm(_image); // Call submitForm
+                        bool isSuccess= await controller.submitForm(_image);
+                        if (isSuccess) {
+                          Get.offAll(() =>
+                             BottomStoreHomePage()); 
+                                } else {
+                          Get.snackbar('Error',
+                              'Failed to create the store. Please try again.',
+                              snackPosition: SnackPosition.BOTTOM);
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
@@ -143,6 +154,23 @@ class _CreateStorePageState extends State<CreateStorePage> {
                       ),
                     ),
 
+                    // ElevatedButton(
+                    //   onPressed: () async {
+                    //     await controller.submitForm(_image); 
+                    //             Get.offAllNamed(AppRoutes.storebottombar);
+                    //     // Call submitForm
+                    //   },
+                    //   style: ElevatedButton.styleFrom(
+                    //     padding: const EdgeInsets.symmetric(
+                    //         horizontal: 50, vertical: 15),
+                    //     backgroundColor: ThemeConstants.primaryColorNew,
+                    //     foregroundColor: Colors.white,
+                    //   ),
+                    //   child: Text(
+                    //     'Create Store',
+                    //     style: AppStyle.headingWhite, // Apply your style here
+                    //   ),
+                    // ),
                     const SizedBox(height: 20),
                   ],
                 ),

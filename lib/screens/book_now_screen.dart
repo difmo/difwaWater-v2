@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:difwa/config/app_color.dart';
 import 'package:difwa/controller/bottle_controller.dart';
 import 'package:difwa/routes/app_routes.dart';
@@ -21,6 +22,45 @@ class _BookNowScreenState extends State<BookNowScreen> {
   int _selectedIndex = -1;
   bool _hasEmptyBottle = false;
   int _quantity = 1;
+List<Map<String, dynamic>> _bottleItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchBottleItems();
+  }
+Future<void> fetchBottleItems() async {
+  try {
+    List<Map<String, dynamic>> fetchedItems = [];
+    QuerySnapshot storeSnapshot = await FirebaseFirestore.instance.collection('difwa-stores').get();
+
+    for (var storeDoc in storeSnapshot.docs) {
+      QuerySnapshot itemSnapshot = await FirebaseFirestore.instance
+          .collection('difwa-stores')
+          .doc(storeDoc.id)
+          .collection('difwa-items')
+          .get();
+
+      for (var doc in itemSnapshot.docs) {
+        fetchedItems.add(doc.data() as Map<String, dynamic>);
+      }
+    }
+
+    if (mounted) {
+      setState(() {
+        _bottleItems = fetchedItems;
+      });
+    }
+  } catch (e) {
+    print("Error fetching data: $e");
+  }
+}
+
+  // Update state after all Firestore calls are completed
+//   setState(() {
+//     _bottleItems = fetchedItems;
+//   });
+// }
 
   @override
   Widget build(BuildContext context) {
@@ -50,12 +90,10 @@ class _BookNowScreenState extends State<BookNowScreen> {
                 height: screenHeight * 0.20,
                 child: const ImageCarouselPage(),
               ),
-              Obx(() {
-                if (bottleController.bottleItems.isEmpty) {
-                  return const CircularProgressIndicator();
-                }
-
-                return Column(
+              if (_bottleItems.isEmpty)
+                const CircularProgressIndicator()
+              else
+                Column(
                   children: [
                     Divider(
                       color: AppColors.darkGrey,
@@ -65,37 +103,22 @@ class _BookNowScreenState extends State<BookNowScreen> {
                       endIndent: 10,
                     ),
                     SizedBox(
-                      height: 200, // Card height
+                      height: 200,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
-                        itemCount: bottleController.bottleItems.length,
+                        itemCount: _bottleItems.length,
                         itemBuilder: (context, index) {
-                          var bottle = bottleController.bottleItems[index];
+                          var bottle = _bottleItems[index];
                           bool isSelected = index == _selectedIndex;
 
-                          String imagePath;
-                          switch (bottle['size']) {
-                            case 15:
-                              imagePath =
-                                  'https://5.imimg.com/data5/RK/MM/MY-26385841/ff-1000x1000.jpg';
-                              break;
-                            case 20:
-                              imagePath =
-                                  'https://5.imimg.com/data5/RK/MM/MY-26385841/ff-1000x1000.jpg';
-                              break;
-                            case 10:
-                              imagePath =
-                                  'https://5.imimg.com/data5/RK/MM/MY-26385841/ff-1000x1000.jpg';
-                              break;
-                            default:
-                              imagePath =
-                                  'https://5.imimg.com/data5/RK/MM/MY-26385841/ff-1000x1000.jpg';
-                              break;
-                          }
+                          String imageUrl = bottle['imageUrl'] ?? 'https://5.imimg.com/data5/RK/MM/MY-26385841/ff-1000x1000.jpg';
 
                           return GestureDetector(
                             onTap: () {
+                              print("index");
+                              print(index);
                               setState(() {
+
                                 _selectedIndex = isSelected ? -1 : index;
                               });
                             },
@@ -103,13 +126,8 @@ class _BookNowScreenState extends State<BookNowScreen> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16.0),
                                 side: BorderSide(
-                                  color: isSelected
-                                      ? Colors.blue
-                                      : Colors
-                                          .grey, // Apply blue border when selected, grey when unselected
-                                  width: isSelected
-                                      ? 2.0
-                                      : 1.0, // Thicker border when selected, thinner when unselected
+                                  color: isSelected ? Colors.blue : Colors.grey,
+                                  width: isSelected ? 2.0 : 1.0,
                                 ),
                               ),
                               elevation: 0,
@@ -122,23 +140,15 @@ class _BookNowScreenState extends State<BookNowScreen> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Image.network(
-                                      imagePath,
+                                      imageUrl,
                                       width: 80,
                                       height: 80,
                                       fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (context, error, stackTrace) {
+                                      errorBuilder: (context, error, stackTrace) {
                                         return Icon(Icons.image_not_supported,
                                             size: 80, color: Colors.grey);
                                       },
                                     ),
-
-                                    // Image.asset(
-                                    //   imagePath,
-                                    //   width: 80,
-                                    //   height: 80,
-                                    //   fit: BoxFit.cover,
-                                    // ),
                                     const SizedBox(height: 8),
                                     Text(
                                       '${bottle['size']}L',
@@ -161,8 +171,7 @@ class _BookNowScreenState extends State<BookNowScreen> {
                       ),
                     ),
                   ],
-                );
-              }),
+                ),
               const SizedBox(height: 16),
               ClipRRect(
                 borderRadius: BorderRadius.circular(16.0),
@@ -295,7 +304,7 @@ class _BookNowScreenState extends State<BookNowScreen> {
                                               color: ThemeConstants.whiteColor),
                                         ),
                                         Text(
-                                          '₹ ${bottleController.bottleItems[_selectedIndex]['price']}',
+                                          '₹ ${_bottleItems[_selectedIndex]['price']}',
                                           style: const TextStyle(
                                               fontSize: 16,
                                               color: ThemeConstants
@@ -314,7 +323,7 @@ class _BookNowScreenState extends State<BookNowScreen> {
                                         ),
                                         Text(
                                           _hasEmptyBottle
-                                              ? '₹ ${bottleController.bottleItems[_selectedIndex]['vacantPrice']}'
+                                              ? '₹ ${_bottleItems[_selectedIndex]['vacantPrice']}'
                                               : '₹ 0', // If not checked, no bottle price
                                           style: const TextStyle(
                                               fontSize: 16,
@@ -337,7 +346,7 @@ class _BookNowScreenState extends State<BookNowScreen> {
                                           ),
                                         ),
                                         Text(
-                                          '₹ ${(_quantity * bottleController.bottleItems[_selectedIndex]['price']) + (_hasEmptyBottle ? (_quantity * bottleController.bottleItems[_selectedIndex]['vacantPrice']) : 0)}',
+                                          '₹ ${(_quantity * _bottleItems[_selectedIndex]['price']) + (_hasEmptyBottle ? (_quantity * _bottleItems[_selectedIndex]['vacantPrice']) : 0)}',
                                           style: const TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold,
@@ -371,7 +380,7 @@ class _BookNowScreenState extends State<BookNowScreen> {
                     onPressed: () {
                       if (_selectedIndex != -1) {
                         var bottle =
-                            bottleController.bottleItems[_selectedIndex];
+                            _bottleItems[_selectedIndex];
                         double price = bottle['price'];
                         double vacantPrice =
                             _hasEmptyBottle ? bottle['vacantPrice'] : 0;
@@ -390,7 +399,7 @@ class _BookNowScreenState extends State<BookNowScreen> {
                         Get.dialog(
                           AlertDialog(
                             backgroundColor: Colors.white,
-                            title: Text("Selection Error"),
+                            title: Text("Select a Bottle"),
                             content: Text(
                                 "Please select a bottle before proceeding"),
                             actions: [
@@ -401,15 +410,6 @@ class _BookNowScreenState extends State<BookNowScreen> {
                             ],
                           ),
                         );
-                        // Show a popup if no bottle is selected
-                        // Get.snackbar(
-                        //   "Selection Error",
-                        //   "Please select a bottle before proceeding",
-                        //   snackPosition: SnackPosition.BOTTOM,
-                        //   backgroundColor: Colors.red,
-                        //   colorText: Colors.white,
-                        //   duration: Duration(seconds: 2),
-                        // );
                       }
                     },
                   ),

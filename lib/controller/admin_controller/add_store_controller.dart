@@ -28,7 +28,7 @@ class SignupController extends GetxController {
     super.onClose();
   }
 
-  Future<void> submitForm(File? image) async {
+  Future<bool> submitForm(File? image) async {
     if (_formKey.currentState!.validate()) {
       try {
         String userId = await _getCurrentUserId();
@@ -45,10 +45,15 @@ class SignupController extends GetxController {
         await _saveUserStore(newUser);
 
         _showSuccessSnackbar(merchantId);
-        Get.offNamed(AppRoutes.storebottombar);
+        // Get.offAllNamed(AppRoutes.storebottombar);
+
+        return true;
       } catch (e) {
         _handleError(e);
+        return false;
       }
+    } else {
+      return false;
     }
   }
 
