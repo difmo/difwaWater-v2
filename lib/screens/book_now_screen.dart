@@ -32,14 +32,14 @@ class _BookNowScreenState extends State<BookNowScreen> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
         child: CustomAppbar(
-            onProfilePressed: () {},
-            onNotificationPressed: () {
-              Get.toNamed(AppRoutes.notification);
-            },
-            onMenuPressed: () {},
-            hasNotifications: true, 
-            badgeCount: 0,
-          ),
+          onProfilePressed: () {},
+          onNotificationPressed: () {
+            Get.toNamed(AppRoutes.notification);
+          },
+          onMenuPressed: () {},
+          hasNotifications: true,
+          badgeCount: 0,
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -258,7 +258,8 @@ class _BookNowScreenState extends State<BookNowScreen> {
                                 children: [
                                   Checkbox(
                                     activeColor: ThemeConstants.whiteColor,
-                                    checkColor: Colors.blue, // Ensure checkmark is white
+                                    checkColor: Colors
+                                        .blue, // Ensure checkmark is white
                                     value:
                                         _hasEmptyBottle, // Bind the checkbox state
                                     onChanged: (value) {
@@ -357,12 +358,12 @@ class _BookNowScreenState extends State<BookNowScreen> {
               ),
               const SizedBox(height: 20),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  CustomButton(
-                      text: "Order Now",
-                      baseTextColor: ThemeConstants.whiteColor,
-                      onPressed: () {}),
+                  // CustomButton(
+                  //     text: "Order Now",
+                  //     baseTextColor: ThemeConstants.whiteColor,
+                  //     onPressed: () {}),
                   CustomButton(
                     text: "Take Subscription",
                     baseTextColor: ThemeConstants.whiteColor,
@@ -385,6 +386,30 @@ class _BookNowScreenState extends State<BookNowScreen> {
                             'hasEmptyBottle': _hasEmptyBottle,
                           },
                         );
+                      } else {
+                        Get.dialog(
+                          AlertDialog(
+                            backgroundColor: Colors.white,
+                            title: Text("Selection Error"),
+                            content: Text(
+                                "Please select a bottle before proceeding"),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Get.back(),
+                                child: Text("OK"),
+                              ),
+                            ],
+                          ),
+                        );
+                        // Show a popup if no bottle is selected
+                        // Get.snackbar(
+                        //   "Selection Error",
+                        //   "Please select a bottle before proceeding",
+                        //   snackPosition: SnackPosition.BOTTOM,
+                        //   backgroundColor: Colors.red,
+                        //   colorText: Colors.white,
+                        //   duration: Duration(seconds: 2),
+                        // );
                       }
                     },
                   ),

@@ -10,10 +10,26 @@ class AddItem extends StatefulWidget {
 
 class _AdminScreenState extends State<AddItem> {
   final List<Map<String, dynamic>> bottleSizes = [
-    {'size': 10, 'price': 10.0, 'image': 'assets/images/water.jpg'},
-    {'size': 15, 'price': 20.0, 'image': 'assets/images/water.jpg'},
-    {'size': 18, 'price': 25.0, 'image': 'assets/images/water.jpg'},
-    {'size': 20, 'price': 30.0, 'image': 'assets/images/water.jpg'},
+    {
+      'size': 10,
+      'price': 10.0,
+      'image': 'https://5.imimg.com/data5/RK/MM/MY-26385841/ff-1000x1000.jpg'
+    },
+    {
+      'size': 15,
+      'price': 20.0,
+      'image': 'https://5.imimg.com/data5/RK/MM/MY-26385841/ff-1000x1000.jpg'
+    },
+    {
+      'size': 18,
+      'price': 25.0,
+      'image': 'https://5.imimg.com/data5/RK/MM/MY-26385841/ff-1000x1000.jpg'
+    },
+    {
+      'size': 20,
+      'price': 30.0,
+      'image': 'https://5.imimg.com/data5/RK/MM/MY-26385841/ff-1000x1000.jpg'
+    },
   ];
 
   int? selectedBottleSize;
@@ -24,8 +40,14 @@ class _AdminScreenState extends State<AddItem> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Select Waters'),
+        title: const Text(
+          'Select Waters',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.blue,
+        iconTheme: const IconThemeData(
+          color: Colors.white, 
+      ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -66,7 +88,7 @@ class _AdminScreenState extends State<AddItem> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Image.asset(
+                            Image.network(
                               bottle['image'],
                               width: 70,
                               height: 70,
@@ -124,21 +146,38 @@ class _AdminScreenState extends State<AddItem> {
                       onPressed: () async {
                         if (vacantBottlePrice > 0) {
                           try {
+                            // Add bottle data
                             await _controller.addBottleData(
                               selectedBottleSize!,
                               bottleSizes.firstWhere((b) =>
                                   b['size'] == selectedBottleSize!)['price'],
                               vacantBottlePrice,
                             );
+
+                            // Show success message
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                   content: Text('Bottle added successfully')),
                             );
+
+                            // Reset form state
+                            setState(() {
+                              selectedBottleSize =
+                                  null; // Clear selected bottle size
+                              vacantBottlePrice =
+                                  0.0; // Reset vacant bottle price
+                            });
                           } catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('Error: $e')),
                             );
                           }
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text(
+                                    'Please select a bottle size and price')),
+                          );
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -146,8 +185,10 @@ class _AdminScreenState extends State<AddItem> {
                             vertical: 12.0, horizontal: 32.0),
                         backgroundColor: Colors.green,
                       ),
-                      child: const Text('Submit',
-                          style: TextStyle(color: Colors.white, fontSize: 16)),
+                      child: const Text(
+                        'Submit',
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
                     ),
                   ],
                 ),

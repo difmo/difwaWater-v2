@@ -1,7 +1,10 @@
+import 'package:difwa/controller/auth_controller.dart';
+import 'package:difwa/models/user_models/user_details_model.dart';
 import 'package:difwa/routes/app_routes.dart';
 import 'package:difwa/screens/admin_screens/store_onboarding_screen.dart';
 import 'package:difwa/screens/auth/saved_address.dart';
 import 'package:difwa/utils/theme_constant.dart';
+import 'package:difwa/widgets/logout_popup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,7 +20,31 @@ class ProfileScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<ProfileScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+final AuthController _userData = Get.put(AuthController());
+ UserDetailsModel? usersData ; 
+@override
+void initState() {
+  super.initState();
 
+  // Fetch user data
+  _fetchUserData();
+}
+
+void _fetchUserData() async {
+  try {
+    UserDetailsModel user = await _userData.fetchUserData();
+    print(user.name); // This will print the user details to the console
+    setState(() {
+      // You can update state here if needed, for example:
+      // _user = user; 
+      usersData = user;
+    });
+  } catch (e) {
+    print("Error fetching user data: $e");
+  }
+}
+
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,9 +59,9 @@ class _LoginScreenState extends State<ProfileScreen> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10.0),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  CircleAvatar(
+                  const CircleAvatar(
                     radius: 30,
                     backgroundColor: AppColors.inputfield,
                     child: Icon(
@@ -43,21 +70,21 @@ class _LoginScreenState extends State<ProfileScreen> {
                       size: 40,
                     ),
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Pritam',
-                        style: TextStyle(
+                           usersData?.name ?? 'No email found',
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
-                        '+91 7800730968',
-                        style: TextStyle(color: Colors.grey),
+                        usersData?.email ?? 'No email found',
+                        style: const TextStyle(color: Colors.grey),
                       ),
                     ],
                   ),
@@ -65,20 +92,21 @@ class _LoginScreenState extends State<ProfileScreen> {
               ),
             ),
             GestureDetector(
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SavveAddressPage())),
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => SavveAddressPage())),
               child: const MenuOption(
                 icon: Icons.home,
                 title: 'Address',
               ),
             ),
-            const MenuOption(
-              icon: Icons.group_add,
-              title: 'Invite Friends',
-            ),
-            const MenuOption(
-              icon: Icons.help,
-              title: 'Help Center',
-            ),
+            // const MenuOption(
+            //   icon: Icons.group_add,
+            //   title: 'Invite Friends',
+            // ),
+            // const MenuOption(
+            //   icon: Icons.help,
+            //   title: 'Help Center',
+            // ),
             GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -93,30 +121,34 @@ class _LoginScreenState extends State<ProfileScreen> {
                 title: 'Become A Seller',
               ),
             ),
-            const MenuOption(
-              icon: Icons.info_outline,
-              title: 'About Us',
-            ),
             // const MenuOption(
             //   icon: Icons.info_outline,
             //   title: 'About Us',
             // ),
-            const MenuOption(
-              icon: Icons.contact_mail,
-              title: 'Contact Us',
-            ),
+            // const MenuOption(
+            //   icon: Icons.info_outline,
+            //   title: 'About Us',
+            // ),
+            // const MenuOption(
+            //   icon: Icons.contact_mail,
+            //   title: 'Contact Us',
+            // ),
             GestureDetector(
-              onTap: () async {
-                try {
-                  await _auth.signOut();
-                  Get.snackbar('Success', 'Logged out successfully');
-                  Get.offAllNamed(AppRoutes.login);
-                } catch (e) {
-                  Get.snackbar('Error', 'Error logging out: $e');
-                }
+              onTap: () {
+                LogoutDialog.showLogoutDialog(context);
               },
+              //  async
+              //  {
+              //   try {
+              //     await _auth.signOut();
+              //     Get.snackbar('Success', 'Logged out successfully');
+              //     Get.offAllNamed(AppRoutes.login);
+              //   } catch (e) {
+              //     Get.snackbar('Error', 'Error logging out: $e');
+              //   }
+              // },
               child: const MenuOption(
-                icon: Icons.store,
+                icon: Icons.logout,
                 title: 'Logout',
               ),
             ),

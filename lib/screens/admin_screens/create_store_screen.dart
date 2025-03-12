@@ -97,34 +97,34 @@ class _CreateStorePageState extends State<CreateStorePage> {
                     const SizedBox(height: 20),
 
                     // Image Selection Box
-                    GestureDetector(
-                      onTap: _showImageSourceDialog,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: ThemeConstants.primaryColorNew),
-                          borderRadius: BorderRadius.circular(5.0),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 8, horizontal: 16.0),
-                              child: Text('Select Image',
-                                  style: AppStyle.heading2Black),
-                            ),
-                            if (_image != null) ...[
-                              Image.file(
-                                _image!,
-                                height: 60,
-                                width: 60,
-                                fit: BoxFit.cover,
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ),
+                    // GestureDetector(
+                    //   onTap: _showImageSourceDialog,
+                    //   child: Container(
+                    //     decoration: BoxDecoration(
+                    //       border: Border.all(color: ThemeConstants.primaryColorNew),
+                    //       borderRadius: BorderRadius.circular(5.0),
+                    //     ),
+                    //     child: Row(
+                    //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //       children: [
+                    //         Padding(
+                    //           padding: const EdgeInsets.symmetric(
+                    //               vertical: 8, horizontal: 16.0),
+                    //           child: Text('Select Image',
+                    //               style: AppStyle.heading2Black),
+                    //         ),
+                    //         if (_image != null) ...[
+                    //           Image.file(
+                    //             _image!,
+                    //             height: 60,
+                    //             width: 60,
+                    //             fit: BoxFit.cover,
+                    //           ),
+                    //         ],
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
                     const SizedBox(height: 20),
 
                     ElevatedButton(

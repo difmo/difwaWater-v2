@@ -58,7 +58,7 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
               _buildOnboardingPage(
                 topImage: 'assets/images/stonb1.svg',
                 middleImage: 'assets/images/stonb11.svg',
-                title: 'Fresh Water',
+                title: 'Fresh Water', 
                 topImageHeight: 400,
                 newHeading: 'Healthy Choices!',
                 newDescription:
@@ -140,7 +140,12 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text(title, style: AppStyle.heading1),
+                  child: Text(title, 
+                  style: TextStyle(
+                    color: titleColor, // Set title color from the parameter
+                    fontSize: 24, // You can adjust the font size as needed
+                    fontWeight: FontWeight.bold, // You can also customize other styles
+                  ),),
                 ),
                 const SizedBox(height: 130),
                 SvgPicture.asset(
@@ -163,15 +168,16 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
                 if (showButton)
                   ElevatedButton(
                     style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(Colors.white),
+                      backgroundColor: WidgetStateProperty.all(Colors.red),
                       foregroundColor:
-                          WidgetStateProperty.all(Colors.red), // Set text color
+                          WidgetStateProperty.all(Colors.white), // Set text color
                     ),
                     onPressed: onNextPressed, // Call the passed function
                     child: const Text(
-                      "Create My Store",
+                      "Create Store",
                       style: TextStyle(
-                          color: Colors.red), // Ensure text color is red
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold), // Ensure text color is red
                     ),
                   ),
 

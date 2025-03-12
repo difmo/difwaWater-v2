@@ -13,7 +13,8 @@ class SplashScreen extends StatefulWidget {
   _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _logoOpacity;
   late Animation<double> _textOpacity;
@@ -60,7 +61,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
       if (userDoc.exists) {
         String role = userDoc['role'] ?? 'isUser';
-
+        print("User role: $role");
         if (role == 'isUser') {
           Get.offNamed(AppRoutes.userbottom);
         } else if (role == 'isStoreKeeper') {
@@ -68,9 +69,10 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
         } else {
           Get.offNamed(AppRoutes.login);
         }
-      } else {
-        Get.offNamed(AppRoutes.login);
-      }
+      } 
+      // else {
+      //   Get.offNamed(AppRoutes.login);
+      // }
     } catch (e) {
       Get.snackbar('Error', 'Failed to retrieve user role');
       Get.offNamed(AppRoutes.login);
@@ -99,7 +101,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               ],
             ),
           ),
-          
+
           Positioned(
             bottom: 0,
             child: Center(
@@ -108,7 +110,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               ),
             ),
           ),
-          
+
           // Text with fade-in animation
           Positioned(
             bottom: 20,

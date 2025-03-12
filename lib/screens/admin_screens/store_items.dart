@@ -11,7 +11,10 @@ class StoreItems extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Store Items'),
+        title: const Text(
+          'Store Items',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.blue,
       ),
       body: StreamBuilder<List<Map<String, dynamic>>>(
@@ -91,12 +94,12 @@ class StoreItems extends StatelessWidget {
                       Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: () {
-                              // Handle edit
-                            },
-                          ),
+                          // IconButton(
+                          //   icon: const Icon(Icons.edit),
+                          //   onPressed: () {
+                          //     // Handle edit
+                          //   },
+                          // ),
                           IconButton(
                             icon: const Icon(Icons.delete),
                             onPressed: () async {

@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:difwa/models/stores_models/store_model.dart';
+import 'package:difwa/models/user_models/user_details_model.dart';
 import 'package:difwa/routes/app_routes.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,20 +14,22 @@ class AuthController extends GetxController {
   @override
   void onReady() {
     super.onReady();
-    _auth.authStateChanges().listen(_handleAuthStateChanged);
+    // _auth.authStateChanges().listen(_handleAuthStateChanged);
   }
 
 ///////////////////////////////////////////////////////////////////////// SIGN UP WITH EMAIL //////////////////////////////////////////////////////////////////////////
-  Future<void> signwithemail(String email, String name, String password,  String number) async {
+  Future<void> signwithemail(
+      String email, String name, String password, String number) async {
     try {
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
-        
       );
 
       // Save additional user details in Firestore
-      await _saveUserDataemail(userCredential.user!.uid, email, name, number, 'defaultFloor');
+      await _saveUserDataemail(
+          userCredential.user!.uid, email, name, number, 'defaultFloor');
       await _fetchUserRole();
       _navigateToDashboard();
     } on FirebaseAuthException catch (e) {
@@ -52,7 +56,8 @@ class AuthController extends GetxController {
   }
 
 ///////////////////////////////////////////////////////////////////////// VERIFY USER //////////////////////////////////////////////////////////////////////////
-  Future<void> verifyUserExistenceAndLogin(String email, String password) async {
+  Future<void> verifyUserExistenceAndLogin(
+      String email, String password) async {
     try {
       await _auth.signInWithEmailAndPassword(
         email: email,
@@ -66,7 +71,8 @@ class AuthController extends GetxController {
       } else if (e.code == 'wrong-password') {
         Get.snackbar('Error', 'Incorrect password. Please try again.');
       } else {
-        Get.snackbar('Error', e.message ?? 'An error occurred while logging in');
+        Get.snackbar(
+            'Error', e.message ?? 'An error occurred while logging in');
       }
     } catch (e) {
       Get.snackbar('Error', 'An unexpected error occurred: $e');
@@ -86,16 +92,18 @@ class AuthController extends GetxController {
     if (userRole.value == 'isUser') {
       Get.offAllNamed(AppRoutes.userbottom);
     } else if (userRole.value == 'isStoreKeeper') {
-      Get.offAllNamed(AppRoutes.userbottom);
+      Get.offAllNamed(AppRoutes.storebottombar);
     } else {
       Get.offAllNamed(AppRoutes.login);
     }
   }
 
 ///////////////////////////////////////////////////////////////////////// SAVE USER DETAILS ////////////////////////////////////////////////////////////////////
-  Future<void> _saveUserDataemail(String uid, String email, String name, String number,String floor) async {
-    DocumentSnapshot userDoc = await _firestore.collection('difwa-users').doc(uid).get();
-    
+  Future<void> _saveUserDataemail(String uid, String email, String name,
+      String number, String floor) async {
+    DocumentSnapshot userDoc =
+        await _firestore.collection('difwa-users').doc(uid).get();
+
     if (!userDoc.exists) {
       await _firestore.collection('difwa-users').doc(uid).set({
         'uid': uid,
@@ -127,6 +135,34 @@ class AuthController extends GetxController {
         userRole.value = 'isUser';
       }
     }
+  }
+
+  Future<UserDetailsModel> fetchUserData() async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc =
+          await _firestore.collection('difwa-users').doc(user.uid).get();
+      if (userDoc.exists) {
+        // Print the data to the terminal (console)
+        print("User data: ${userDoc.data()}");
+
+        // Optionally, print the data after converting it into a UserDetailsModel
+        var userDetails =
+            UserDetailsModel.fromJson(userDoc.data() as Map<String, dynamic>);
+        print("UserDetailsModel: $userDetails");
+
+        return userDetails;
+      }
+    }
+    return UserDetailsModel(
+        docId: "",
+        uid: "",
+        name: "",
+        number: "",
+        email: "",
+        floor: "",
+        role: "",
+        walletBalance: 0.0);
   }
 
 ///////////////////////////////////////////////////////////////////////// HANDLE ROLE CHANGED //////////////////////////////////////////////////////////////////
