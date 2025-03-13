@@ -52,7 +52,7 @@ class _LoginScreenState extends State<ProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Pritam',
+                        'name',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -68,13 +68,25 @@ class _LoginScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
+            
             GestureDetector(
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SavveAddressPage())),
-              child: const MenuOption(
-                icon: Icons.home,
-                title: 'Address',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SavveAddressPage()),
+              ),
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                decoration: BoxDecoration(
+                color: Colors.grey[200], // Light gray background
+                borderRadius: BorderRadius.circular(20)
+                ),
+                child: const MenuOption(
+                  icon: Icons.add,
+                  title: 'Address',
+                ),
               ),
             ),
+
             const MenuOption(
               icon: Icons.group_add,
               title: 'Invite Friends',
@@ -119,6 +131,12 @@ class _LoginScreenState extends State<ProfileScreen> {
                   Get.snackbar('Error', 'Error logging out: $e');
                 }
               },
+                child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                decoration: BoxDecoration(
+                  color: Colors.grey[200], // Light gray background
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
               child: const MenuOption(
                 icon: Icons.store,
                 title: 'Logout',
@@ -128,6 +146,7 @@ class _LoginScreenState extends State<ProfileScreen> {
             //   icon: Icons.contact_mail,
             //   title: 'Become a dealer',
             // ),
+            )
           ],
         ),
       ),
@@ -155,15 +174,14 @@ class MenuOption extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(icon, size: 24, color: AppColors.inputfield),
-          const SizedBox(width: 16),
+          Icon(icon, size: 24, color: AppColors.myblack),
+          const SizedBox(width: 25),
           Text(
             title,
             style: const TextStyle(fontSize: 16),
           ),
-          const Spacer(),
-          const Icon(Icons.arrow_forward,
-              size: 24, color: ThemeConstants.grey),
+          // const Spacer(),
+          // const Icon(Icons.arrow_forward, size: 24, color: ThemeConstants.grey),
         ],
       ),
     );
