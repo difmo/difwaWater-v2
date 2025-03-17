@@ -3,6 +3,7 @@ import 'package:difwa/routes/store_bottom_bar.dart';
 import 'package:difwa/routes/user_bottom_bar.dart';
 import 'package:difwa/screens/admin_screens/create_store_screen.dart';
 import 'package:difwa/screens/auth/adddress_form_page.dart';
+import 'package:difwa/screens/auth/login_screen.dart';
 import 'package:difwa/screens/auth/signup_screen.dart';
 import 'package:difwa/screens/available_service_select.dart';
 import 'package:difwa/screens/book_now_screen.dart';
@@ -18,6 +19,7 @@ class AppRoutes {
   static const splash = '/splash';
   static const availableservices = '/availableservices';
   static const login = '/login';
+  static const signUp = '/signup';
   static const otp = '/otp';
   static const userbottom = '/userbottom';
   static const subscription = '/subscription';
@@ -66,6 +68,12 @@ class AppRoutes {
     ),
     GetPage(
       name: login,
+      page: () => const LoginScreenPage(),
+      transition: Transition.circularReveal, // Circular reveal effect for login
+      transitionDuration: Duration(milliseconds: 1000),
+    ),
+    GetPage(
+      name: signUp,
       page: () => const MobileNumberPage(),
       transition: Transition.circularReveal, // Circular reveal effect for login
       transitionDuration: Duration(milliseconds: 1000),

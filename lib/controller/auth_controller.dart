@@ -18,8 +18,34 @@ class AuthController extends GetxController {
   }
 
 ///////////////////////////////////////////////////////////////////////// SIGN UP WITH EMAIL //////////////////////////////////////////////////////////////////////////
-  Future<void> signwithemail(
-      String email, String name, String password, String number) async {
+
+//  Future<bool> signwithemail(String email, String name, String password,
+//     String number, bool isLoading) async {
+//   try {
+//     UserCredential userCredential =
+//         await _auth.createUserWithEmailAndPassword(
+//       email: email,
+//       password: password,
+//     );
+
+//     // Save additional user details in Firestore
+//     await _saveUserDataemail(
+//         userCredential.user!.uid, email, name, number, 'defaultFloor');
+//     await _fetchUserRole();
+//     _navigateToDashboard();
+
+//     return true; // Success
+//   } on FirebaseAuthException catch (e) {
+//     Get.snackbar('Error', e.message ?? 'An error occurred while signing up');
+//     return false; // Failure
+//   } catch (e) {
+//     Get.snackbar('Error', 'An unexpected error occurred: $e');
+//     return false; // Failure
+//   }
+// }
+
+  Future<bool> signwithemail(String email, String name, String password,
+      String number, bool isLoading) async {
     try {
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
@@ -32,15 +58,19 @@ class AuthController extends GetxController {
           userCredential.user!.uid, email, name, number, 'defaultFloor');
       await _fetchUserRole();
       _navigateToDashboard();
+      return true;
     } on FirebaseAuthException catch (e) {
       Get.snackbar('Error', e.message ?? 'An error occurred while signing up');
+      return false;
     } catch (e) {
       Get.snackbar('Error', 'An unexpected error occurred: $e');
+      return false;
     }
   }
 
 ///////////////////////////////////////////////////////////////////////// LOGIN WITH EMAIL //////////////////////////////////////////////////////////////////////////
-  Future<void> loginwithemail(String email, String password) async {
+  Future<bool> loginwithemail(
+      String email, String password, bool isLoading) async {
     try {
       await _auth.signInWithEmailAndPassword(
         email: email,
@@ -48,10 +78,13 @@ class AuthController extends GetxController {
       );
       await _fetchUserRole();
       _navigateToDashboard();
+      return true;
     } on FirebaseAuthException catch (e) {
       Get.snackbar('Error', e.message ?? 'An error occurred while logging in');
+      return false;
     } catch (e) {
       Get.snackbar('Error', 'An unexpected error occurred: $e');
+      return false;
     }
   }
 

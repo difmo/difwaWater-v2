@@ -49,7 +49,7 @@ class UserDetailsModel {
       number: json['number'] ?? '',
       email: json['email'] ?? '',
       floor: json['floor'] ?? '',
-      role: json['role'] ?? 'isUser', // Default to 'isUser' if missing
+      role: json['role'] ?? 'isUser', 
       walletBalance: json['walletBalance']?.toDouble() ?? 0.0,
     );
   }

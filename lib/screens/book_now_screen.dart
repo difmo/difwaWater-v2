@@ -95,13 +95,13 @@ Future<void> fetchBottleItems() async {
               else
                 Column(
                   children: [
-                    Divider(
-                      color: AppColors.darkGrey,
-                      thickness: 1,
-                      height: 20,
-                      indent: 10,
-                      endIndent: 10,
-                    ),
+                    // Divider(
+                    //   color: AppColors.darkGrey,
+                    //   thickness: 1,
+                    //   height: 20,
+                    //   indent: 10,
+                    //   endIndent: 10,
+                    // ),
                     SizedBox(
                       height: 200,
                       child: ListView.builder(

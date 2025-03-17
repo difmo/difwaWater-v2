@@ -1,3 +1,6 @@
+import 'dart:ui';
+
+import 'package:difwa/config/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter_svg/svg.dart';
@@ -9,6 +12,7 @@ import 'package:difwa/widgets/custom_button.dart';
 import 'package:difwa/widgets/custom_input_field.dart';
 import 'package:difwa/utils/validators.dart';
 import 'package:country_code_picker/country_code_picker.dart';
+import 'package:lottie/lottie.dart';
 
 class MobileNumberPage extends StatefulWidget {
   const MobileNumberPage({super.key});
@@ -71,16 +75,16 @@ class _MobileNumberPageState extends State<MobileNumberPage>
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: SvgPicture.asset(
-              'assets/bgimage/bottom.svg',
-              fit: BoxFit.cover,
-              width: MediaQuery.of(context).size.width,
-            ),
-          ),
+          // Positioned(
+          //   bottom: 0,
+          //   left: 0,
+          //   right: 0,
+          //   child: SvgPicture.asset(
+          //     'assets/bgimage/bottom.svg',
+          //     fit: BoxFit.cover,
+          //     width: MediaQuery.of(context).size.width,
+          //   ),
+          // ),
           Center(
             child: SingleChildScrollView(
               child: Padding(
@@ -94,15 +98,24 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                     ),
                     const SizedBox(height: 30),
                     Text(
-                      "Create Your Account \n&\n Stay Hydrated",
+                      "Create Your Account ",
                       style: AppStyle.headingBlack.copyWith(
                         fontSize: isSmallScreen ? 20 : 24,
                       ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 10),
+
+                    Text(
+                      "Order water with ease or register as a \nvendor to sell. Sign up now!",
+                      style: AppStyle.greyText18.copyWith(
+                        fontSize: isSmallScreen ? 14 : 18,
+                      ),
+                      textAlign: TextAlign.center, // Ensure it's center-aligned
+                    ),
+
                     // Text(
-                    //   "Please enter your name and the required verification details",
+                    //   "Order water with ease or register as a vendor to sell.\n Sign up now!",
                     //   style: AppStyle.greyText18.copyWith(
                     //     fontSize: isSmallScreen ? 14 : 18,
                     //   ),
@@ -132,6 +145,7 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                               favorite: const ['+91', '+1'],
                               showCountryOnly: false,
                               showOnlyCountryWhenClosed: false,
+                              showFlag: false,
                               alignLeft: false,
                             ),
                             Expanded(
@@ -139,7 +153,7 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                                 controller: phoneController,
                                 inputType: InputType.phone,
                                 label: 'Phone Number',
-                                hint: 'Enter Your Phone Number',
+                                hint: 'Enter  Phone Number',
                                 icon: Icons.phone,
                                 onChanged: (String) {
                                   _formKeyPhone.currentState!.validate();
@@ -170,7 +184,7 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                             _formKeyName.currentState!.validate();
                           },
                           label: 'Name',
-                          hint: 'Enter Your Name',
+                          hint: 'Enter Name',
                           icon: Icons.person,
                           validator: Validators.validateName,
                         ),
@@ -192,7 +206,7 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                           controller: emailController,
                           inputType: InputType.email,
                           label: 'Email',
-                          hint: 'Enter Your Email',
+                          hint: 'Enter  Email',
                           icon: Icons.email,
                           onChanged: (String) {
                             _formKeyEmail.currentState!.validate();
@@ -220,14 +234,14 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                             _formKeyPassword.currentState!.validate();
                           },
                           label: 'Password',
-                          hint: 'Enter Your Password',
+                          hint: 'Enter  Password',
                           icon: Icons.lock,
                           suffixIcon: Icons.visibility_off,
                           validator: Validators.validatePassword,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 30),
                     AnimatedBuilder(
                       animation: _staggeredController,
                       builder: (context, child) {
@@ -237,38 +251,49 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                           child: child,
                         );
                       },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          CustomButton(
-                            onPressed: () async {
-                              if (_formKeyName.currentState!.validate() &&
-                                  _formKeyEmail.currentState!.validate() &&
-                                  _formKeyPassword.currentState!.validate()) {
-                                try {
-                                  await authController.signwithemail(
-                                      emailController.text,
-                                      nameController.text,
-                                      passwordController.text,
-                                      selectedCountryCode +
-                                          phoneController.text);
-                                } catch (e) {
-                                  print("Error: $e");
-                                }
-                                setState(() {
-                                  isLoading = true;
-                                });
+                      child: CustomButton(
+                        onPressed: () async {
+                          if (_formKeyName.currentState!.validate() &&
+                              _formKeyEmail.currentState!.validate() &&
+                              _formKeyPassword.currentState!.validate()) {
+                            setState(() {
+                              isLoading = true; // Start loading
+                            });
+
+                            try {
+                              bool success = await authController.signwithemail(
+                                emailController.text,
+                                nameController.text,
+                                passwordController.text,
+                                selectedCountryCode + phoneController.text,
+                                isLoading,
+                              );
+
+                              if (!success) {
+                                // Handle failure (if needed)
+                                Get.snackbar(
+                                    "Signup Failed", "Please try again.");
+                                isLoading = false;
                               }
-                            },
-                            text: 'SignUp',
-                            baseTextColor: Colors.white,
-                          ),
-                        ],
+                            } catch (e) {
+                              print("Error: $e");
+                              isLoading = false;
+                            } finally {
+                              setState(() {
+                                isLoading =
+                                    false; // Stop loading after completion
+                              });
+                            }
+                          }
+                        },
+                        width: double.infinity,
+                        text: isLoading ? 'Loading...' : 'Sign Up',
+                        baseTextColor: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 20),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text("Already have an account?"),
                         TextButton(
@@ -280,9 +305,9 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                                         const LoginScreenPage()));
                           },
                           child: const Text(
-                            'LogIn',
+                            'Login here',
                             style: TextStyle(
-                              color: Colors.blueAccent,
+                              color: AppColors.logosecondry,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -294,6 +319,37 @@ class _MobileNumberPageState extends State<MobileNumberPage>
               ),
             ),
           ),
+          if (isLoading)
+            Positioned.fill(
+              child: BackdropFilter(
+                filter:
+                    ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0), // Blur effect
+                child: Container(
+                  // ignore: deprecated_member_use
+                  color:
+                      Colors.black.withOpacity(0.5), // Semi-transparent overlay
+                  child: Center(
+                    child: Lottie.asset(
+                      'assets/lottie/loader.json', // Path to your Lottie file
+                      width: 200, // Set width of the animation
+                      height: 200, // Set height of the animation
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          // Positioned.fill(
+          //   child: Container(
+          //     color: Colors.black
+          //         .withOpacity(0.5), // Semi-transparent background
+          //     child: Center(
+          //       child: CircularProgressIndicator(
+          //         color: AppColors.logosecondry, // Customize loading color
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   static const Color primary = Color(0xFF5975F1);
-    static const Color logoprimary = Color(0xFF1d3757); // Opaque color (Blueish tone)
+    static const Color logoprimary = Color(0xFF1d3757);
+    static const Color logosecondry = Color(0xFF11baf9); // Opaque color (Blueish tone)
  // Opaque color (Blueish tone)
   static const Color secondary =
       Color(0xFFDDE1F5); // Opaque color (Light blueish tone)

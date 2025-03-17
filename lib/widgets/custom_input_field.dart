@@ -103,7 +103,7 @@ class _CommonTextFieldState extends State<CommonTextField> {
       validator: widget.validator, // Apply validation function
       style: TextStyle(
         color:
-            widget.readOnly ? Colors.grey : const Color.fromARGB(255, 0, 0, 0),
+            widget.readOnly ? Colors.grey : Colors.black,
         letterSpacing: 1.5,
       ),
       decoration: InputDecoration(
@@ -127,7 +127,7 @@ class _CommonTextFieldState extends State<CommonTextField> {
         labelText: widget.label,
         hintText: widget.hint,
         labelStyle: TextStyle(
-          color: widget.readOnly ? Colors.grey : ThemeConstants.borderColor,
+          color: widget.readOnly ? Colors.grey : ThemeConstants.grey,
           fontWeight: FontWeight.w200,
           fontSize: 16,
         ),
@@ -141,7 +141,7 @@ class _CommonTextFieldState extends State<CommonTextField> {
         ),
         floatingLabelBehavior: FloatingLabelBehavior.always,
         floatingLabelStyle: TextStyle(
-          color: widget.readOnly ? Colors.grey : ThemeConstants.borderColor,
+          color: widget.readOnly ? Colors.black12 : ThemeConstants.blackColor,
           fontWeight: FontWeight.w600,
           fontSize: 16,
         ),
@@ -154,7 +154,7 @@ class _CommonTextFieldState extends State<CommonTextField> {
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(
-            color: AppColors.inputfield,
+            color: AppColors.logosecondry,
             width: 1,
           ),
           borderRadius: BorderRadius.circular(widget.borderRadius ?? 16.0),

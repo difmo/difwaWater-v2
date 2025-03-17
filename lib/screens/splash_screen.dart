@@ -48,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen>
     if (user != null) {
       await _getUserRole(user.uid);
     } else {
-      Get.offNamed(AppRoutes.login);
+      Get.offNamed(AppRoutes.signUp);
     }
   }
 
@@ -67,15 +67,15 @@ class _SplashScreenState extends State<SplashScreen>
         } else if (role == 'isStoreKeeper') {
           Get.offNamed(AppRoutes.storebottombar);
         } else {
-          Get.offNamed(AppRoutes.login);
+          Get.offNamed(AppRoutes.signUp);
         }
-      } 
+      }
       // else {
       //   Get.offNamed(AppRoutes.login);
       // }
     } catch (e) {
       Get.snackbar('Error', 'Failed to retrieve user role');
-      Get.offNamed(AppRoutes.login);
+      Get.offNamed(AppRoutes.signUp);
     }
   }
 
