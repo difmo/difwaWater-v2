@@ -94,20 +94,20 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                     ),
                     const SizedBox(height: 30),
                     Text(
-                      "Enter your details",
+                      "Create Your Account \n&\n Stay Hydrated",
                       style: AppStyle.headingBlack.copyWith(
                         fontSize: isSmallScreen ? 20 : 24,
                       ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 10),
-                    Text(
-                      "Please enter your name and the required verification details",
-                      style: AppStyle.greyText18.copyWith(
-                        fontSize: isSmallScreen ? 14 : 18,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
+                    // Text(
+                    //   "Please enter your name and the required verification details",
+                    //   style: AppStyle.greyText18.copyWith(
+                    //     fontSize: isSmallScreen ? 14 : 18,
+                    //   ),
+                    //   textAlign: TextAlign.center,
+                    // ),
                     const SizedBox(height: 30),
                     AnimatedBuilder(
                       animation: _staggeredController,

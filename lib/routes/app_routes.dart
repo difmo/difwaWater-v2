@@ -3,7 +3,7 @@ import 'package:difwa/routes/store_bottom_bar.dart';
 import 'package:difwa/routes/user_bottom_bar.dart';
 import 'package:difwa/screens/admin_screens/create_store_screen.dart';
 import 'package:difwa/screens/auth/adddress_form_page.dart';
-import 'package:difwa/screens/auth/signin_screen.dart';
+import 'package:difwa/screens/auth/signup_screen.dart';
 import 'package:difwa/screens/available_service_select.dart';
 import 'package:difwa/screens/book_now_screen.dart';
 import 'package:difwa/screens/notification_page.dart';
