@@ -3,6 +3,7 @@ import 'package:difwa/models/user_models/user_details_model.dart';
 import 'package:difwa/routes/app_routes.dart';
 import 'package:difwa/screens/admin_screens/store_onboarding_screen.dart';
 import 'package:difwa/screens/auth/saved_address.dart';
+import 'package:difwa/screens/personal_details.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/widgets/logout_popup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,31 +21,30 @@ class ProfileScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<ProfileScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-final AuthController _userData = Get.put(AuthController());
- UserDetailsModel? usersData ; 
-@override
-void initState() {
-  super.initState();
+  final AuthController _userData = Get.put(AuthController());
+  UserDetailsModel? usersData;
+  @override
+  void initState() {
+    super.initState();
 
-  // Fetch user data
-  _fetchUserData();
-}
-
-void _fetchUserData() async {
-  try {
-    UserDetailsModel user = await _userData.fetchUserData();
-    print(user.name); // This will print the user details to the console
-    setState(() {
-      // You can update state here if needed, for example:
-      // _user = user; 
-      usersData = user;
-    });
-  } catch (e) {
-    print("Error fetching user data: $e");
+    // Fetch user data
+    _fetchUserData();
   }
-}
 
-  
+  void _fetchUserData() async {
+    try {
+      UserDetailsModel user = await _userData.fetchUserData();
+      print(user.name); // This will print the user details to the console
+      setState(() {
+        // You can update state here if needed, for example:
+        // _user = user;
+        usersData = user;
+      });
+    } catch (e) {
+      print("Error fetching user data: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,7 +75,7 @@ void _fetchUserData() async {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                           usersData?.name ?? 'No Data found',
+                        usersData?.name ?? 'No Data found',
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -93,16 +93,20 @@ void _fetchUserData() async {
             ),
             GestureDetector(
               onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => PersonalDetails())),
+              child: const MenuOption(
+                icon: Icons.person,
+                title: 'Personal Details',
+              ),
+            ),
+            GestureDetector(
+              onTap: () => Navigator.push(context,
                   MaterialPageRoute(builder: (context) => SavveAddressPage())),
               child: const MenuOption(
                 icon: Icons.home,
                 title: 'Address',
               ),
             ),
-            // const MenuOption(
-            //   icon: Icons.group_add,
-            //   title: 'Invite Friends',
-            // ),
             // const MenuOption(
             //   icon: Icons.help,
             //   title: 'Help Center',

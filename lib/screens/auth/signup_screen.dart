@@ -135,25 +135,26 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                         key: _formKeyPhone,
                         child: Row(
                           children: [
-                            CountryCodePicker(
-                              onChanged: (code) {
-                                setState(() {
-                                  selectedCountryCode = code.dialCode!;
-                                });
-                              },
-                              initialSelection: 'IN',
-                              favorite: const ['+91', '+1'],
-                              showCountryOnly: false,
-                              showOnlyCountryWhenClosed: false,
-                              showFlag: false,
-                              alignLeft: false,
-                            ),
+                            // CountryCodePicker(
+                            //   onChanged: (code) {
+                            //     setState(() {
+                            //       selectedCountryCode = code.dialCode!;
+                            //     });
+                            //   },
+                            //   initialSelection: 'IN',
+                            //   favorite: const ['+91', '+1'],
+                            //   showCountryOnly: false,
+                            //   showOnlyCountryWhenClosed: false,
+                            //   showFlag: false,
+                            //   alignLeft: false,
+                            // ),
                             Expanded(
                               child: CommonTextField(
                                 controller: phoneController,
                                 inputType: InputType.phone,
                                 label: 'Phone Number',
                                 hint: 'Enter  Phone Number',
+                                prefixText: '+91',
                                 icon: Icons.phone,
                                 onChanged: (String) {
                                   _formKeyPhone.currentState!.validate();

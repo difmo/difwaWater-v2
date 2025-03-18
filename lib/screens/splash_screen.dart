@@ -83,54 +83,153 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFF010614),
-      body: Stack(
-        children: [
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                FadeTransition(
-                  opacity: _logoOpacity,
-                  child: SvgPicture.asset(
-                    "assets/images/difwalogo.svg",
-                    width: 100,
-                    height: 100,
+      body: Center(
+        child: Column(
+          mainAxisAlignment:
+              MainAxisAlignment.spaceBetween, // Distributes widgets evenly
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 300.0),
+                  child: FadeTransition(
+                    opacity: _logoOpacity,
+                    child: SvgPicture.asset(
+                      "assets/images/difwalogo.svg",
+                      width: 100,
+                      height: 100,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 100,),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    FadeTransition(
+                      opacity: _textOpacity,
+                      child: Text(
+                        "Welcome to Difwa",
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    FadeTransition(
+                      opacity: _textOpacity,
+                      child: Text(
+                        'Hassle-Free Water Delivery \nat Your Fingertips!',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ],
             ),
-          ),
 
-          Positioned(
-            bottom: 0,
-            child: Center(
-              child: SvgPicture.asset(
-                "assets/elements/splash.svg",
-              ),
-            ),
-          ),
+            // ),
+            // const SizedBox(height: 150),
 
-          // Text with fade-in animation
-          Positioned(
-            bottom: 20,
-            left: 0,
-            right: 0,
-            child: FadeTransition(
-              opacity: _textOpacity,
-              child: const Center(
-                child: Text(
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20.0),
+              child: FadeTransition(
+                opacity: _textOpacity,
+                child: const Text(
                   'Powered by Difmo',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.grey,
+                    color: Colors.white,
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
+      // Stack(
+      //   children: [
+      //     Column(
+      //       mainAxisAlignment: MainAxisAlignment.center,
+      //       children: <Widget>[
+      //         FadeTransition(
+      //           opacity: _textOpacity,
+      //           child: Text(
+      //             "Welcome to Difwa",
+      //             style: TextStyle(
+      //               fontSize: 16,
+      //             fontWeight: FontWeight.bold,
+      //               color: Colors.grey,
+      //             ),
+      //           ),
+      //         ),
+      //         FadeTransition(
+      //           opacity: _textOpacity,
+      //           child: Text(
+      //             'Hassle-Free Water Delivery at Your Fingertips!',
+      //             style: TextStyle(
+      //               fontSize: 16,
+      //               color: Colors.grey,
+      //             ),
+      //           ),
+      //         ),
+      //         const SizedBox(height: 20),
+      //       ],
+      //     ),
+      //     Center(
+      //       child: Column(
+      //         mainAxisAlignment: MainAxisAlignment.center,
+      //         children: <Widget>[
+      //           FadeTransition(
+      //             opacity: _logoOpacity,
+      //             child: SvgPicture.asset(
+      //               "assets/images/difwalogo.svg",
+      //               width: 100,
+      //               height: 100,
+      //             ),
+      //           ),
+      //           const SizedBox(height: 20),
+      //         ],
+      //       ),
+      //     ),
+
+      //     // Positioned(
+      //     //   bottom: 0,
+      //     //   child: Center(
+      //     //     child: SvgPicture.asset(
+      //     //       "assets/elements/splash.svg",
+      //     //     ),
+      //     //   ),
+      //     // ),
+
+      //     // Text with fade-in animation
+      //     Positioned(
+      //       bottom: 20,
+      //       left: 0,
+      //       right: 0,
+      //       child: FadeTransition(
+      //         opacity: _textOpacity,
+      //         child: const Center(
+      //           child: Text(
+      //             'Powered by Difmo',
+      //             style: TextStyle(
+      //               fontSize: 16,
+      //               color: Colors.grey,
+      //             ),
+      //           ),
+      //         ),
+      //       ),
+      //     ),
+      //   ],
+      // ),
     );
   }
 }

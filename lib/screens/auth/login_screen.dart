@@ -84,7 +84,7 @@ class _LoginScreenState extends State<LoginScreenPage> {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      "Log in to order water instantly or manage your vendor account.",
+                      "Log in to order water instantly or \n manage your vendor account.",
                       style: AppStyle.greyText18.copyWith(
                         fontSize: isSmallScreen ? 14 : 18,
                       ),

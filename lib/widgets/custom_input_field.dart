@@ -16,6 +16,7 @@ class CommonTextField extends StatefulWidget {
   final double? borderRadius;
   final double? height;
   final Color? borderColor;
+  final String? prefixText;
   final IconData? icon;
   final IconData? suffixIcon;
   final String? Function(String?)? validator; // Accept a validator function
@@ -33,6 +34,7 @@ class CommonTextField extends StatefulWidget {
     this.height,
     this.borderColor,
     this.icon,
+    this.prefixText,
     this.suffixIcon,
     this.validator, // Optional validator function
   });
@@ -44,12 +46,22 @@ class CommonTextField extends StatefulWidget {
 class _CommonTextFieldState extends State<CommonTextField> {
   late List<TextInputFormatter> _inputFormatters;
   late TextInputType _keyboardType;
+  FocusNode _focusNode = FocusNode(); // ✅ Direct initialization
   bool _obscureText = true;
 
   @override
   void initState() {
     super.initState();
+    _focusNode.addListener(() {
+      setState(() {}); // Rebuild UI when focus state changes
+    });
     _setInputType();
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
   }
 
   void _setInputType() {
@@ -90,10 +102,10 @@ class _CommonTextFieldState extends State<CommonTextField> {
 
   @override
   Widget build(BuildContext context) {
-
     return TextFormField(
       autofocus: widget.autofocus,
       controller: widget.controller,
+      focusNode: _focusNode,
       keyboardType: _keyboardType,
       inputFormatters: _inputFormatters,
       readOnly: widget.readOnly,
@@ -102,19 +114,49 @@ class _CommonTextFieldState extends State<CommonTextField> {
           widget.inputType == InputType.visiblePassword ? _obscureText : false,
       validator: widget.validator, // Apply validation function
       style: TextStyle(
-        color:
-            widget.readOnly ? Colors.grey : Colors.black,
+        color: widget.readOnly ? Colors.grey : Colors.black,
         letterSpacing: 1.5,
       ),
       decoration: InputDecoration(
-        prefixIcon: widget.icon != null
-            ? Icon(widget.icon, color: ThemeConstants.blackColor)
-            : null,
+        prefixIcon: Row(
+          mainAxisSize:
+              MainAxisSize.min,
+          children: [
+            if (widget.icon != null) 
+              Padding(
+                padding: EdgeInsets.only(
+                    left: 12, right: 4), 
+                child: Icon(
+                  widget.icon,
+                  color: _focusNode.hasFocus ? Colors.black : Colors.grey,
+                ),
+              ),
+            if (widget.prefixText != null) 
+              Text(
+                widget.prefixText!,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+          ],
+        ),
+
+        //  widget.icon != null
+        //     ? Icon(
+        //         widget.icon,
+        //         color: _focusNode.hasFocus
+        //             ? Colors.black
+        //             : Colors.grey, // Change color on focus
+        //       )
+        //     : null,
         suffixIcon: widget.inputType == InputType.visiblePassword
             ? IconButton(
                 icon: Icon(
-                    _obscureText ? Icons.visibility_off : Icons.visibility,
-                    color: ThemeConstants.blackColor),
+                  _obscureText ? Icons.visibility_off : Icons.visibility,
+                  color: ThemeConstants.blackColor,
+                ),
                 onPressed: () {
                   setState(() {
                     _obscureText = !_obscureText;
