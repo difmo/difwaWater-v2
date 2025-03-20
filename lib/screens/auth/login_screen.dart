@@ -191,7 +191,7 @@ class _LoginScreenState extends State<LoginScreenPage> {
                               Get.toNamed(AppRoutes.signUp);
                             },
                             child: const Text(
-                              'Sign Up Now!',
+                              'Sign Up Now',
                               style: TextStyle(
                                 color: AppColors.logosecondry,
                               ),

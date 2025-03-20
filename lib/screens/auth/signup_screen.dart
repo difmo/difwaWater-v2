@@ -153,8 +153,9 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                                 controller: phoneController,
                                 inputType: InputType.phone,
                                 label: 'Phone Number',
-                                hint: 'Enter  Phone Number',
-                                prefixText: '+91',
+                                hint: 'Enter Phone Number',
+                                showCountryPicker: true,
+                                // prefixText: '+91',
                                 icon: Icons.phone,
                                 onChanged: (String) {
                                   _formKeyPhone.currentState!.validate();
@@ -207,7 +208,7 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                           controller: emailController,
                           inputType: InputType.email,
                           label: 'Email',
-                          hint: 'Enter  Email',
+                          hint: 'Enter Email',
                           icon: Icons.email,
                           onChanged: (String) {
                             _formKeyEmail.currentState!.validate();
@@ -235,7 +236,7 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                             _formKeyPassword.currentState!.validate();
                           },
                           label: 'Password',
-                          hint: 'Enter  Password',
+                          hint: 'Enter Password',
                           icon: Icons.lock,
                           suffixIcon: Icons.visibility_off,
                           validator: Validators.validatePassword,

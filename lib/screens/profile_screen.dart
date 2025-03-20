@@ -1,6 +1,6 @@
 import 'package:difwa/controller/auth_controller.dart';
 import 'package:difwa/models/user_models/user_details_model.dart';
-import 'package:difwa/routes/app_routes.dart';
+// import 'package:difwa/routes/app_routes.dart';
 import 'package:difwa/screens/admin_screens/store_onboarding_screen.dart';
 import 'package:difwa/screens/auth/saved_address.dart';
 import 'package:difwa/screens/personal_details.dart';
@@ -96,7 +96,7 @@ class _LoginScreenState extends State<ProfileScreen> {
                   MaterialPageRoute(builder: (context) => PersonalDetails())),
               child: const MenuOption(
                 icon: Icons.person,
-                title: 'Personal Details',
+                title: 'Profile',
               ),
             ),
             GestureDetector(

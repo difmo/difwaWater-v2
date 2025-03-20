@@ -155,6 +155,33 @@ class AuthController extends GetxController {
       });
     }
   }
+///////////////////////////////////////////////////////////////////////// SAVE USER DETAILS ////////////////////////////////////////////////////////////////////
+Future<void> updateUserDetails(
+    String uid, String email, String name, String number, String floor) async {
+  DocumentSnapshot userDoc =
+      await _firestore.collection('difwa-users').doc(uid).get();
+
+  if (userDoc.exists) {
+    // If the user exists, update their details
+    await _firestore.collection('difwa-users').doc(uid).update({
+      'name': name,
+      'number': number,
+      'floor': floor,
+      'email': email,
+    });
+  } else {
+    // If the user does not exist, create a new record
+    await _firestore.collection('difwa-users').doc(uid).set({
+      'uid': uid,
+      'name': name,
+      'number': number,
+      'email': email,
+      'floor': floor,
+      'role': 'isUser',
+      'walletBalance': 0.0,
+    }, SetOptions(merge: true));
+  }
+}
 
 ///////////////////////////////////////////////////////////////////////// FETCH USER ROLE  //////////////////////////////////////////////////////////////////////
   Future<void> _fetchUserRole() async {

@@ -1,3 +1,4 @@
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:difwa/config/app_color.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
@@ -8,9 +9,9 @@ enum InputType { phone, email, name, address, visiblePassword, pin }
 class CommonTextField extends StatefulWidget {
   final InputType inputType;
   final TextEditingController controller;
-  final Function(String) onChanged;
-  final String label;
-  final String hint;
+  final Function(String)? onChanged;
+  final String? label;
+  final String? hint;
   final bool readOnly;
   final bool autofocus;
   final double? borderRadius;
@@ -20,14 +21,14 @@ class CommonTextField extends StatefulWidget {
   final IconData? icon;
   final IconData? suffixIcon;
   final String? Function(String?)? validator; // Accept a validator function
-
+  final bool showCountryPicker;
   const CommonTextField({
     super.key,
     required this.inputType,
     required this.controller,
-    required this.onChanged,
-    required this.label,
-    required this.hint,
+    this.onChanged,
+    this.label,
+    this.hint,
     this.readOnly = false,
     this.autofocus = false,
     this.borderRadius,
@@ -36,7 +37,8 @@ class CommonTextField extends StatefulWidget {
     this.icon,
     this.prefixText,
     this.suffixIcon,
-    this.validator, // Optional validator function
+    this.validator,
+    this.showCountryPicker = false,
   });
 
   @override
@@ -48,7 +50,7 @@ class _CommonTextFieldState extends State<CommonTextField> {
   late TextInputType _keyboardType;
   FocusNode _focusNode = FocusNode(); // ✅ Direct initialization
   bool _obscureText = true;
-
+  String _selectedCountryCode = '+91';
   @override
   void initState() {
     super.initState();
@@ -119,27 +121,49 @@ class _CommonTextFieldState extends State<CommonTextField> {
       ),
       decoration: InputDecoration(
         prefixIcon: Row(
-          mainAxisSize:
-              MainAxisSize.min,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            if (widget.icon != null) 
+            if (widget.icon != null)
               Padding(
-                padding: EdgeInsets.only(
-                    left: 12, right: 4), 
+                padding: EdgeInsets.only(left: 16),
                 child: Icon(
                   widget.icon,
                   color: _focusNode.hasFocus ? Colors.black : Colors.grey,
                 ),
               ),
-            if (widget.prefixText != null) 
-              Text(
-                widget.prefixText!,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+            if (widget.showCountryPicker) // ✅ Show Country Picker
+              Container(
+                //  width: 45,
+                //  decoration: BoxDecoration(
+                //   color: Colors.red
+                //  ),
+                child: CountryCodePicker(
+                  onChanged: (code) {
+                    setState(() {
+                      _selectedCountryCode = code.dialCode!;
+                    });
+                  },
+                  initialSelection: _selectedCountryCode,
+                  favorite: const ['+91'],
+                  showCountryOnly: false,
+                  showOnlyCountryWhenClosed: false,
+                  // dialogTextStyle: TextStyle(color: Colors.deepOrange),
+                  // textStyle: TextStyle(color: Colors.amber),
+                  showFlag: false,
+                  showFlagDialog: true,
+                  margin: EdgeInsets.all(0),
+                  padding: EdgeInsets.all(0),
                 ),
               ),
+            // if (widget.prefixText != null)
+            //   Text(
+            //     widget.prefixText!,
+            //     style: TextStyle(
+            //       color: Colors.black,
+            //       fontWeight: FontWeight.bold,
+            //       fontSize: 16,
+            //     ),
+            //   ),
           ],
         ),
 
@@ -202,7 +226,7 @@ class _CommonTextFieldState extends State<CommonTextField> {
           borderRadius: BorderRadius.circular(widget.borderRadius ?? 16.0),
         ),
         contentPadding:
-            EdgeInsets.symmetric(vertical: widget.height ?? 0, horizontal: 20),
+            EdgeInsets.symmetric(vertical: widget.height ?? 0, horizontal: 17),
       ),
     );
   }

@@ -8,6 +8,7 @@ class LogoutDialog {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           title: Text('Log Out'),
           content: Text('Are you sure you want to log out?'),
           actions: <Widget>[

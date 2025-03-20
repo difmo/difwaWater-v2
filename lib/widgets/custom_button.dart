@@ -77,7 +77,7 @@ class CustomButton extends StatelessWidget {
           child: ElevatedButton(
             onPressed: onPressed,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.logoprimary, // Make button transparent
+              backgroundColor: AppColors.logoprimary,
               padding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -95,7 +95,7 @@ class CustomButton extends StatelessWidget {
             child: Ink(
               decoration: BoxDecoration(
                 color: AppColors
-                    .logoprimary, // Apply gradient inside Ink for ripple effect
+                    .logoprimary, 
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Container(
