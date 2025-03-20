@@ -72,7 +72,7 @@ class _PersonalDetailsState extends State<PersonalDetails> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Column(
+        child: Column(   
           children: [
             Column(
               children: [
@@ -191,22 +191,22 @@ class _PersonalDetailsState extends State<PersonalDetails> {
                               ),
                             ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: SizedBox(
-                child: CustomButton(
-                  icon: Icon(
-                    Icons.logout,
-                    color: Colors.white,
-                  ),
-                  width: double.infinity,
-                  text: 'Logout',
-                  onPressed: () {
-                    LogoutDialog.showLogoutDialog(context);
-                  },
-                ),
-              ),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.all(16.0),
+            //   child: SizedBox(
+            //     child: CustomButton(
+            //       icon: Icon(
+            //         Icons.logout,
+            //         color: Colors.white,
+            //       ),
+            //       width: double.infinity,
+            //       text: 'Logout',
+            //       onPressed: () {
+            //         LogoutDialog.showLogoutDialog(context);
+            //       },
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),

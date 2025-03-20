@@ -1,13 +1,10 @@
 import 'dart:io';
-import 'package:difwa/config/app_styles.dart';
+import 'package:difwa/config/app_textstyle.dart';
 import 'package:difwa/controller/admin_controller/add_store_controller.dart';
-import 'package:difwa/routes/app_routes.dart';
 import 'package:difwa/routes/store_bottom_bar.dart';
-import 'package:difwa/screens/admin_screens/store_home.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-// import 'package:image_picker/image_picker.dart';
 
 class CreateStorePage extends StatefulWidget {
   const CreateStorePage({super.key});
@@ -72,7 +69,7 @@ class _CreateStorePageState extends State<CreateStorePage> {
               const SizedBox(height: 20),
               Text(
                 'Fill all details to become a seller',
-                style: AppStyle.heading24Black,
+                style: AppTTextStyle.heading24Black,
               ),
               const SizedBox(height: 20),
               Form(
@@ -150,7 +147,7 @@ class _CreateStorePageState extends State<CreateStorePage> {
                       ),
                       child: Text(
                         'Create Store',
-                        style: AppStyle.headingWhite, // Apply your style here
+                        style: AppTTextStyle.headingWhite, // Apply your style here
                       ),
                     ),
 
@@ -196,7 +193,7 @@ class _CreateStorePageState extends State<CreateStorePage> {
         focusedBorder: const OutlineInputBorder(
           borderSide: BorderSide(color: ThemeConstants.primaryColorNew),
         ),
-        labelStyle: AppStyle.greyText16,
+        labelStyle: AppTTextStyle.greyText16,
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {

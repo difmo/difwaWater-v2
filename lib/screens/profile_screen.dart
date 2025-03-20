@@ -1,10 +1,10 @@
 import 'package:difwa/controller/auth_controller.dart';
 import 'package:difwa/models/user_models/user_details_model.dart';
-// import 'package:difwa/routes/app_routes.dart';
 import 'package:difwa/screens/admin_screens/store_onboarding_screen.dart';
 import 'package:difwa/screens/auth/saved_address.dart';
+import 'package:difwa/screens/edit_personaldetails.dart';
 import 'package:difwa/screens/personal_details.dart';
-import 'package:difwa/utils/theme_constant.dart';
+import 'package:difwa/widgets/custom_button.dart';
 import 'package:difwa/widgets/logout_popup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +23,8 @@ class _LoginScreenState extends State<ProfileScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final AuthController _userData = Get.put(AuthController());
   UserDetailsModel? usersData;
+  bool notificationsEnabled = true;
+
   @override
   void initState() {
     super.initState();
@@ -56,35 +58,55 @@ class _LoginScreenState extends State<ProfileScreen> {
             Container(
               padding: const EdgeInsets.all(16.0),
               margin: const EdgeInsets.symmetric(horizontal: 16.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
               child: Row(
                 children: [
-                  const CircleAvatar(
-                    radius: 30,
+                  CircleAvatar(
+                    radius: 40,
                     backgroundColor: AppColors.inputfield,
-                    child: Icon(
-                      Icons.person,
-                      color: Colors.white,
-                      size: 40,
-                    ),
+                    backgroundImage: usersData?.profileImage != null &&
+                            usersData!.profileImage!.isNotEmpty
+                        ? NetworkImage(usersData!.profileImage!)
+                        : null,
+                    child: (usersData?.profileImage == null ||
+                            usersData!.profileImage!.isEmpty)
+                        ? Text(
+                            (usersData?.name?.isNotEmpty ?? false)
+                                ? usersData!.name![0].toUpperCase()
+                                : 'G',
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          )
+                        : null,
                   ),
                   const SizedBox(width: 16),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        usersData?.name ?? 'No Data found',
+                        usersData?.name ?? 'Guest',
                         style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        usersData?.email ?? 'No email found',
+                        usersData?.email ?? 'guest@gmail.com',
                         style: const TextStyle(color: Colors.grey),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Get.to(() => EditPersonaldetails(
+                              // name: nameController.text,
+                              //   email: emailController.text,
+                              //   phone:
+                              //       _removeCountryCode(mobileController.text),
+                              //   profileImage: usersData?.profileImage,
+                              ));
+                        },
+                        child: const Text('Edit Profile',
+                            style: TextStyle(color: Colors.blue)),
                       ),
                     ],
                   ),
@@ -94,23 +116,19 @@ class _LoginScreenState extends State<ProfileScreen> {
             GestureDetector(
               onTap: () => Navigator.push(context,
                   MaterialPageRoute(builder: (context) => PersonalDetails())),
-              child: const MenuOption(
-                icon: Icons.person,
-                title: 'Profile',
-              ),
+              child: buildProfileOption(
+                  'Profile',  'Edit profile details', Icons.person),
             ),
+            buildProfileOption(
+                'Phone Number',  usersData?.number ?? 'Not available', Icons.phone),
+            buildProfileOption(
+                'Email Address',  usersData?.email ?? 'Not available', Icons.email),
             GestureDetector(
               onTap: () => Navigator.push(context,
                   MaterialPageRoute(builder: (context) => SavveAddressPage())),
-              child: const MenuOption(
-                icon: Icons.home,
-                title: 'Address',
-              ),
+              child: buildProfileOption('Delivery Address',
+                  'Manage multiple addresses', Icons.location_on),
             ),
-            // const MenuOption(
-            //   icon: Icons.help,
-            //   title: 'Help Center',
-            // ),
             GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -120,46 +138,91 @@ class _LoginScreenState extends State<ProfileScreen> {
                   ),
                 );
               },
-              child: const MenuOption(
-                icon: Icons.store,
-                title: 'Become A Seller',
+              child: buildProfileOption(
+                'Become A Seller',
+                'Start selling your products today!',
+                Icons.store,
               ),
             ),
-            // const MenuOption(
-            //   icon: Icons.info_outline,
-            //   title: 'About Us',
-            // ),
-            // const MenuOption(
-            //   icon: Icons.info_outline,
-            //   title: 'About Us',
-            // ),
-            // const MenuOption(
-            //   icon: Icons.contact_mail,
-            //   title: 'Contact Us',
-            // ),
-            GestureDetector(
-              onTap: () {
-                LogoutDialog.showLogoutDialog(context);
-              },
-              //  async
-              //  {
-              //   try {
-              //     await _auth.signOut();
-              //     Get.snackbar('Success', 'Logged out successfully');
-              //     Get.offAllNamed(AppRoutes.login);
-              //   } catch (e) {
-              //     Get.snackbar('Error', 'Error logging out: $e');
-              //   }
-              // },
-              child: const MenuOption(
-                icon: Icons.logout,
-                title: 'Logout',
+            buildProfileOption('Subscription Details',
+                'View/modify water plans', Icons.subscriptions),
+            buildProfileOption(
+                'Order History', 'Check past & ongoing orders', Icons.history),
+            buildProfileOption(
+                'Payment Methods', 'Manage payments', Icons.payment),
+            _buildNotificationSetting(),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SizedBox(
+                child: CustomButton(
+                  icon: Icon(
+                    Icons.logout,
+                    color: Colors.white,
+                  ),
+                  height: 50,
+                  width: double.infinity,
+                  text: 'Logout',
+                  onPressed: () {
+                    LogoutDialog.showLogoutDialog(context);
+                  },
+                ),
               ),
             ),
-            // const MenuOption(
-            //   icon: Icons.contact_mail,
-            //   title: 'Become a dealer',
-            // ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNotificationSetting() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              blurRadius: 5,
+              spreadRadius: 2,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.notifications, color: Colors.blue),
+                SizedBox(width: 16),
+                Column(
+                  children: [
+                    Text('Notifications Settings',
+                        style:
+                            TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                             Text('Change Notification Visibility',
+                       style: TextStyle(color: Colors.grey)),
+                  ],
+                ),
+              ],
+            ),
+            Switch(
+                value: notificationsEnabled,
+                activeColor: Colors.blue, // Thumb color when switch is ON
+                activeTrackColor: Colors.blue
+                    .withOpacity(0.5), // Track color when switch is ON
+                inactiveThumbColor:
+                    Colors.grey, // Thumb color when switch is OFF
+                inactiveTrackColor: Colors.grey
+                    .withOpacity(0.5), // Track color when switch is OFF
+                onChanged: (value) {
+                  setState(() {
+                    notificationsEnabled = value;
+                  });
+                }),
           ],
         ),
       ),
@@ -167,36 +230,42 @@ class _LoginScreenState extends State<ProfileScreen> {
   }
 }
 
-class MenuOption extends StatelessWidget {
-  final IconData icon;
-  final String title;
-
-  const MenuOption({
-    super.key,
-    required this.icon,
-    required this.title,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 1.0, vertical: 2.0),
-      padding: const EdgeInsets.all(12.0),
+Widget buildProfileOption(String title, String subtitle, IconData icon) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+    child: Container(
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10.0),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            blurRadius: 5,
+            spreadRadius: 2,
+            offset: Offset(0, 3),
+          ),
+        ],
       ),
       child: Row(
         children: [
-          Icon(icon, size: 24, color: AppColors.inputfield),
-          const SizedBox(width: 16),
-          Text(
-            title,
-            style: const TextStyle(fontSize: 16),
+          Icon(icon, color: Colors.blue),
+          SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title,
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                SizedBox(height: 4),
+                Text(subtitle, style: TextStyle(color: Colors.grey)),
+              ],
+            ),
           ),
-          const Spacer(),
-          const Icon(Icons.arrow_forward, size: 24, color: ThemeConstants.grey),
+          Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
         ],
       ),
-    );
-  }
+    ),
+  );
 }

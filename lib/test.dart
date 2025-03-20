@@ -1,153 +1,160 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
+class tProfileScreen extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: Colors.red,
-      ),
-      home: ProfileScreen(),
-    );
-  }
+  _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-class ProfileScreen extends StatelessWidget {
+class _ProfileScreenState extends State<tProfileScreen> {
+  bool notificationsEnabled = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: Image.asset('assets/logo.png', height: 40),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.notifications, color: Colors.white),
-            onPressed: () {},
-          )
-        ],
+        title: Text('Profile'),
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(height: 20),
-            Center(
-              child: Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 60,
-                    backgroundColor: Colors.red,
-                    child: Text(
-                      'A',
-                      style: TextStyle(fontSize: 40, color: Colors.white),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        backgroundColor: Colors.white,
-                      ),
-                      onPressed: () {},
-                      icon: Icon(Icons.camera_alt, color: Colors.black),
-                      label: Text('Edit', style: TextStyle(color: Colors.black)),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 20),
-            ProfileInfo(icon: Icons.person, label: 'Name', value: 'admin'),
-            ProfileInfo(icon: Icons.email, label: 'Email', value: 'admin@gmail.com'),
-            ProfileInfo(icon: Icons.phone, label: 'Phone Number', value: '8853389395'),
-            ProfileInfo(icon: Icons.location_on, label: 'Address', value: ''),
-            SwitchListTile(
-              title: Row(
-                children: [
-                  Icon(Icons.settings, color: Colors.red),
-                  SizedBox(width: 10),
-                  Text('Dark Mode', style: TextStyle(fontWeight: FontWeight.bold)),
-                ],
-              ),
-              value: false,
-              onChanged: (bool value) {},
-            ),
-            SizedBox(height: 20),
-            ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-              ),
-              onPressed: () {},
-              icon: Icon(Icons.logout, color: Colors.white),
-              label: Text('Logout', style: TextStyle(color: Colors.white)),
-            ),
-            SizedBox(height: 20),
+            _buildProfileHeader(),
+            _buildProfileOption('Full Name', 'Edit personal details', Icons.person),
+            _buildProfileOption('Phone Number', 'For updates & authentication', Icons.phone),
+            _buildProfileOption('Email Address', 'Optional but useful', Icons.email),
+            _buildProfileOption('Delivery Address', 'Manage multiple addresses', Icons.location_on),
+            _buildProfileOption('Subscription Details', 'View/modify water plans', Icons.subscriptions),
+            _buildProfileOption('Order History', 'Check past & ongoing orders', Icons.history),
+            _buildProfileOption('Payment Methods', 'Manage payments', Icons.payment),
+            _buildNotificationSetting(),
+            _buildLogoutButton(),
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white,
-        selectedItemColor: Colors.red,
-        unselectedItemColor: Colors.black,
-        currentIndex: 2,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.people),
-            label: 'Members',
+    );
+  }
+
+  Widget _buildProfileHeader() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 40,
+            backgroundImage: AssetImage('assets/profile_placeholder.png'),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.work),
-            label: 'Staff',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
+          SizedBox(width: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('John Doe', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Text('john.doe@example.com', style: TextStyle(color: Colors.grey)),
+              TextButton(
+                onPressed: () {},
+                child: Text('Edit Profile', style: TextStyle(color: Colors.blue)),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
-}
 
-class ProfileInfo extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-
-  ProfileInfo({required this.icon, required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildProfileOption(String title, String subtitle, IconData icon) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, color: Colors.red),
-              SizedBox(width: 10),
-              Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
-            ],
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              blurRadius: 5,
+              spreadRadius: 2,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: Colors.blue),
+            SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 4),
+                  Text(subtitle, style: TextStyle(color: Colors.grey)),
+                ],
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNotificationSetting() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              blurRadius: 5,
+              spreadRadius: 2,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.notifications, color: Colors.blue),
+                SizedBox(width: 16),
+                Text('Notifications Settings', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              ],
+            ),
+            Switch(
+              value: notificationsEnabled,
+              onChanged: (value) {
+                setState(() {
+                  notificationsEnabled = value;
+                });
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLogoutButton() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: () {},
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+            padding: EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
-          Padding(
-            padding: EdgeInsets.only(left: 35),
-            child: Text(value, style: TextStyle(color: Colors.grey)),
-          ),
-          Divider(),
-        ],
+          child: Text('Logout', style: TextStyle(color: Colors.white, fontSize: 16)),
+        ),
       ),
     );
   }

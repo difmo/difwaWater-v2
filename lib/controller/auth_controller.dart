@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:difwa/models/stores_models/store_model.dart';
+// import 'package:difwa/models/stores_models/store_model.dart';
 import 'package:difwa/models/user_models/user_details_model.dart';
 import 'package:difwa/routes/app_routes.dart';
 import 'package:get/get.dart';

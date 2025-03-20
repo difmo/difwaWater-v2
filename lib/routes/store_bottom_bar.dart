@@ -1,5 +1,5 @@
 import 'package:difwa/config/app_color.dart';
-import 'package:difwa/config/app_styles.dart';
+import 'package:difwa/config/app_textstyle.dart';
 import 'package:difwa/screens/admin_screens/store_home.dart';
 import 'package:difwa/screens/admin_screens/admin_orders_page.dart';
 import 'package:difwa/screens/admin_screens/store_items.dart';
@@ -62,8 +62,8 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
             type: BottomNavigationBarType.fixed,
             selectedItemColor: AppColors.primary,
             unselectedItemColor: AppColors.darkGrey,
-            selectedLabelStyle: AppStyle.selectedTabStyle,
-            unselectedLabelStyle: AppStyle.unSelectedTabStyle,
+            selectedLabelStyle: AppTTextStyle.selectedTabStyle,
+            unselectedLabelStyle: AppTTextStyle.unSelectedTabStyle,
           ),
         ),
       ),

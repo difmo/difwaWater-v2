@@ -10,16 +10,16 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 class EditPersonaldetails extends StatefulWidget {
-  final String name;
-  final String email;
-  final String phone;
+  final String? name;
+  final String? email;
+  final String? phone;
   final String? profileImage;
 
   const EditPersonaldetails({
     super.key,
-    required this.name,
-    required this.email,
-    required this.phone,
+    this.name,
+    this.email,
+    this.phone,
     this.profileImage,
   });
 
@@ -39,9 +39,9 @@ class _EditPersonaldetailsState extends State<EditPersonaldetails> {
   @override
   void initState() {
     super.initState();
-    nameController.text = widget.name;
-    emailController.text = widget.email;
-    mobileController.text = widget.phone;
+    nameController.text = widget.name ?? '';
+    emailController.text = widget.email ?? '';
+    mobileController.text = widget.phone ?? '';
   }
 
   Future<void> _pickImage(ImageSource source) async {
@@ -87,7 +87,8 @@ class _EditPersonaldetailsState extends State<EditPersonaldetails> {
                 icon: const Icon(Icons.photo, color: Colors.white),
                 label: const Text("Gallery",
                     style: TextStyle(color: Colors.white)),
-                style: ElevatedButton.styleFrom(backgroundColor: AppColors.logoprimary),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.logoprimary),
               ),
             ],
           ),
@@ -102,7 +103,7 @@ class _EditPersonaldetailsState extends State<EditPersonaldetails> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text("Edit Personal Details"),
+        title: const Text("Edit Profile "),
       ),
       body: Column(
         children: [
@@ -131,10 +132,11 @@ class _EditPersonaldetailsState extends State<EditPersonaldetails> {
                                     height: 130,
                                     fit: BoxFit.cover,
                                     errorBuilder: (context, error, stackTrace) {
-                                      return _buildInitialsAvatar(widget.name);
+                                      return _buildInitialsAvatar(
+                                          widget.name ?? '');
                                     },
                                   )
-                                : _buildInitialsAvatar(widget.name),
+                                : _buildInitialsAvatar(widget.name ?? ''),
                       ),
                     ),
                     Positioned(
@@ -157,14 +159,14 @@ class _EditPersonaldetailsState extends State<EditPersonaldetails> {
                   ],
                 ),
                 const SizedBox(height: 25),
-                Text(
-                  nameController.text,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
+                // Text(
+                //   nameController.text,
+                //   style: const TextStyle(
+                //     fontSize: 20,
+                //     fontWeight: FontWeight.bold,
+                //     color: Colors.black,
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -175,10 +177,18 @@ class _EditPersonaldetailsState extends State<EditPersonaldetails> {
               child: Column(
                 children: [
                   CommonTextField(
+                    label: 'Name',
+                    controller: nameController,
+                    icon: Icons.person,
+                    inputType: InputType.email,
+                  ),
+                  const SizedBox(height: 30),
+                  CommonTextField(
                     label: 'Email',
                     controller: emailController,
                     icon: Icons.email,
                     inputType: InputType.email,
+                    readOnly: true,
                   ),
                   const SizedBox(height: 30),
                   CommonTextField(

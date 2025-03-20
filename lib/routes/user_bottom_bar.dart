@@ -3,8 +3,10 @@ import 'package:difwa/screens/book_now_screen.dart';
 import 'package:difwa/screens/ordershistory_screen.dart';
 import 'package:difwa/screens/profile_screen.dart';
 import 'package:difwa/screens/user_wallet_page.dart';
+import 'package:difwa/test.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 class BottomUserHomePage extends StatefulWidget {
   const BottomUserHomePage({super.key});
@@ -18,9 +20,9 @@ class _HomeScreenState extends State<BottomUserHomePage> {
 
   final List<Widget> _screens = [
     const BookNowScreen(),
-    const WalletScreen(),
     const HistoryScreen(),
-    const ProfileScreen(),
+    const WalletScreen(),
+    ProfileScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -33,14 +35,16 @@ class _HomeScreenState extends State<BottomUserHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ThemeConstants.whiteColor,
-      body: _screens[_selectedIndex], // Display the screen based on selected index
+      body: _screens[
+          _selectedIndex], // Display the screen based on selected index
       bottomNavigationBar: Container(
         margin: const EdgeInsets.only(bottom: 0),
         padding: const EdgeInsets.only(top: 5.0),
         decoration: BoxDecoration(
           boxShadow: const [
             BoxShadow(
-              color: AppColors.inputfield, // Assuming AppColors.inputfield is a Color
+              color: AppColors
+                  .inputfield, // Assuming AppColors.inputfield is a Color
               blurRadius: 3.0, // Adjust blur radius as needed
               spreadRadius: 0.5, // Adjust spread radius if needed
               offset: Offset(0, 4), // Adjust the offset for shadow direction
@@ -48,67 +52,53 @@ class _HomeScreenState extends State<BottomUserHomePage> {
           ],
           borderRadius: const BorderRadius.vertical(
             top: Radius.circular(0), // No rounded corners on the top
-            bottom: Radius.circular(8), // Optional: Adjust bottom corners' radius
+            bottom:
+                Radius.circular(8), // Optional: Adjust bottom corners' radius
           ),
         ),
         child: BottomNavigationBar(
+          selectedLabelStyle: TextStyle(color: Colors.blue),
+          unselectedItemColor: Colors.black,
           backgroundColor: Colors.white,
           items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: _buildIcon(Icons.home, 0),
-              label: '',
+             BottomNavigationBarItem(
+              icon: _buildSvgIcon('assets/icons/home.svg','assets/icons/home_filled.svg' , 0),
+              label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: _buildIcon(Icons.shopping_bag_rounded, 1),
-              label: '',
+              icon: _buildSvgIcon('assets/icons/order.svg','assets/icons/order_filled.svg', 1),
+              label: 'My Orders',
             ),
             BottomNavigationBarItem(
-              icon: _buildIcon(Icons.shopping_cart_rounded, 2),
-              label: '',
+              icon: _buildSvgIcon('assets/icons/wallet.svg', 'assets/icons/wallet_filled.svg', 2),
+              label: 'Wallet',
             ),
             BottomNavigationBarItem(
-              icon: _buildIcon(Icons.person, 3),
-              label: '',
+              icon: _buildSvgIcon('assets/icons/profile.svg','assets/icons/profile_filled.svg',  3),
+              label: 'Profile',
             ),
           ],
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
           type: BottomNavigationBarType.fixed,
           selectedItemColor: AppColors.inputfield, // Color when selected
-          unselectedItemColor: Colors.white, // Color when not selected
+          // unselectedItemColor: Colors.black, // Color when not selected
         ),
       ),
     );
   }
 
   // Custom method to build the icon with zoom effect and SVG background
-  Widget _buildIcon(IconData iconData, int index) {
+  Widget _buildSvgIcon(String unselectedPath, String selectedPath,  int index) {
     bool isSelected = _selectedIndex == index;
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      padding: EdgeInsets.all(isSelected ? 10 : 9), // Add padding for zoom effect
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8), // Round corners for background
-      ),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Background SVG image when selected, change color dynamically
-          if (isSelected)
-            Image.asset(
-            'assets/icons/iconbg.png', // Replace with your actual PNG asset path
-            width: 50, // Adjust size as per your requirement
-            height: 50, // Adjust size as per your requirement
-            fit: BoxFit.cover, // Optional: Use this to make sure the image fits the container
-          ),
-          // Icon on top of the SVG background
-          Icon(
-            iconData,
-            size: isSelected ? 30 : 18, // Zoom in when selected
-            color: isSelected ? Colors.white : Colors.black, // Change icon color when selected
-          ),
-        ],
+    return SvgPicture.asset(
+       isSelected ? selectedPath : unselectedPath,
+      width: isSelected ? 30 : 24, // Slightly larger when selected
+      height: isSelected ? 30 : 24,
+      colorFilter: ColorFilter.mode(
+        isSelected ? AppColors.inputfield : Colors.black, // Change color dynamically
+        BlendMode.srcIn,
       ),
     );
   }

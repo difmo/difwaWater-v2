@@ -11,7 +11,7 @@ import 'package:difwa/screens/auth/login_screen.dart';
 import 'package:difwa/widgets/custom_button.dart';
 import 'package:difwa/widgets/custom_input_field.dart';
 import 'package:difwa/utils/validators.dart';
-import 'package:country_code_picker/country_code_picker.dart';
+// import 'package:country_code_picker/country_code_picker.dart';
 import 'package:lottie/lottie.dart';
 
 class MobileNumberPage extends StatefulWidget {

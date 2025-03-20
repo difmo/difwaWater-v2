@@ -39,6 +39,7 @@ dependencies:
   icons_plus: ^5.0.0
   animated_icon: ^0.0.9
   image_picker: ^1.1.2
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_test:
@@ -110,7 +111,7 @@ flutter:
     - assets/button/trbg.png
     - assets/icons/iconbg.svg
     - assets/icons/iconbg.png
-
+    - assets/icons/
     - assets/bgimage.png
     - assets/imagebg.png
 

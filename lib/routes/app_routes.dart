@@ -11,6 +11,7 @@ import 'package:difwa/screens/notification_page.dart';
 import 'package:difwa/screens/profile_screen.dart';
 import 'package:difwa/screens/splash_screen.dart';
 import 'package:difwa/screens/subscription_screen.dart';
+import 'package:difwa/test.dart';
 import 'package:get/get.dart';
 
 class AppRoutes {
@@ -49,7 +50,7 @@ class AppRoutes {
     ),
     GetPage(
       name: profile,
-      page: () => const ProfileScreen(),
+      page: () =>  ProfileScreen(),
       transition: Transition.fadeIn, // Fade transition for profile
       transitionDuration: Duration(milliseconds: 600),
     ),

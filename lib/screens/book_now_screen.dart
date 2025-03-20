@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:difwa/config/app_color.dart';
-import 'package:difwa/controller/bottle_controller.dart';
+// import 'package:difwa/controller/bottle_controller.dart';
 import 'package:difwa/routes/app_routes.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/widgets/custom_appbar.dart';
@@ -64,7 +64,7 @@ Future<void> fetchBottleItems() async {
 
   @override
   Widget build(BuildContext context) {
-    final BottleController bottleController = Get.put(BottleController());
+    // final BottleController bottleController = Get.put(BottleController());
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
@@ -299,6 +299,24 @@ Future<void> fetchBottleItems() async {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         const Text(
+                                          'Vender Name:',
+                                          style: TextStyle(
+                                              color: ThemeConstants.whiteColor),
+                                        ),
+                                        Text(
+                                          '${_bottleItems[_selectedIndex]['name']}',
+                                          style: const TextStyle(
+                                              fontSize: 16,
+                                              color: ThemeConstants
+                                                  .backgroundColor),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const Text(
                                           'Water Price:',
                                           style: TextStyle(
                                               color: ThemeConstants.whiteColor),
@@ -346,7 +364,8 @@ Future<void> fetchBottleItems() async {
                                           ),
                                         ),
                                         Text(
-                                          '₹ ${(_quantity * _bottleItems[_selectedIndex]['price']) + (_hasEmptyBottle ? (_quantity * _bottleItems[_selectedIndex]['vacantPrice']) : 0)}',
+                                          '₹ ${(_quantity * _bottleItems[_selectedIndex]['price']) 
+                                          + (_hasEmptyBottle ? (_quantity * _bottleItems[_selectedIndex]['vacantPrice']) : 0)}',
                                           style: const TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold,
