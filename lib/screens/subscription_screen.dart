@@ -40,9 +40,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     totalPrice = bottlePrice * orderData['quantity'];
     print(totalPrice);
 
-    // if (orderData['hasEmptyBottle']) {
-    //   totalPrice += orderData['vacantPrice'] * orderData['quantity'];
-    // }
+    if (orderData['hasEmptyBottle']) {
+      totalPrice += orderData['vacantPrice'] * orderData['quantity'];
+    }
     startDate = DateTime.now().add(const Duration(days: 1));
     totalDays = getTotalDays();
   }

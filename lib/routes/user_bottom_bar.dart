@@ -18,12 +18,25 @@ class BottomUserHomePage extends StatefulWidget {
 class _HomeScreenState extends State<BottomUserHomePage> {
   int _selectedIndex = 0;
 
-  final List<Widget> _screens = [
-    const BookNowScreen(),
-    const HistoryScreen(),
-    const WalletScreen(),
-    ProfileScreen(),
-  ];
+  late final List<Widget> _screens;
+
+  @override
+  void initState() {
+    super.initState();
+    _screens = [
+      BookNowScreen(
+        onProfilePressed: () {
+          _onItemTapped(3);
+        },
+        onMenuPressed: () {
+          _onItemTapped(2);
+        },
+      ),
+      HistoryScreen(),
+      WalletScreen(),
+      ProfileScreen(),
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -61,20 +74,24 @@ class _HomeScreenState extends State<BottomUserHomePage> {
           unselectedItemColor: Colors.black,
           backgroundColor: Colors.white,
           items: <BottomNavigationBarItem>[
-             BottomNavigationBarItem(
-              icon: _buildSvgIcon('assets/icons/home.svg','assets/icons/home_filled.svg' , 0),
+            BottomNavigationBarItem(
+              icon: _buildSvgIcon(
+                  'assets/icons/home.svg', 'assets/icons/home_filled.svg', 0),
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: _buildSvgIcon('assets/icons/order.svg','assets/icons/order_filled.svg', 1),
+              icon: _buildSvgIcon(
+                  'assets/icons/order.svg', 'assets/icons/order_filled.svg', 1),
               label: 'My Orders',
             ),
             BottomNavigationBarItem(
-              icon: _buildSvgIcon('assets/icons/wallet.svg', 'assets/icons/wallet_filled.svg', 2),
+              icon: _buildSvgIcon('assets/icons/wallet.svg',
+                  'assets/icons/wallet_filled.svg', 2),
               label: 'Wallet',
             ),
             BottomNavigationBarItem(
-              icon: _buildSvgIcon('assets/icons/profile.svg','assets/icons/profile_filled.svg',  3),
+              icon: _buildSvgIcon('assets/icons/profile.svg',
+                  'assets/icons/profile_filled.svg', 3),
               label: 'Profile',
             ),
           ],
@@ -89,15 +106,17 @@ class _HomeScreenState extends State<BottomUserHomePage> {
   }
 
   // Custom method to build the icon with zoom effect and SVG background
-  Widget _buildSvgIcon(String unselectedPath, String selectedPath,  int index) {
+  Widget _buildSvgIcon(String unselectedPath, String selectedPath, int index) {
     bool isSelected = _selectedIndex == index;
 
     return SvgPicture.asset(
-       isSelected ? selectedPath : unselectedPath,
+      isSelected ? selectedPath : unselectedPath,
       width: isSelected ? 30 : 24, // Slightly larger when selected
       height: isSelected ? 30 : 24,
       colorFilter: ColorFilter.mode(
-        isSelected ? AppColors.inputfield : Colors.black, // Change color dynamically
+        isSelected
+            ? AppColors.inputfield
+            : Colors.black, // Change color dynamically
         BlendMode.srcIn,
       ),
     );

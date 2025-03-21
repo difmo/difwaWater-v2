@@ -43,14 +43,17 @@ class AppRoutes {
     ),
     GetPage(
       name: home,
-      page: () => const BookNowScreen(),
+      page: () => BookNowScreen(
+        onProfilePressed: () {},
+        onMenuPressed: () {},
+      ),
       transition: Transition
           .rightToLeftWithFade, // Smooth right-to-left with fade for home screen
       transitionDuration: Duration(milliseconds: 800),
     ),
     GetPage(
       name: profile,
-      page: () =>  ProfileScreen(),
+      page: () => ProfileScreen(),
       transition: Transition.fadeIn, // Fade transition for profile
       transitionDuration: Duration(milliseconds: 600),
     ),
