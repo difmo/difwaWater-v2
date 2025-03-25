@@ -1,6 +1,7 @@
 import 'package:difwa/models/address_model.dart';
 import 'package:difwa/routes/store_bottom_bar.dart';
 import 'package:difwa/routes/user_bottom_bar.dart';
+import 'package:difwa/screens/add_balance_screen.dart';
 import 'package:difwa/screens/admin_screens/create_store_screen.dart';
 import 'package:difwa/screens/auth/adddress_form_page.dart';
 import 'package:difwa/screens/auth/login_screen.dart';
@@ -11,7 +12,6 @@ import 'package:difwa/screens/notification_page.dart';
 import 'package:difwa/screens/profile_screen.dart';
 import 'package:difwa/screens/splash_screen.dart';
 import 'package:difwa/screens/subscription_screen.dart';
-import 'package:difwa/test.dart';
 import 'package:get/get.dart';
 
 class AppRoutes {
@@ -26,6 +26,8 @@ class AppRoutes {
   static const subscription = '/subscription';
   static const address_page = '/address_page';
   static const notification = '/notification_page';
+
+  static const addbalance_screen = '/addbalance_screen';
 
   //////// Admin stuff////////
   static const additem = '/additem';
@@ -106,6 +108,14 @@ class AppRoutes {
     GetPage(
       name: storebottombar,
       page: () => const BottomStoreHomePage(),
+      transition: Transition
+          .leftToRight, // Slide transition from left for store dashboard
+      transitionDuration: Duration(milliseconds: 600),
+    ),
+
+    GetPage(
+      name: addbalance_screen,
+      page: () => const AddBalanceScreen(),
       transition: Transition
           .leftToRight, // Slide transition from left for store dashboard
       transitionDuration: Duration(milliseconds: 600),

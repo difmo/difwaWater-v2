@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class tProfileScreen extends StatefulWidget {
+  const tProfileScreen({super.key});
+
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
@@ -119,7 +121,7 @@ class _ProfileScreenState extends State<tProfileScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
-              children: [
+              children: const [
                 Icon(Icons.notifications, color: Colors.blue),
                 SizedBox(width: 16),
                 Text('Notifications Settings', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),

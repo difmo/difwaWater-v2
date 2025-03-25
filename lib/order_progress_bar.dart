@@ -76,7 +76,7 @@ class ProgressTracker extends StatefulWidget {
 
 
   const ProgressTracker({
-    Key? key,
+    super.key,
     required this.currentIndex,
     required this.statusList,
     this.activeColor = Colors.green,
@@ -88,7 +88,7 @@ class ProgressTracker extends StatefulWidget {
     this.horizontalPadding = 16.0,
     this.verticalPadding = 16.0,
     this.height = 100,
-  }) : super(key: key);
+  });
 
   @override
   State<ProgressTracker> createState() => _ProgressTrackerState();

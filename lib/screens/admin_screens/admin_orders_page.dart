@@ -70,7 +70,7 @@ class OrderListPage extends StatelessWidget {
   final String status;
   final String merchantId;
 
-  OrderListPage({super.key, required this.status, required this.merchantId});
+  const OrderListPage({super.key, required this.status, required this.merchantId});
 
   @override
   Widget build(BuildContext context) {
@@ -258,7 +258,7 @@ class OrderListPage extends StatelessWidget {
         }
 
         // Add the new status change to statusHistory with the current timestamp
-        selectedDates[dateIndex]['statusHistory'][newStatus + 'Time'] =
+        selectedDates[dateIndex]['statusHistory']['${newStatus}Time'] =
             currentTime;
 
         // Update the Firestore document with the modified selectedDates list

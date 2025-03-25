@@ -7,7 +7,7 @@ class UserDetailInputField extends StatelessWidget {
   final TextInputType? keyboardType;
   final IconData? icon;
 
-  UserDetailInputField({
+  const UserDetailInputField({super.key, 
     required this.label,
     this.controller,
     this.keyboardType,

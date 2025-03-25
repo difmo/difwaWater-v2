@@ -11,11 +11,6 @@ class AuthController extends GetxController {
   var verificationId = ''.obs;
   var userRole = ''.obs;
 
-  @override
-  void onReady() {
-    super.onReady();
-    // _auth.authStateChanges().listen(_handleAuthStateChanged);
-  }
 
 ///////////////////////////////////////////////////////////////////////// SIGN UP WITH EMAIL //////////////////////////////////////////////////////////////////////////
 

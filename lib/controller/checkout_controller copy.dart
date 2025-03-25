@@ -71,7 +71,7 @@ class CheckoutController extends GetxController {
       return {'bulkOrderId': newBulkOrderId, 'dailyOrderId': newDailyOrderId};
     } catch (e) {
       print("Error fetching or updating order IDs: $e");
-      throw e;
+      rethrow;
     }
   }
 

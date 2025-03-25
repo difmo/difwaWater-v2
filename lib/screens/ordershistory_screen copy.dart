@@ -57,7 +57,7 @@ class _HistoryScreenState extends State<HistoryScreen>
 class OrderListPage extends StatefulWidget {
   final String status;
 
-  const OrderListPage({Key? key, required this.status}) : super(key: key);
+  const OrderListPage({super.key, required this.status});
 
   @override
   _OrderListPageState createState() => _OrderListPageState();

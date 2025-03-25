@@ -3,7 +3,6 @@ import 'package:difwa/screens/book_now_screen.dart';
 import 'package:difwa/screens/ordershistory_screen.dart';
 import 'package:difwa/screens/profile_screen.dart';
 import 'package:difwa/screens/user_wallet_page.dart';
-import 'package:difwa/test.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';

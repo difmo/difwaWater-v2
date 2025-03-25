@@ -15,7 +15,7 @@ import 'package:get/get.dart';
 class AddressForm extends StatefulWidget {
   final Address address;
   final String flag;
-  AddressForm({
+  const AddressForm({
     super.key,
     required this.address,
     required this.flag,
@@ -37,7 +37,7 @@ class _AddressFormState extends State<AddressForm> {
   final TextEditingController _floorController = TextEditingController();
   bool _isChecked = false;
   bool _isdeleted = false;
-  bool _isSelected = false; // Checkbox state
+  final bool _isSelected = false; // Checkbox state
 
   final AddressController _addressController = Get.put(AddressController());
 
@@ -174,7 +174,7 @@ class _AddressFormState extends State<AddressForm> {
                           });
                         },
                         initialSelection: 'IN',
-                        favorite: ['+91', '+1'],
+                        favorite: const ['+91', '+1'],
                         showCountryOnly: false,
                         showOnlyCountryWhenClosed: false,
                         alignLeft: false,

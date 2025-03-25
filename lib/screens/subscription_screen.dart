@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:difwa/screens/checkout_screen.dart';
 import 'package:difwa/utils/app__text_style.dart';

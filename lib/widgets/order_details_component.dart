@@ -106,8 +106,8 @@ class _OrderDetailsComponentState extends State<OrderDetailsComponent> {
                 onPressed: _decrementQuantity,
                 icon: const Icon(Icons.remove),
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.white),
-                  shape: MaterialStateProperty.all(
+                  backgroundColor: WidgetStateProperty.all(Colors.white),
+                  shape: WidgetStateProperty.all(
                     const CircleBorder(),
                   ),
                 ),
@@ -130,8 +130,8 @@ class _OrderDetailsComponentState extends State<OrderDetailsComponent> {
                 onPressed: _incrementQuantity,
                 icon: const Icon(Icons.add),
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.white),
-                  shape: MaterialStateProperty.all(
+                  backgroundColor: WidgetStateProperty.all(Colors.white),
+                  shape: WidgetStateProperty.all(
                     const CircleBorder(),
                   ),
                 ),

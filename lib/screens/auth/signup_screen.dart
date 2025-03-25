@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:difwa/config/app_color.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/animation.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:difwa/config/app_styles.dart';

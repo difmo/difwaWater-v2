@@ -52,9 +52,9 @@ class CheckoutController extends GetxController {
       }
 
       String formattedBulkOrderId =
-          'DIF$currentYear' + newBulkOrderNumber.toString().padLeft(6, '0');
+          'DIF$currentYear${newBulkOrderNumber.toString().padLeft(6, '0')}';
       String formattedDailyOrderId =
-          'DIF$currentYear' + newDailyOrderNumber.toString().padLeft(6, '0');
+          'DIF$currentYear${newDailyOrderNumber.toString().padLeft(6, '0')}';
 
       await _firestore
           .collection('difwa-order-counters')
@@ -93,13 +93,11 @@ class CheckoutController extends GetxController {
 
         List<Map<String, dynamic>> selectedDatesWithHistory = [];
         for (int i = 0; i < selectedDates.length; i++) {
-          String formattedDailyOrderId = 'DIF' +
-              DateTime.now().year.toString() +
-              (int.parse(newDailyOrderId
+          String formattedDailyOrderId = 'DIF${DateTime.now().year}${(int.parse(newDailyOrderId
                           .split(DateTime.now().year.toString())[1]) +
                       i)
                   .toString()
-                  .padLeft(6, '0');
+                  .padLeft(6, '0')}';
           selectedDatesWithHistory.add({
             'date': selectedDates[i].toIso8601String(),
             'dailyOrderId': formattedDailyOrderId,

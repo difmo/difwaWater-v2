@@ -66,7 +66,7 @@ class CustomButton extends StatelessWidget {
         // ),
 
         // Button
-        Container(
+        SizedBox(
           // decoration: BoxDecoration(
           // color: AppColors.logoprimary, // Apply gradient here
           //   // border: Border.all(color: borderColor ?? AppColors.buttonbgColor),

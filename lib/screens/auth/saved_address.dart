@@ -6,6 +6,8 @@ import 'package:difwa/screens/auth/adddress_form_page.dart';
 import 'package:difwa/models/address_model.dart';
 
 class SavveAddressPage extends StatelessWidget {
+  const SavveAddressPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     final AddressController addressController = Get.put(AddressController());
@@ -176,12 +178,12 @@ class SavveAddressPage extends StatelessWidget {
                 ),
               );
             },
+            backgroundColor: Colors.transparent,
+            elevation: 0,
             child: Icon(
               Icons.add_business_sharp,
               color: AppColors.mywhite,
             ),
-            backgroundColor: Colors.transparent,
-            elevation: 0,
           ),
         ],
       ),

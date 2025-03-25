@@ -1,6 +1,5 @@
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class SubscribeButtonComponent extends StatelessWidget {
   final VoidCallback onPressed;

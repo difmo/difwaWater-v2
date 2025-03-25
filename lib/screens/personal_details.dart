@@ -12,6 +12,8 @@ import 'package:get/get.dart';
 import 'package:difwa/config/app_color.dart';
 
 class PersonalDetails extends StatefulWidget {
+  const PersonalDetails({super.key});
+
   @override
   _PersonalDetailsState createState() => _PersonalDetailsState();
 }

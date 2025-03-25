@@ -48,7 +48,7 @@ class CommonTextField extends StatefulWidget {
 class _CommonTextFieldState extends State<CommonTextField> {
   late List<TextInputFormatter> _inputFormatters;
   late TextInputType _keyboardType;
-  FocusNode _focusNode = FocusNode(); // ✅ Direct initialization
+  final FocusNode _focusNode = FocusNode(); // ✅ Direct initialization
   bool _obscureText = true;
   String _selectedCountryCode = '+91';
   @override

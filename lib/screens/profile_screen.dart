@@ -70,8 +70,8 @@ class _LoginScreenState extends State<ProfileScreen> {
                     child: (usersData?.profileImage == null ||
                             usersData!.profileImage!.isEmpty)
                         ? Text(
-                            (usersData?.name?.isNotEmpty ?? false)
-                                ? usersData!.name![0].toUpperCase()
+                            (usersData?.name.isNotEmpty ?? false)
+                                ? usersData!.name[0].toUpperCase()
                                 : 'G',
                             style: const TextStyle(
                               fontSize: 24,
@@ -195,7 +195,7 @@ class _LoginScreenState extends State<ProfileScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
-              children: [
+              children: const [
                 Icon(Icons.notifications, color: Colors.blue),
                 SizedBox(width: 16),
                 Column(
