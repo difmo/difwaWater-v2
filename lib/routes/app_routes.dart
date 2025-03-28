@@ -93,7 +93,7 @@ class AppRoutes {
     ),
     GetPage(
       name: subscription,
-      page: () => const SubscriptionScreen(),
+      page: () => SubscriptionScreen(),
       transition: Transition.zoom, // Zoom transition for subscription screen
       transitionDuration: Duration(milliseconds: 800),
     ),

@@ -8,15 +8,14 @@ import 'package:difwa/controller/checkout_controller.dart'; // Import the contro
 class CheckoutScreen extends StatelessWidget {
   final Map<String, dynamic> orderData;
   final double totalPrice;
-  final int totalDays;
+  final int totalDays; // Ensure this is int
   final List<DateTime> selectedDates;
 
   const CheckoutScreen({
     required this.orderData,
     required this.totalPrice,
-    required this.totalDays,
+    required this.totalDays, // Must be int
     required this.selectedDates,
-    super.key,
   });
 
   @override
@@ -25,8 +24,12 @@ class CheckoutScreen extends StatelessWidget {
     checkoutController.fetchWalletBalance();
     // checkoutController.fetchMerchantId();
 
-    double vacantBottlePrice = orderData['vacantPrice'] * orderData['quantity'];
-    double totalAmount = totalPrice * totalDays + vacantBottlePrice;
+    // double vacantBottlePrice = orderData['vacantPrice'] * orderData['quantity'];
+    // double totalAmount = totalPrice * totalDays + vacantBottlePrice;
+    double vacantBottlePrice = (orderData['vacantPrice'] as num).toDouble() *
+        (orderData['quantity'] as num).toDouble();
+
+    double totalAmount = totalPrice * totalDays.toDouble() + vacantBottlePrice;
 
     return Scaffold(
       backgroundColor: ThemeConstants.whiteColor,

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:difwa/routes/app_routes.dart';
+import 'package:difwa/widgets/CustomPopup.dart';
 import 'package:difwa/widgets/ImageCarouselApp.dart';
 import 'package:difwa/widgets/custom_appbar.dart';
 import 'package:difwa/widgets/order_details_component.dart';
@@ -73,6 +74,7 @@ class _BookNowScreenState extends State<BookNowScreen> {
   }
 
   void _onPackageSelected(Map<String, dynamic>? package) {
+    print(package);
     setState(() {
       _selectedPackage = package;
       _selectedIndex = _bottleItems.indexOf(package!);
@@ -102,6 +104,12 @@ class _BookNowScreenState extends State<BookNowScreen> {
   /// Handles subscription button press
   void _onSubscribePressed() {
     if (_selectedPackage != null && _selectedIndex != -1) {
+      print(_bottleItems[_selectedIndex]);
+      print("bottle : $_quantity");
+      print("quantity : ${_bottleItems[_selectedIndex]['price']}");
+      print(
+          "vacantPrice :  ${_hasEmptyBottle ? _bottleItems[_selectedIndex]['vacantPrice'] : 0}");
+      print(" totalPrice : $_totalPrice");
       Get.toNamed(
         AppRoutes.subscription,
         arguments: {
@@ -115,19 +123,19 @@ class _BookNowScreenState extends State<BookNowScreen> {
         },
       );
     } else {
-      Get.dialog(
-        AlertDialog(
-          backgroundColor: Colors.white,
-          title: const Text("Select a Bottle"),
-          content: const Text("Please select a bottle before proceeding"),
-          actions: [
-            TextButton(
-              onPressed: () => Get.back(),
-              child: const Text("OK"),
-            ),
-          ],
-        ),
-      );
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CustomPopup(
+              title: "Oops! Bottle Not Selected",
+              description:
+                  "Please select a bottle before moving forward. This ensures you get the best!",
+              buttonText: "Got It!",
+              onButtonPressed: () {
+                Get.back();
+              },
+            );
+          });
     }
   }
 
@@ -189,11 +197,12 @@ class _BookNowScreenState extends State<BookNowScreen> {
               ),
 
               const SizedBox(height: 20),
-
               // Subscribe button
               Padding(
                 padding: const EdgeInsets.only(left: 8, right: 8),
                 child: SubscribeButtonComponent(
+                  text: "Subscribe Now",
+                  icon: Icons.check_circle,
                   onPressed: _onSubscribePressed,
                 ),
               ),
