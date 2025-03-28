@@ -198,10 +198,8 @@ Future<void> updateUserDetails(
       DocumentSnapshot userDoc =
           await _firestore.collection('difwa-users').doc(user.uid).get();
       if (userDoc.exists) {
-        // Print the data to the terminal (console)
         print("User data: ${userDoc.data()}");
 
-        // Optionally, print the data after converting it into a UserDetailsModel
         var userDetails =
             UserDetailsModel.fromJson(userDoc.data() as Map<String, dynamic>);
         print("UserDetailsModel: $userDetails");
