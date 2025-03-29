@@ -11,7 +11,7 @@ class CheckoutScreen extends StatelessWidget {
   final int totalDays; // Ensure this is int
   final List<DateTime> selectedDates;
 
-  const CheckoutScreen({
+  const CheckoutScreen({super.key, 
     required this.orderData,
     required this.totalPrice,
     required this.totalDays, // Must be int

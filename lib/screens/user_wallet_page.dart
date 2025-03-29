@@ -7,7 +7,6 @@ import 'package:difwa/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 class WalletScreen extends StatefulWidget {
   const WalletScreen({super.key});

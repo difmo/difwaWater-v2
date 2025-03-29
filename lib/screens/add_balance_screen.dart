@@ -4,7 +4,6 @@ import 'package:difwa/screens/payment_webview_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class AddBalanceScreen extends StatefulWidget {
   const AddBalanceScreen({super.key});

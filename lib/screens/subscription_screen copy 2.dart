@@ -11,6 +11,8 @@ import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class SubscriptionScreen extends StatefulWidget {
+  const SubscriptionScreen({super.key});
+
   @override
   _SubscriptionScreenState createState() => _SubscriptionScreenState();
 }
@@ -336,9 +338,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       SizedBox(height: 4),
                       Text("Price: ₹10.0 per bottle",
                           style: AppTextStyle.TextWhite16700),
-                      Text("Vacant Bottle Price: \₹20.0",
+                      Text("Vacant Bottle Price: ₹20.0",
                           style: AppTextStyle.TextWhite16700),
-                      Text("One Bottle Price: \₹30.0",
+                      Text("One Bottle Price: ₹30.0",
                           style: AppTextStyle.TextWhite16700),
                     ],
                   ),
@@ -467,7 +469,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text("For One Day:", style: AppTextStyle.Text14500),
-                      Text("\₹$pricePerDay", style: AppTextStyle.Text16700),
+                      Text("₹$pricePerDay", style: AppTextStyle.Text16700),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -495,7 +497,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                             fontWeight: FontWeight.bold, fontSize: 18),
                       ),
                       Text(
-                        "\₹${totalDays * pricePerDay + vacantBottlePrice}",
+                        "₹${totalDays * pricePerDay + vacantBottlePrice}",
                         style: const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 18),
                       ),
