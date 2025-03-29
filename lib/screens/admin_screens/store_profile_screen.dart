@@ -5,6 +5,7 @@ import 'package:difwa/models/user_models/user_details_model.dart';
 import 'package:difwa/screens/auth/saved_address.dart';
 import 'package:difwa/screens/edit_personaldetails.dart';
 import 'package:difwa/screens/personal_details.dart';
+import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/widgets/custom_button.dart';
 import 'package:difwa/widgets/logout_popup.dart';
 import 'package:flutter/material.dart';
@@ -223,24 +224,13 @@ class _LoginScreenState extends State<StoreProfileScreen> {
 
 Widget buildProfileOption(String title, String subtitle, IconData icon) {
   return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
     child: Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            blurRadius: 5,
-            spreadRadius: 2,
-            offset: Offset(0, 3),
-          ),
-        ],
-      ),
+      padding: EdgeInsets.all(8),
+ 
       child: Row(
         children: [
-          Icon(icon, color: Colors.blue),
+          Icon(icon, color:ThemeConstants.borderColor),
           SizedBox(width: 16),
           Expanded(
             child: Column(

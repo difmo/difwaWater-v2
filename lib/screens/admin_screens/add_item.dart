@@ -1,4 +1,7 @@
 import 'package:difwa/controller/admin_controller/add_items_controller.dart';
+import 'package:difwa/utils/app__text_style.dart';
+import 'package:difwa/utils/theme_constant.dart';
+import 'package:difwa/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 
 class AddItem extends StatefulWidget {
@@ -39,12 +42,13 @@ class _AdminScreenState extends State<AddItem> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ThemeConstants.whiteColor,
       appBar: AppBar(
-        title: const Text(
+        title:  Text(
           'Select Waters',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: AppTextStyle.Text18600.copyWith(color: ThemeConstants.whiteColor),
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: ThemeConstants.blackColor,
         iconTheme: const IconThemeData(
           color: Colors.white, 
       ),
@@ -142,11 +146,10 @@ class _AdminScreenState extends State<AddItem> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () async {
+
+                    CustomButton(text: "Add",   onPressed: () async {
                         if (vacantBottlePrice > 0) {
                           try {
-                            // Add bottle data
                             await _controller.addBottleData(
                               selectedBottleSize!,
                               bottleSizes.firstWhere((b) =>
@@ -154,7 +157,6 @@ class _AdminScreenState extends State<AddItem> {
                               vacantBottlePrice,
                             );
 
-                            // Show success message
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                   content: Text('Bottle added successfully')),
@@ -179,17 +181,8 @@ class _AdminScreenState extends State<AddItem> {
                                     'Please select a bottle size and price')),
                           );
                         }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12.0, horizontal: 32.0),
-                        backgroundColor: Colors.green,
-                      ),
-                      child: const Text(
-                        'Submit',
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                      ),
-                    ),
+                      },)
+                   
                   ],
                 ),
               ),

@@ -27,7 +27,7 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
   final FirebaseController _authController = Get.put(FirebaseController());
   final AudioPlayer _audioPlayer = AudioPlayer(); // Initialize the audio player
   String merchantIdd = "";
-
+  
   // Variables to control the vibration and sound
   late bool _isVibrating;
   late bool _isSoundPlaying;
@@ -48,9 +48,9 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
       setState(() {
         merchantIdd = merchantId!;
       });
-      _listenForNewOrders(); // Start listening for new orders after merchantId is fetched
+      _listenForNewOrders();  // Start listening for new orders after merchantId is fetched
     });
-
+    
     // Initial state for vibration and sound
     _isVibrating = false;
     _isSoundPlaying = false;
@@ -64,8 +64,8 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
     _orderSubscription = FirebaseFirestore.instance
         .collection('difwa-orders')
         .where('merchantId', isEqualTo: merchantIdd)
-        .where('status', isEqualTo: 'paid') // Check if the order is paid
-        .snapshots() // Listen to changes
+        .where('status', isEqualTo: 'paid')  // Check if the order is paid
+        .snapshots()  // Listen to changes
         .listen((snapshot) {
       print("Snapshot received: ${snapshot.docs.length} documents found");
 
@@ -120,15 +120,50 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
     });
   }
 
+  // Show the popup with two buttons
+  void _showPopup(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent dismissing by tapping outside
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('New Order'),
+          content:
+              Text('You have a new order. Do you want to confirm or cancel?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                // Stop vibration and sound and cancel order
+                _stopVibration();
+                _stopSound();
+                _updateOrderStatus('canceled'); // Update order status to canceled
+                Navigator.of(context).pop(); // Close the popup
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Stop vibration and sound and confirm order
+                _stopVibration();
+                _stopSound();
+                _updateOrderStatus('confirmed'); // Update order status to confirmed
+                Navigator.of(context).pop(); // Close the popup
+              },
+              child: Text('Confirm'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   // Update the order status in Firestore
-  void _updateOrderStatus(String status) {
+ void _updateOrderStatus(String status) {
     // You would need to get the document reference of the order you want to update
     FirebaseFirestore.instance
         .collection('difwa-orders')
-        .where('merchantId', isEqualTo: merchantIdd)
-        .where('status',
-            isEqualTo:
-                'paid') // Filter based on your conditions (e.g., 'paid' status)
+        .where('merchantId',isEqualTo: merchantIdd)
+        .where('status', isEqualTo: 'paid') // Filter based on your conditions (e.g., 'paid' status)
         .limit(1)
         .get()
         .then((snapshot) {
@@ -227,108 +262,4 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
       ),
     );
   }
-
-  // Show the popup with two buttons
-  // Show the popup with two buttons
-  // Show the popup with two buttons
-  // Show the popup with two buttons
-void _showPopup(BuildContext context) {
-  showDialog(
-    context: context,
-    barrierDismissible: false, // Prevent dismissing by tapping outside
-    builder: (BuildContext context) {
-      return SafeArea(
-        child: GestureDetector(
-          onTap: () {
-            // Prevent the dialog from closing when tapping inside
-          },
-          child: Container(
-            width: double.infinity,
-            height: double.infinity,
-            color: Colors.blueAccent, // Background color for the popup
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.delivery_dining,
-                  size: 100,
-                  color: Colors.white,
-                ),
-                SizedBox(height: 20),
-                Text(
-                  'New Order Incoming!',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  'Do you want to confirm or cancel?',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white70,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 30),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Cancel button
-                    TextButton(
-                      onPressed: () {
-                        _stopVibration();
-                        _stopSound();
-                        _updateOrderStatus('canceled');
-                        Navigator.of(context).pop();
-                      },
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                      ),
-                      child: Text(
-                        'Cancel',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 20),
-                    // Confirm button
-                    TextButton(
-                      onPressed: () {
-                        _stopVibration();
-                        _stopSound();
-                        _updateOrderStatus('confirmed');
-                        Navigator.of(context).pop();
-                      },
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                      ),
-                      child: Text(
-                        'Confirm',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    },
-  );
-}
-
-
-
-
 }

@@ -32,7 +32,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen>
       setState(() {
         merchantIdd = merchantId!;
       });
-      print("133");
+      print("hello");
     });
   }
 
@@ -45,6 +45,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen>
       setState(() {
         usersData = user;
       });
+      print(usersData?.orderpin);
     } catch (e) {
       print("Error fetching user data: $e");
     }
@@ -80,47 +81,17 @@ class _AdminPanelScreenState extends State<AdminPanelScreen>
           OrderListPage(
             status: 'pending',
             merchantId: merchantIdd,
-            userDetails: usersData ??
-                UserDetailsModel(
-                    docId: '',
-                    uid: '',
-                    name: '',
-                    number: '',
-                    email: '',
-                    floor: '',
-                    role: '',
-                    walletBalance: 0.0,
-                    orderpin: ''), // Provide a default value or handle null
+            userDetails: usersData!,
           ),
           OrderListPage(
             status: 'completed',
             merchantId: merchantIdd,
-            userDetails: usersData ??
-                UserDetailsModel(
-                    docId: '',
-                    uid: '',
-                    name: '',
-                    number: '',
-                    email: '',
-                    floor: '',
-                    role: '',
-                    walletBalance: 0.0,
-                    orderpin: ''), // Provide a default value or handle null
+            userDetails: usersData!,
           ),
           OrderListPage(
             status: 'cancelled',
             merchantId: merchantIdd,
-            userDetails: usersData ??
-                UserDetailsModel(
-                    docId: '',
-                    uid: '',
-                    name: '',
-                    number: '',
-                    email: '',
-                    floor: '',
-                    role: '',
-                    walletBalance: 0.0,
-                    orderpin: ''), // Provide a default value or handle null
+            userDetails: usersData!,
           ),
         ],
       ),
@@ -351,7 +322,7 @@ class OrderListPage extends StatelessWidget {
         } else {
           _showErrorDialog(context, "Entered pipn is wrong ",
               "Please insure your pin is correct");
-          return;
+              return;
         }
       } else {
         print("PRI1 :: $newStatus");

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:difwa/models/stores_models/store_model.dart';
 import 'package:difwa/models/user_models/user_details_model.dart';
@@ -11,10 +13,7 @@ class AuthController extends GetxController {
   var verificationId = ''.obs;
   var userRole = ''.obs;
 
-
 ///////////////////////////////////////////////////////////////////////// SIGN UP WITH EMAIL //////////////////////////////////////////////////////////////////////////
-
-
 
   Future<bool> signwithemail(String email, String name, String password,
       String number, bool isLoading) async {
@@ -103,6 +102,13 @@ class AuthController extends GetxController {
     }
   }
 
+  int generateRandomPin() {
+    Random random = Random();
+    // Generate a random number between 100000 and 999999 (inclusive)
+    int pin = 100000 + random.nextInt(900000);
+    return pin;
+  }
+
 ///////////////////////////////////////////////////////////////////////// SAVE USER DETAILS ////////////////////////////////////////////////////////////////////
   Future<void> _saveUserDataemail(String uid, String email, String name,
       String number, String floor) async {
@@ -117,6 +123,7 @@ class AuthController extends GetxController {
         'email': email,
         'floor': floor,
         'role': 'isUser',
+        'orderpin': generateRandomPin(),
         'walletBalance': 0.0,
       }, SetOptions(merge: true));
     } else {
@@ -124,36 +131,40 @@ class AuthController extends GetxController {
         'name': name,
         'number': number,
         'floor': floor,
+        'orderpin': generateRandomPin(),
       });
     }
   }
-///////////////////////////////////////////////////////////////////////// SAVE USER DETAILS ////////////////////////////////////////////////////////////////////
-Future<void> updateUserDetails(
-    String uid, String email, String name, String number, String floor) async {
-  DocumentSnapshot userDoc =
-      await _firestore.collection('difwa-users').doc(uid).get();
 
-  if (userDoc.exists) {
-    // If the user exists, update their details
-    await _firestore.collection('difwa-users').doc(uid).update({
-      'name': name,
-      'number': number,
-      'floor': floor,
-      'email': email,
-    });
-  } else {
-    // If the user does not exist, create a new record
-    await _firestore.collection('difwa-users').doc(uid).set({
-      'uid': uid,
-      'name': name,
-      'number': number,
-      'email': email,
-      'floor': floor,
-      'role': 'isUser',
-      'walletBalance': 0.0,
-    }, SetOptions(merge: true));
+///////////////////////////////////////////////////////////////////////// SAVE USER DETAILS ////////////////////////////////////////////////////////////////////
+  Future<void> updateUserDetails(String uid, String email, String name,
+      String number, String floor) async {
+    DocumentSnapshot userDoc =
+        await _firestore.collection('difwa-users').doc(uid).get();
+
+    if (userDoc.exists) {
+      // If the user exists, update their details
+      await _firestore.collection('difwa-users').doc(uid).update({
+        'name': name,
+        'number': number,
+        'floor': floor,
+        'email': email,
+        'orderpin': generateRandomPin(),
+      });
+    } else {
+      // If the user does not exist, create a new record
+      await _firestore.collection('difwa-users').doc(uid).set({
+        'uid': uid,
+        'name': name,
+        'number': number,
+        'email': email,
+        'floor': floor,
+        'role': 'isUser',
+        'walletBalance': 0.0,
+        'orderpin': generateRandomPin(),
+      }, SetOptions(merge: true));
+    }
   }
-}
 
 ///////////////////////////////////////////////////////////////////////// FETCH USER ROLE  //////////////////////////////////////////////////////////////////////
   Future<void> _fetchUserRole() async {
@@ -168,6 +179,8 @@ Future<void> updateUserDetails(
       }
     }
   }
+
+
 
   Future<UserDetailsModel> fetchUserData() async {
     final user = _auth.currentUser;
@@ -192,7 +205,8 @@ Future<void> updateUserDetails(
         email: "",
         floor: "",
         role: "",
-        walletBalance: 0.0);
+        walletBalance: 0.0,
+        orderpin: '');
   }
 
 ///////////////////////////////////////////////////////////////////////// HANDLE ROLE CHANGED //////////////////////////////////////////////////////////////////

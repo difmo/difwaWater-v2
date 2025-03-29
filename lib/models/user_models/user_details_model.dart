@@ -6,6 +6,7 @@ class UserDetailsModel {
   final String email;
   final String floor;
   final String role;
+  final String orderpin;
   final double walletBalance;
   final String? profileImage;
   // Constructor with required fields
@@ -19,6 +20,7 @@ class UserDetailsModel {
     required this.role,
     required this.walletBalance,
     this.profileImage,
+    required this.orderpin,
   }) : name = _capitalize(name);
 
   // Capitalize the first letter of the name
@@ -37,6 +39,7 @@ class UserDetailsModel {
       'floor': floor,
       'role': role,
       'walletBalance': walletBalance,
+      'orderpin':orderpin,
       'docId': docId,
     };
   }
@@ -48,6 +51,7 @@ class UserDetailsModel {
       uid: json['uid'] ?? '',
       name: json['name'] ?? '',
       number: json['number'] ?? '',
+      orderpin: json['orderpin'] ?? '',
       email: json['email'] ?? '',
       floor: json['floor'] ?? '',
       role: json['role'] ?? 'isUser',

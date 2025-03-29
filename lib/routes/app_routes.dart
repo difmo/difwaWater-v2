@@ -3,6 +3,7 @@ import 'package:difwa/routes/store_bottom_bar.dart';
 import 'package:difwa/routes/user_bottom_bar.dart';
 import 'package:difwa/screens/add_balance_screen.dart';
 import 'package:difwa/screens/admin_screens/create_store_screen.dart';
+import 'package:difwa/screens/admin_screens/global_popup.dart';
 import 'package:difwa/screens/auth/adddress_form_page.dart';
 import 'package:difwa/screens/auth/login_screen.dart';
 import 'package:difwa/screens/auth/signup_screen.dart';
@@ -26,6 +27,7 @@ class AppRoutes {
   static const subscription = '/subscription';
   static const address_page = '/address_page';
   static const notification = '/notification_page';
+static const fullScreenPopup = '/fullScreenPopup';
 
   static const addbalance_screen = '/addbalance_screen';
 
@@ -81,6 +83,12 @@ class AppRoutes {
     GetPage(
       name: signUp,
       page: () => const MobileNumberPage(),
+      transition: Transition.circularReveal, // Circular reveal effect for login
+      transitionDuration: Duration(milliseconds: 1000),
+    ),
+    GetPage(
+      name: fullScreenPopup,
+      page: () => FullScreenPopupPage(),
       transition: Transition.circularReveal, // Circular reveal effect for login
       transitionDuration: Duration(milliseconds: 1000),
     ),

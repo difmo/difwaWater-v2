@@ -56,31 +56,22 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
             },
             children: [
               _buildOnboardingPage(
-                topImage: 'assets/images/stonb1.svg',
-                middleImage: 'assets/images/stonb11.svg',
-                title: 'Fresh Water', 
-                topImageHeight: 400,
-                newHeading: 'Healthy Choices!',
+                middleImage: 'assets/images/stonb22.svg',
+                newHeading: 'Streamlined Order Management',
                 newDescription:
-                    'Choose from a variety of nutritious options every day.',
+                    'Welcome to Difwa! Simplify your water delivery business today.',
                 titleColor: Colors.white,
                 showButton: false,
               ),
               _buildOnboardingPage(
-                topImage: 'assets/images/stonb2.svg',
                 middleImage: 'assets/images/stonb22.svg',
-                title: 'Quality Ingredients',
-                topImageHeight: 230,
                 newHeading: 'Farm to Table!',
                 newDescription: 'Experience the freshness of local produce.',
                 titleColor: Colors.black,
                 showButton: false,
               ),
               _buildOnboardingPage(
-                topImage: 'assets/images/stonb3.svg',
                 middleImage: 'assets/images/stonb33.svg',
-                title: 'Start Today!',
-                topImageHeight: 440,
                 newHeading: 'Join Our Community!',
                 newDescription:
                     'Connect with fellow food lovers and share recipes.',
@@ -109,10 +100,7 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
   }
 
   Widget _buildOnboardingPage({
-    required String topImage,
     required String middleImage,
-    required String title,
-    required double topImageHeight,
     required String newHeading,
     required String newDescription,
     required Color titleColor,
@@ -124,33 +112,15 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
       child: Stack(
         children: [
           // Background image
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: SvgPicture.asset(
-              topImage,
-              fit: BoxFit.fill,
-              height: topImageHeight,
-            ),
-          ),
+       
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text(title, 
-                  style: TextStyle(
-                    color: titleColor, // Set title color from the parameter
-                    fontSize: 24, // You can adjust the font size as needed
-                    fontWeight: FontWeight.bold, // You can also customize other styles
-                  ),),
-                ),
+               
                 const SizedBox(height: 130),
                 SvgPicture.asset(
                   middleImage,
-                  height: 250,
                 ),
                 const SizedBox(height: 30),
                 Padding(
