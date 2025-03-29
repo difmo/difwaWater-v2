@@ -1,11 +1,39 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:difwa/controller/admin_controller/add_items_controller.dart';
+import 'package:difwa/controller/admin_controller/add_store_controller.dart';
+import 'package:difwa/controller/auth_controller.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/widgets/logout_popup.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
-class StoreHome extends StatelessWidget {
+class StoreHome extends StatefulWidget {
   const StoreHome({super.key});
+
+  @override
+  _StoreHomeState createState() => _StoreHomeState();
+}
+
+class _StoreHomeState extends State<StoreHome> {
+  final FirebaseController _authController = Get.put(FirebaseController());
+  String merchantIdd = "";
+
+  @override
+  void initState() {
+    super.initState();
+    print("hello");
+    _authController.fetchMerchantId("").then((merchantId) {
+      print(merchantId);
+      setState(() {
+        merchantIdd = merchantId!;
+      });
+      print("hello");
+      print(merchantId);
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +52,7 @@ class StoreHome extends StatelessWidget {
               color: Colors.white,
             ),
             onPressed: () {
+                  // _controller2.checkFunction();
               LogoutDialog.showLogoutDialog(context);
             },
           ),
@@ -71,8 +100,11 @@ class StoreHome extends StatelessWidget {
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('difwa-orders')
+                    .where('merchantId', isEqualTo: merchantIdd)
                     .snapshots(),
                 builder: (context, snapshot) {
+                print("merchantIdd");
+                print(merchantIdd);
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }

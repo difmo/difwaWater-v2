@@ -3,6 +3,7 @@ import 'package:difwa/config/app_textstyle.dart';
 import 'package:difwa/screens/admin_screens/store_home.dart';
 import 'package:difwa/screens/admin_screens/admin_orders_page.dart';
 import 'package:difwa/screens/admin_screens/store_items.dart';
+import 'package:difwa/screens/admin_screens/store_profile_screen.dart';
 import 'package:flutter/material.dart';
 
 class BottomStoreHomePage extends StatefulWidget {
@@ -19,12 +20,15 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
     const StoreHome(),
     const StoreItems(),
     const AdminPanelScreen(),
+    const StoreProfileScreen(),
   ];
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (index >= 0 && index < _screens.length) { // Ensure index is within bounds
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
   }
 
   @override
@@ -56,6 +60,10 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
                 icon: _buildIcon(Icons.shopping_bag, 2),
                 label: '',  // Removed label
               ),
+              BottomNavigationBarItem(
+                icon: _buildIcon(Icons.person_2_rounded, 3),
+                label: '',  // Removed label
+              ),
             ],
             currentIndex: _selectedIndex,
             onTap: _onItemTapped,
@@ -70,7 +78,6 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
     );
   }
 
-  // Custom method to build the icon with zoom effect and SVG background
   Widget _buildIcon(IconData iconData, int index) {
     bool isSelected = _selectedIndex == index;
 
@@ -83,19 +90,17 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Background SVG image when selected
           if (isSelected)
             Image.asset(
-            'assets/icons/iconbg.png', // Replace with your actual PNG asset path
-            width: 50, // Adjust size as per your requirement
-            height: 50, // Adjust size as per your requirement
-            fit: BoxFit.cover, // Optional: Use this to make sure the image fits the container
-          ),
-          // Icon on top of the SVG background
+              'assets/icons/iconbg.png',
+              width: 50,
+              height: 50,
+              fit: BoxFit.cover,
+            ),
           Icon(
             iconData,
-            size: isSelected ? 30 : 18, // Zoom in when selected
-            color: isSelected ? Colors.white : Colors.black, // Change icon color when selected
+            size: isSelected ? 30 : 18,
+            color: isSelected ? Colors.white : Colors.black,
           ),
         ],
       ),

@@ -14,7 +14,7 @@ class CreateStorePage extends StatefulWidget {
 }
 
 class _CreateStorePageState extends State<CreateStorePage> {
-  final SignupController controller = Get.put(SignupController());
+  final AddStoreController controller = Get.put(AddStoreController());
   File? _image;
 
   // Future<void> _pickImage(ImageSource source) async {
