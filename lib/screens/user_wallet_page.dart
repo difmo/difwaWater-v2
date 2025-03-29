@@ -39,7 +39,6 @@ class _WalletScreenState extends State<WalletScreen> {
     _sub = _appLinks.uriLinkStream.listen((Uri? uri) {
       _handleDeepLink(uri);
     });
-
     Uri? initialLink = await _appLinks.getInitialLink();
     _handleDeepLink(initialLink);
   }
@@ -51,8 +50,7 @@ class _WalletScreenState extends State<WalletScreen> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text("Payment successful!"),
         ));
-        // Update wallet balance or any other relevant data
-        walletController?.updateWalletBalance(50.0); // Example value
+        walletController?.updateWalletBalance(50.0);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text("Payment failed. Please try again."),
@@ -132,21 +130,33 @@ class _WalletScreenState extends State<WalletScreen> {
                         return Text('Error: ${snapshot.error}');
                       }
 
-                      if (snapshot.hasData) {
-                        var userDoc = snapshot.data!;
-                        double walletBalance = (userDoc['walletBalance'] is int)
-                            ? (userDoc['walletBalance'] as int).toDouble()
-                            : (userDoc['walletBalance'] ?? 0.0);
-                        return Text(
-                          "₹ ${walletBalance.toStringAsFixed(2)}",
+// Check if data exists
+                      if (!snapshot.hasData || !snapshot.data!.exists) {
+                        return const Text(
+                          "₹ 0.0",
                           style: TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
                           ),
                         );
-                      } else {
-                        return const Text('No data');
                       }
+                      // Extract document data
+                      var userDoc = snapshot.data!;
+                      double walletBalance = 0.0;
+
+                      if (userDoc.data() != null &&
+                          userDoc['walletBalance'] != null) {
+                        walletBalance =
+                            (userDoc['walletBalance'] as num).toDouble();
+                      }
+
+                      return Text(
+                        "₹ ${walletBalance.toStringAsFixed(2)}",
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
                     },
                   ),
                   const SizedBox(height: 10),

@@ -25,8 +25,6 @@ class CheckoutScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final CheckoutController checkoutController = Get.put(CheckoutController());
     checkoutController.fetchWalletBalance();
-    double vacantBottlePrice = 100;
-    double totalAmount = 100;
 
     return Scaffold(
       backgroundColor: ThemeConstants.whiteColor,
@@ -82,7 +80,8 @@ class CheckoutScreen extends StatelessWidget {
                           SizedBox(height: 4),
                           Text("Price: ₹ ${orderData['price']} per bottle",
                               style: AppTextStyle.TextWhite16700),
-                          Text("Vacant Bottle Price: ₹ $vacantBottlePrice",
+                          Text(
+                              "Vacant Bottle Price: ₹ ${orderData['vacantPrice'] * orderData['quantity']}",
                               style: AppTextStyle.TextWhite16700),
                           Text("One Bottle Price: ₹ $totalPrice",
                               style: AppTextStyle.TextWhite16700),
@@ -202,7 +201,7 @@ class CheckoutScreen extends StatelessWidget {
                             fontWeight: FontWeight.bold, fontSize: 18),
                       ),
                       Text(
-                        "₹$totalAmount",
+                        "₹${orderData['price'] * totalDays + orderData['vacantPrice'] * orderData['quantity']} ",
                         style: const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 18),
                       ),
@@ -218,10 +217,16 @@ class CheckoutScreen extends StatelessWidget {
 
             // Wallet Balance Display
             Obx(() {
-              return checkoutController.walletBalance.value == 0.0
-                  ? const CircularProgressIndicator()
-                  : Text(
+              return checkoutController.walletBalance.value != null
+                  ? Text(
                       '₹ ${checkoutController.walletBalance.value.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24),
+                    )
+                  : Text(
+                      '₹ 0.0',
                       style: const TextStyle(
                           color: Colors.blue,
                           fontWeight: FontWeight.bold,
@@ -236,8 +241,14 @@ class CheckoutScreen extends StatelessWidget {
                 text: 'Pay Now',
                 // icon: Icons.shopping_cart_checkout,
                 onPressed: () {
-                  checkoutController.processPayment(orderData, totalPrice,
-                      totalDays, vacantBottlePrice, selectedDates);
+                  checkoutController.processPayment(
+                      orderData,
+                      orderData['price'],
+                      totalDays,
+                      (orderData['vacantPrice'] * orderData['quantity'])
+                          .toDouble(),
+                      selectedDates,
+                      context);
                 }),
           ],
         ),

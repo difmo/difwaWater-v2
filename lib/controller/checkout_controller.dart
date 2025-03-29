@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:difwa/utils/theme_constant.dart';
+import 'package:difwa/widgets/CustomPopup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:difwa/screens/congratulations_page.dart';
 
@@ -80,24 +83,29 @@ class CheckoutController extends GetxController {
       double totalPrice,
       int totalDays,
       double vacantBottlePrice,
-      List<DateTime> selectedDates) async {
+      List<DateTime> selectedDates,
+      BuildContext context) async {
     double totalAmount = totalPrice * totalDays + vacantBottlePrice;
 
     if (walletBalance.value >= totalAmount) {
       double newBalance = walletBalance.value - totalAmount;
 
       try {
+        Get.dialog(
+          const Center(
+              child: CircularProgressIndicator(
+            backgroundColor: ThemeConstants.primaryColor,
+          )),
+          barrierDismissible: false, // Prevent user from closing it
+        );
         Map<String, String> orderIds = await getNextOrderIds();
         String newBulkOrderId = orderIds['bulkOrderId']!;
         String newDailyOrderId = orderIds['dailyOrderId']!;
 
         List<Map<String, dynamic>> selectedDatesWithHistory = [];
         for (int i = 0; i < selectedDates.length; i++) {
-          String formattedDailyOrderId = 'DIF${DateTime.now().year}${(int.parse(newDailyOrderId
-                          .split(DateTime.now().year.toString())[1]) +
-                      i)
-                  .toString()
-                  .padLeft(6, '0')}';
+          String formattedDailyOrderId =
+              'DIF${DateTime.now().year}${(int.parse(newDailyOrderId.split(DateTime.now().year.toString())[1]) + i).toString().padLeft(6, '0')}';
           selectedDatesWithHistory.add({
             'date': selectedDates[i].toIso8601String(),
             'dailyOrderId': formattedDailyOrderId,
@@ -110,7 +118,6 @@ class CheckoutController extends GetxController {
             },
           });
         }
-
         await _firestore
             .collection('difwa-users')
             .doc(currentUserId)
@@ -127,7 +134,7 @@ class CheckoutController extends GetxController {
           'timestamp': FieldValue.serverTimestamp(),
           'merchantId': orderData['bottle']['merchantId'],
         });
-
+        Get.back();
         Get.to(() => CongratulationsPage());
 
         await _firestore
@@ -140,11 +147,32 @@ class CheckoutController extends GetxController {
               1,
         });
       } catch (e) {
-        print("Error processing payment: $e");
-        Get.snackbar("Error", "Error processing payment: $e");
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return CustomPopup(
+                title: "Oops! Something went wrong!",
+                description: "Error processing payment: $e",
+                buttonText: "Got It!",
+                onButtonPressed: () {
+                  Get.back();
+                },
+              );
+            });
       }
     } else {
-      Get.snackbar("Insufficient Balance", "Please add funds to your wallet.");
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CustomPopup(
+              title: "Oops! Insufficient Balance",
+              description: "Please add funds to your wallet",
+              buttonText: "Got It!",
+              onButtonPressed: () {
+                Get.back();
+              },
+            );
+          });
     }
   }
 }

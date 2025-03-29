@@ -149,7 +149,6 @@ class _OrderListPageState extends State<OrderListPage> {
                 : []; // Default to empty list if not a List
 
             return Container(
-              
               color: Colors.white,
               margin: const EdgeInsets.symmetric(vertical: 8.0),
               child: ExpansionTile(
@@ -210,7 +209,8 @@ class _OrderListPageState extends State<OrderListPage> {
                                   ),
                                   Text(
                                     'Updated At: ${statusHistory['pendingTime']}',
-                                    style: const TextStyle(fontSize: 12, color: Colors.deepOrange),
+                                    style: const TextStyle(
+                                        fontSize: 12, color: Colors.deepOrange),
                                   ),
                                 ],
                               ),

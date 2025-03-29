@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:difwa/routes/app_routes.dart';
 import 'package:difwa/screens/checkout_screen.dart';
+import 'package:difwa/utils/location_helper.dart';
 import 'package:difwa/widgets/CustomPopup.dart';
 import 'package:difwa/widgets/ImageCarouselApp.dart';
 import 'package:difwa/widgets/custom_appbar.dart';
@@ -8,6 +9,7 @@ import 'package:difwa/widgets/order_details_component.dart';
 import 'package:difwa/widgets/package_selector_component.dart';
 import 'package:difwa/widgets/subscribe_button_component.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 
 class BookNowScreen extends StatefulWidget {
@@ -28,11 +30,31 @@ class _BookNowScreenState extends State<BookNowScreen> {
   double _totalPrice = 0;
   bool _isLoading = true;
   List<Map<String, dynamic>> _bottleItems = [];
-
+  String locationDetails = "Fetching location...";
   @override
   void initState() {
     super.initState();
     fetchBottleItems();
+    fetchLocation();
+  }
+
+  Future<void> fetchLocation() async {
+    Position? position = await LocationHelper.getCurrentLocation();
+    if (position != null) {
+      Map<String, dynamic>? locationData =
+          await LocationHelper.getAddressFromLatLng(position);
+      if (locationData != null) {
+        setState(() {
+          locationDetails =
+              "Address: ${locationData['address']}\n Pincode: ${locationData['pincode']}\n Lat: ${locationData['latitude']}, Lng: ${locationData['longitude']}";
+        });
+        print("locationDetails : $locationDetails");
+      }
+    } else {
+      setState(() {
+        locationDetails = "Location not available.";
+      });
+    }
   }
 
   /// Fetches bottle items from Firestore

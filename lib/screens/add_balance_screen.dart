@@ -168,25 +168,34 @@ class _AddBalanceScreenState extends State<AddBalanceScreen> {
                   return Text('Error: ${snapshot.error}');
                 }
 
-                if (snapshot.hasData) {
-                  var userDoc = snapshot.data!;
-                  double walletBalance = (userDoc['walletBalance'] is int)
-                      ? (userDoc['walletBalance'] as int).toDouble()
-                      : (userDoc['walletBalance'] ?? 0.0);
-                  return Text(
-                    "₹ ${walletBalance.toStringAsFixed(2)}",
-                    style: const TextStyle(
-                      fontSize: 32,
+// Check if data exists
+                if (!snapshot.hasData || !snapshot.data!.exists) {
+                  return const Text(
+                    "₹ 0.0",
+                    style: TextStyle(
+                      fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
                     ),
                   );
-                } else {
-                  return const Text('No data');
                 }
+                // Extract document data
+                var userDoc = snapshot.data!;
+                double walletBalance = 0.0;
+
+                if (userDoc.data() != null &&
+                    userDoc['walletBalance'] != null) {
+                  walletBalance = (userDoc['walletBalance'] as num).toDouble();
+                }
+
+                return Text(
+                  "₹ ${walletBalance.toStringAsFixed(2)}",
+                  style: const TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                  ),
+                );
               },
             ),
-
             const SizedBox(height: 20),
 
             // Amount Input Field

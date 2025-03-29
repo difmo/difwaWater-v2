@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:difwa/utils/location_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,10 +20,12 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _controller;
   late Animation<double> _logoOpacity;
   late Animation<double> _textOpacity;
+  String locationDetails = "Fetching location...";
 
   @override
   void initState() {
     super.initState();
+    fetchLocation();
     _controller = AnimationController(
       duration: Duration(seconds: 3),
       vsync: this,
@@ -34,6 +38,25 @@ class _SplashScreenState extends State<SplashScreen>
     );
     _controller.forward();
     Timer(const Duration(seconds: 3), _checkLoginStatus);
+  }
+
+  Future<void> fetchLocation() async {
+    Position? position = await LocationHelper.getCurrentLocation();
+    if (position != null) {
+      Map<String, dynamic>? locationData =
+          await LocationHelper.getAddressFromLatLng(position);
+      if (locationData != null) {
+        setState(() {
+          locationDetails =
+              "📍 Address: ${locationData['address']}\n📌 Pincode: ${locationData['pincode']}\n🌍 Lat: ${locationData['latitude']}, Lng: ${locationData['longitude']}";
+        });
+        print("locationDetails : $locationDetails");
+      }
+    } else {
+      setState(() {
+        locationDetails = "Location not available.";
+      });
+    }
   }
 
   @override
@@ -102,7 +125,9 @@ class _SplashScreenState extends State<SplashScreen>
                     ),
                   ),
                 ),
-                SizedBox(height: 100,),
+                SizedBox(
+                  height: 100,
+                ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
