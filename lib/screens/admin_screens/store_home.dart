@@ -4,6 +4,7 @@ import 'package:difwa/controller/admin_controller/add_store_controller.dart';
 import 'package:difwa/controller/auth_controller.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/widgets/logout_popup.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -34,7 +35,6 @@ class _StoreHomeState extends State<StoreHome> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,8 +52,24 @@ class _StoreHomeState extends State<StoreHome> {
               color: Colors.white,
             ),
             onPressed: () {
-                  // _controller2.checkFunction();
-              LogoutDialog.showLogoutDialog(context);
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return YesNoPopup(
+                      title: "Logout from app!",
+                      description:
+                          "Are you sure want to exit from application?",
+                      noButtonText: "No",
+                      yesButtonText: "Yes",
+                      onNoButtonPressed: () async {
+                        Navigator.pop(context); // Cancel action
+                      },
+                      onYesButtonPressed: () async {
+                        await FirebaseAuth.instance.signOut();
+                        Navigator.pushReplacementNamed(context, '/login');
+                      },
+                    );
+                  });
             },
           ),
         ],
@@ -103,8 +119,8 @@ class _StoreHomeState extends State<StoreHome> {
                     .where('merchantId', isEqualTo: merchantIdd)
                     .snapshots(),
                 builder: (context, snapshot) {
-                print("merchantIdd");
-                print(merchantIdd);
+                  print("merchantIdd");
+                  print(merchantIdd);
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }

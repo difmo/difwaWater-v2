@@ -1,3 +1,4 @@
+import 'package:difwa/utils/app__text_style.dart';
 import 'package:flutter/material.dart';
 
 class CustomPopup extends StatelessWidget {
@@ -38,26 +39,13 @@ class CustomPopup extends StatelessWidget {
             const SizedBox(height: 16),
 
             // Title
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
+            Text(title,
+                textAlign: TextAlign.center, style: AppTextStyle.Text18700),
             const SizedBox(height: 10),
 
             // Description
-            Text(
-              description,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black87,
-              ),
-            ),
+            Text(description,
+                textAlign: TextAlign.center, style: AppTextStyle.Text16600),
             const SizedBox(height: 20),
 
             // Animated Button with Ripple Effect

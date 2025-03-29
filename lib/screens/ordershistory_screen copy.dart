@@ -1,7 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:difwa/utils/theme_constant.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:difwa/order_progress_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -30,12 +30,12 @@ class _HistoryScreenState extends State<HistoryScreen>
         centerTitle: true,
         title: const Text(
           'Your Orders',
-          style: TextStyle(color: ThemeConstants.primaryColorNew),
+          style: TextStyle(color: Colors.blue), // Change to your primary color
         ),
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: ThemeConstants.primaryColorNew,
-          labelColor: ThemeConstants.primaryColorNew,
+          indicatorColor: Colors.blue, // Change to your primary color
+          labelColor: Colors.blue, // Change to your primary color
           unselectedLabelColor: Colors.grey,
           tabs: const [
             Tab(icon: Icon(Icons.info), text: 'Pending'),
@@ -180,44 +180,7 @@ class _OrderListPageState extends State<OrderListPage> {
                     return ListTile(
                       title: Text(
                           'Date: ${formatDateTime(DateTime.parse(date).toLocal())}'),
-                      subtitle: DropdownButton<String>(
-                        value: statusList.isNotEmpty ? statusList[0] : null,
-                        onChanged: (newStatus) {
-                          setState(() {
-                            // Handle status change if needed
-                          });
-                        },
-                        items: statusList.map((status) {
-                          return DropdownMenuItem<String>(
-                            value: status,
-                            child: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(status),
-                                  Text(
-                                    'Updated At: ${statusHistory['ongoingTime']}',
-                                    style: const TextStyle(fontSize: 12),
-                                  ),
-                                  Text(
-                                    'Updated At: ${statusHistory['cancelledTime']}',
-                                    style: const TextStyle(fontSize: 12),
-                                  ),
-                                  Text(
-                                    'Updated At: ${statusHistory['confirmedTime']}',
-                                    style: const TextStyle(fontSize: 12),
-                                  ),
-                                  Text(
-                                    'Updated At: ${statusHistory['pendingTime']}',
-                                    style: const TextStyle(
-                                        fontSize: 12, color: Colors.deepOrange),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
+                      subtitle: buildOrderStatusBar(statusHistory),
                     );
                   }
                   return const ListTile(
@@ -234,5 +197,51 @@ class _OrderListPageState extends State<OrderListPage> {
 
   String formatDateTime(DateTime dateTime) {
     return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute}';
+  }
+
+  Widget buildOrderStatusBar(Map<String, dynamic> statusHistory) {
+    // Define status stages
+    final statusStages = ['pending', 'confirmed', 'cancelled', 'completed'];
+    final currentStatus = statusHistory['status'] ?? 'pending';
+
+    // Calculate progress
+    final statusIndex = statusStages.indexOf(currentStatus);
+    final progress = (statusIndex + 1);
+
+    return Column(
+      children: [
+        SizedBox(
+            // width: 200,
+            height: 155,
+            child: ExampleProgressTracker(
+              currentIndex: progress,
+            )),
+        // LinearProgressIndicator(
+        //   value: progress,
+        //   backgroundColor: Colors.grey[300],
+        //   color: getStatusColor(currentStatus),
+        // ),
+        // SizedBox(height: 8),
+        // Text(
+        //   'Status: $currentStatus',
+        //   style: TextStyle(fontWeight: FontWeight.bold),
+        // ),
+      ],
+    );
+  }
+
+  Color getStatusColor(String status) {
+    switch (status) {
+      case 'pending':
+        return Colors.orange;
+      case 'confirmed':
+        return Colors.blue;
+      case 'cancelled':
+        return Colors.red;
+      case 'completed':
+        return Colors.green;
+      default:
+        return Colors.grey;
+    }
   }
 }
