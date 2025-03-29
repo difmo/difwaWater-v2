@@ -3,7 +3,6 @@ import 'package:difwa/controller/auth_controller.dart';
 import 'package:difwa/models/user_models/user_details_model.dart';
 import 'package:difwa/screens/edit_personaldetails.dart';
 import 'package:difwa/widgets/custom_prersonaldetails_input.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:difwa/config/app_color.dart';
@@ -16,12 +15,10 @@ class PersonalDetails extends StatefulWidget {
 }
 
 class _PersonalDetailsState extends State<PersonalDetails> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final AuthController _userData = Get.put(AuthController());
 
   UserDetailsModel? usersData;
   bool isLoading = true;
-  final _formKeyEmail = GlobalKey<FormState>();
   String? errorMessage;
   File? _selectedImage;
   final TextEditingController nameController = TextEditingController();

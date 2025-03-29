@@ -6,7 +6,6 @@ import 'package:difwa/screens/edit_personaldetails.dart';
 import 'package:difwa/screens/personal_details.dart';
 import 'package:difwa/widgets/custom_button.dart';
 import 'package:difwa/widgets/logout_popup.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -20,7 +19,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<ProfileScreen> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final AuthController _userData = Get.put(AuthController());
   UserDetailsModel? usersData;
   bool notificationsEnabled = true;

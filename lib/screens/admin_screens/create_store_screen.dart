@@ -17,44 +17,8 @@ class _CreateStorePageState extends State<CreateStorePage> {
   final AddStoreController controller = Get.put(AddStoreController());
   File? _image;
 
-  // Future<void> _pickImage(ImageSource source) async {
-  //   final picker = ImagePicker();
-  //   final pickedFile = await picker.pickImage(source: source);
 
-  //   if (pickedFile != null) {
-  //     setState(() {
-  //       _image = File(pickedFile.path);
-  //       controller.setImage(_image!); // Set the image in the controller
-  //     });
-  //   }
-  // }
 
-  void _showImageSourceDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Select Image Source'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                // _pickImage(ImageSource.camera);
-                // Navigator.of(context).pop();
-              },
-              child: const Text('Camera'),
-            ),
-            TextButton(
-              onPressed: () {
-                // _pickImage(ImageSource.gallery);
-                // Navigator.of(context).pop();
-              },
-              child: const Text('Gallery'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {

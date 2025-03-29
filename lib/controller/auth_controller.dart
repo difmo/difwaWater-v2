@@ -14,30 +14,7 @@ class AuthController extends GetxController {
 
 ///////////////////////////////////////////////////////////////////////// SIGN UP WITH EMAIL //////////////////////////////////////////////////////////////////////////
 
-//  Future<bool> signwithemail(String email, String name, String password,
-//     String number, bool isLoading) async {
-//   try {
-//     UserCredential userCredential =
-//         await _auth.createUserWithEmailAndPassword(
-//       email: email,
-//       password: password,
-//     );
 
-//     // Save additional user details in Firestore
-//     await _saveUserDataemail(
-//         userCredential.user!.uid, email, name, number, 'defaultFloor');
-//     await _fetchUserRole();
-//     _navigateToDashboard();
-
-//     return true; // Success
-//   } on FirebaseAuthException catch (e) {
-//     Get.snackbar('Error', e.message ?? 'An error occurred while signing up');
-//     return false; // Failure
-//   } catch (e) {
-//     Get.snackbar('Error', 'An unexpected error occurred: $e');
-//     return false; // Failure
-//   }
-// }
 
   Future<bool> signwithemail(String email, String name, String password,
       String number, bool isLoading) async {
@@ -219,20 +196,6 @@ Future<void> updateUserDetails(
   }
 
 ///////////////////////////////////////////////////////////////////////// HANDLE ROLE CHANGED //////////////////////////////////////////////////////////////////
-  void _handleAuthStateChanged(User? user) {
-    if (user != null) {
-      _firestore
-          .collection('difwa-users')
-          .doc(user.uid)
-          .snapshots()
-          .listen((doc) {
-        if (doc.exists) {
-          userRole.value = doc.data()?['role'] ?? 'isUser';
-          _navigateToDashboard();
-        }
-      });
-    }
-  }
 
 ///////////////////////////////////////////////////////////////////////// HANDLE LOGOUT //////////////////////////////////////////////////////////////////////////
   Future<void> logout() async {

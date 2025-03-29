@@ -6,7 +6,6 @@ import 'package:difwa/widgets/PackageOption.dart';
 import 'package:difwa/widgets/subscribe_button_component.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 

@@ -14,8 +14,6 @@ class PaymentWebViewScreen extends StatefulWidget {
 class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
   late final WebViewController _controller;
   bool _isLoading = true;
-  bool _hasError = false;
-
   @override
   void initState() {
     super.initState();
@@ -58,7 +56,6 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
             print("❌ Webview Error: $error");
             setState(() {
               _isLoading = false;
-              _hasError = true;
             });
           },
         ),

@@ -175,7 +175,6 @@ class _OrderListPageState extends State<OrderListPage> {
                       );
                     }
 
-                    List<String> statusList = [statusHistory['status'] ?? ''];
 
                     return ListTile(
                       title: Text(
