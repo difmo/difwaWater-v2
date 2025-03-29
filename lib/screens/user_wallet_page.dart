@@ -4,12 +4,15 @@ import 'package:app_links/app_links.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:difwa/controller/wallet_controller.dart';
 import 'package:difwa/routes/app_routes.dart';
+import 'package:difwa/widgets/custom_appbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class WalletScreen extends StatefulWidget {
-  const WalletScreen({super.key});
+  final VoidCallback onProfilePressed;
+  final VoidCallback onMenuPressed;
+  const WalletScreen(
+      {super.key, required this.onProfilePressed, required this.onMenuPressed});
 
   @override
   _WalletScreenState createState() => _WalletScreenState();
@@ -73,23 +76,20 @@ class _WalletScreenState extends State<WalletScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SvgPicture.asset(
-            'assets/images/logo.svg',
-            height: 20,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_none, color: Colors.black),
-            onPressed: () {},
-          )
-        ],
-      ),
+      appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(60),
+          child: CustomAppbar(
+            onProfilePressed: widget.onProfilePressed,
+            onNotificationPressed: () {
+              Get.toNamed(
+                  AppRoutes.notification); // Navigate to notifications page
+            },
+            onMenuPressed: widget.onMenuPressed,
+            hasNotifications: true,
+            badgeCount: 5, // Example badge count
+            profileImageUrl:
+                'https://i.ibb.co/CpvLnmGf/cheerful-indian-businessman-smiling-closeup-portrait-jobs-career-campaign.jpg', // Profile picture URL
+          )),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(

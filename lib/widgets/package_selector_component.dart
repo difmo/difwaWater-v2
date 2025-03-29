@@ -1,3 +1,4 @@
+import 'package:difwa/config/app_constant.dart';
 import 'package:flutter/material.dart';
 
 class PackageSelectorComponent extends StatefulWidget {
@@ -51,9 +52,7 @@ class _PackageSelectorComponentState extends State<PackageSelectorComponent> {
                 var bottle = widget.bottleItems[index];
                 bool isSelected = index == _selectedIndex;
 
-                String imageUrl = bottle['imageUrl'] ??
-                    'https://5.imimg.com/data5/RK/MM/MY-26385841/ff-1000x1000.jpg';
-
+                String imageUrl = bottle['imageUrl'] ?? bottleImageUrl;
                 return GestureDetector(
                   onTap: () => _handleSelection(index),
                   child: Container(

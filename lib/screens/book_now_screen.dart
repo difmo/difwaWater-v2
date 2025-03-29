@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:difwa/routes/app_routes.dart';
+import 'package:difwa/screens/checkout_screen.dart';
 import 'package:difwa/widgets/CustomPopup.dart';
 import 'package:difwa/widgets/ImageCarouselApp.dart';
 import 'package:difwa/widgets/custom_appbar.dart';
@@ -81,9 +82,16 @@ class _BookNowScreenState extends State<BookNowScreen> {
     });
 
     if (package != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Selected Package: ${package['size']}L')),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //       content: Text(
+      //         'Selected Package: ${package['size']}L',
+      //         style: TextStyle(color: Colors.white), // Ensure text is visible
+      //       ),
+      //       duration: const Duration(milliseconds: 2), // Set duration to 2ms
+      //       backgroundColor: ThemeConstants.primaryColor // Set background color
+      //       ),
+      // );
       _calculateTotalPrice(); // Ensure immediate total price update
     }
   }
@@ -104,12 +112,6 @@ class _BookNowScreenState extends State<BookNowScreen> {
   /// Handles subscription button press
   void _onSubscribePressed() {
     if (_selectedPackage != null && _selectedIndex != -1) {
-      print(_bottleItems[_selectedIndex]);
-      print("bottle : $_quantity");
-      print("quantity : ${_bottleItems[_selectedIndex]['price']}");
-      print(
-          "vacantPrice :  ${_hasEmptyBottle ? _bottleItems[_selectedIndex]['vacantPrice'] : 0}");
-      print(" totalPrice : $_totalPrice");
       Get.toNamed(
         AppRoutes.subscription,
         arguments: {
@@ -121,6 +123,55 @@ class _BookNowScreenState extends State<BookNowScreen> {
           'hasEmptyBottle': _hasEmptyBottle,
           'totalPrice': _totalPrice,
         },
+      );
+    } else {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CustomPopup(
+              title: "Oops! Bottle Not Selected",
+              description:
+                  "Please select a bottle before moving forward. This ensures you get the best!",
+              buttonText: "Got It!",
+              onButtonPressed: () {
+                Get.back();
+              },
+            );
+          });
+    }
+  }
+
+  /// Handles order button press
+  void _onOrderPressed() {
+    if (_selectedPackage != null && _selectedIndex != -1) {
+      try {} catch (e) {}
+      print(_bottleItems[_selectedIndex]);
+      print(_bottleItems[_selectedIndex]['price']);
+      print([DateTime.now()]);
+      final Map<String, dynamic> myOrderData = {
+        'bottle': _bottleItems[_selectedIndex],
+        'quantity': _quantity,
+        'price': _bottleItems[_selectedIndex]['price'],
+        'vacantPrice':
+            _hasEmptyBottle ? _bottleItems[_selectedIndex]['vacantPrice'] : 0,
+        'hasEmptyBottle': _hasEmptyBottle,
+        'totalPrice': _totalPrice,
+      };
+      print("Order Data: $myOrderData");
+      print(
+          "Total Price: ${_bottleItems[_selectedIndex]['price']} (Type: ${_bottleItems[_selectedIndex]['price'].runtimeType})");
+      print("Total Days:1");
+      print("Selected Dates: ${[DateTime.now()]}");
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CheckoutScreen(
+            orderData: myOrderData,
+            totalPrice: _totalPrice, // Ensure this is double
+            totalDays: 1,
+            selectedDates: [DateTime.now()],
+          ),
+        ),
       );
     } else {
       showDialog(
@@ -197,6 +248,14 @@ class _BookNowScreenState extends State<BookNowScreen> {
               ),
 
               const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.only(left: 8, right: 8),
+                child: SubscribeButtonComponent(
+                  text: "Order Now",
+                  onPressed: _onOrderPressed,
+                ),
+              ),
+              const SizedBox(height: 4),
               // Subscribe button
               Padding(
                 padding: const EdgeInsets.only(left: 8, right: 8),

@@ -39,8 +39,6 @@ class _OrderDetailsComponentState extends State<OrderDetailsComponent> {
           _hasEmptyBottle ? widget.selectedPackage!['vacantPrice'] : 0;
 
       _totalPrice = (_quantity * pricePerUnit) + (_quantity * vacantPrice);
-
-      // Use WidgetsBinding to schedule the update after the build phase
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           widget.onOrderUpdated(_quantity, _hasEmptyBottle, _totalPrice);
@@ -85,20 +83,19 @@ class _OrderDetailsComponentState extends State<OrderDetailsComponent> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Order Details$_totalPrice',
+            'Order Details',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 12),
 
           const SizedBox(height: 6),
           Row(
             children: [
               const Text(
                 'Quantity',
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
               Spacer(),
               // Decrease button
@@ -138,7 +135,22 @@ class _OrderDetailsComponentState extends State<OrderDetailsComponent> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Total Price:",
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+              Text(
+                "₹${_totalPrice.toStringAsFixed(2)}",
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
 
           // Checkbox for empty bottles
           Row(

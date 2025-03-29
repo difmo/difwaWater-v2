@@ -1,3 +1,4 @@
+import 'package:difwa/config/app_constant.dart';
 import 'package:difwa/screens/checkout_screen.dart';
 import 'package:difwa/utils/app__text_style.dart';
 import 'package:difwa/utils/theme_constant.dart';
@@ -18,8 +19,8 @@ class SubscriptionScreen extends StatefulWidget {
 }
 
 class _SubscriptionScreenState extends State<SubscriptionScreen> {
-  int selectedPackageIndex = -1;
-  int selectedFrequencyIndex = -1;
+  int selectedPackageIndex = 0;
+  int selectedFrequencyIndex = 0;
   DateTime? startDate;
   DateTime? endDate;
   List<DateTime> selectedDates = [];
@@ -27,14 +28,13 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   late Map<String, dynamic> orderData;
   late double totalPrice;
   late double overAllTotalo;
-  late double bottlePrice = 200.0;
+  late double bottlePrice = 0.0;
 
-  // old code
+//old code
   String? selectedDateRange;
   String selectedFrequency = "Every Day";
   int totalDays = 0;
-  double pricePerDay = 30.0;
-  double vacantBottlePrice = 20.0;
+  double pricePerDay = 0.0;
   bool showError = false;
 
   Future<void> _selectDateRange() async {
@@ -65,13 +65,13 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
     if (selectedFrequencyIndex == 0) {
       while (currentDate.isBefore(endDate)) {
-        selectedDates.add(currentDate);
         currentDate = currentDate.add(const Duration(days: 1));
+        selectedDates.add(currentDate);
       }
     } else if (selectedFrequencyIndex == 1) {
       while (currentDate.isBefore(endDate)) {
-        selectedDates.add(currentDate);
         currentDate = currentDate.add(const Duration(days: 2));
+        selectedDates.add(currentDate);
       }
     } else if (selectedFrequencyIndex == 2) {
       while (currentDate.isBefore(endDate)) {
@@ -85,10 +85,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
   Future<void> _selectCustomDatesDialog(BuildContext context) async {
     getDatesBasedOnFrequency();
-
-    // Create a temporary list to manage selection state
     List<DateTime> tempSelectedDates = List.from(selectedDates);
-
     await showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -173,6 +170,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     if (orderData['hasEmptyBottle']) {
       totalPrice += orderData['vacantPrice'] * orderData['quantity'];
     }
+    print("totalPricedk: $totalPrice");
   }
 
   List<DateTime> getDatesBasedOnFrequency() {
@@ -230,18 +228,18 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   void _handleCheckout() {
-    if (selectedPackageIndex == -1 || selectedDateRange == null) {
-      setState(() {
-        showError = true;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Please select a package duration and date range!"),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
+    // if (selectedPackageIndex == -1 || selectedDateRange == null) {
+    //   setState(() {
+    //     showError = true;
+    //   });
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(
+    //       content: Text("Please select a package duration and date range!"),
+    //       backgroundColor: Colors.red,
+    //     ),
+    //   );
+    //   return;
+    // }
 
     print("Order Data: $orderData");
     print("Total Price: $totalPrice (Type: ${totalPrice.runtimeType})");
@@ -276,14 +274,20 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     print(orderData);
     print(bottlePrice);
 
-    totalPrice = bottlePrice * orderData['quantity'];
+    totalPrice = bottlePrice;
     print(totalPrice);
-
     if (orderData['hasEmptyBottle']) {
       totalPrice += orderData['vacantPrice'] * orderData['quantity'];
     }
     startDate = DateTime.now().add(const Duration(days: 1));
-    totalDays = getTotalDays();
+
+    _generateDates();
+    setState(() {
+      selectedFrequencyIndex = 0;
+      selectedFrequency = "Every Day";
+      totalDays = getTotalDays();
+    });
+    print("totalPricedk: $totalPrice");
   }
 
   int getTotalDays() {
@@ -315,32 +319,34 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               child: Row(
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(4),
                     child: Image.network(
-                      isValidUrl(
-                              "https://fastly.picsum.photos/id/1057/536/354.jpg?hmac=Bx6hxppJnxgdVDhSwJp0YFx6GxVMKj8XIRbuQmKysz4")
-                          ? "https://fastly.picsum.photos/id/1057/536/354.jpg?hmac=Bx6hxppJnxgdVDhSwJp0YFx6GxVMKj8XIRbuQmKysz4"
-                          : "https://www.freeiconspng.com/uploads/no-image-icon-4.png", // Default image
-                      height: 96,
+                      bottleImageUrl,
                       width: 96,
+                      height: 96,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => const Icon(
-                          Icons.image,
-                          size: 60,
-                          color: Colors.white),
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(
+                          Icons.image_not_supported,
+                          size: 80,
+                          color: Colors.grey,
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("10L", style: AppTextStyle.TextWhite18700),
+                      Text("${orderData['bottle']['size']}L",
+                          style: AppTextStyle.TextWhite18700),
                       SizedBox(height: 4),
-                      Text("Price: ₹10.0 per bottle",
+                      Text("Price: ₹ $bottlePrice per bottle",
                           style: AppTextStyle.TextWhite16700),
-                      Text("Vacant Bottle Price: ₹20.0",
+                      Text(
+                          "Vacant Bottle Price: ₹ ${orderData['vacantPrice'] * orderData['quantity']}",
                           style: AppTextStyle.TextWhite16700),
-                      Text("One Bottle Price: ₹30.0",
+                      Text("One Bottle Price: ₹ $totalPrice",
                           style: AppTextStyle.TextWhite16700),
                     ],
                   ),
@@ -365,9 +371,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   index: index,
                   selectedIndex: selectedPackageIndex,
                   onTap: () {
+                    print(index);
                     setState(() {
-                      selectedPackageIndex = index;
                       showError = false;
+                      selectedPackageIndex = index;
+                      print(index);
                       if (index == 0) {
                         endDate = startDate?.add(const Duration(days: 30));
                       }
@@ -381,7 +389,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                         endDate = startDate?.add(const Duration(days: 365));
                       }
                     });
+                    selectedDates.add(endDate!);
                     _generateDates();
+                    totalDays = getTotalDays();
                   },
                 );
               }),
@@ -392,12 +402,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             // Select Date Range
             _buildSelectionBox(
                 "Select Date Range", Icons.calendar_month, _selectDateRange),
-            if (showError && selectedDateRange == null)
-              const Padding(
-                padding: EdgeInsets.only(top: 8),
-                child: Text("Please select a date range!",
-                    style: TextStyle(color: Colors.red)),
-              ),
+            // if (showError || selectedDateRange == null)
+            //   const Padding(
+            //     padding: EdgeInsets.only(top: 8),
+            //     child: Text("Please select a date range!",
+            //         style: TextStyle(color: Colors.red)),
+            //   ),
             const SizedBox(height: 20),
             const Text("Frequency:", style: AppTextStyle.Text18700),
             // Frequency Selection
@@ -411,7 +421,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   icon: Icons.calendar_today,
                   onTap: () {
                     setState(() {
+                      selectedFrequencyIndex = 0;
                       selectedFrequency = "Every Day";
+                      _generateDates();
+                      totalDays = getTotalDays();
                     });
                   },
                 ),
@@ -422,7 +435,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   icon: Icons.swap_horiz,
                   onTap: () {
                     setState(() {
+                      selectedFrequencyIndex = 1;
                       selectedFrequency = "Alternate Days";
+                      _generateDates();
+                      totalDays = getTotalDays();
                     });
                   },
                 ),
@@ -433,7 +449,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   icon: Icons.block,
                   onTap: () {
                     setState(() {
+                      selectedFrequencyIndex = 2;
                       selectedFrequency = "Except Sundays";
+                      _generateDates();
+                      totalDays = getTotalDays();
                     });
                   },
                 ),
@@ -469,7 +488,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text("For One Day:", style: AppTextStyle.Text14500),
-                      Text("₹$pricePerDay", style: AppTextStyle.Text16700),
+                      Text("₹$totalPrice", style: AppTextStyle.Text16700),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -497,7 +516,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                             fontWeight: FontWeight.bold, fontSize: 18),
                       ),
                       Text(
-                        "₹${totalDays * pricePerDay + vacantBottlePrice}",
+                        "₹ ${orderData['price'] * getTotalDays() + orderData['vacantPrice'] * orderData['quantity']} ",
                         style: const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 18),
                       ),
