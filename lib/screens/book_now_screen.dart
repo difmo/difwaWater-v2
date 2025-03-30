@@ -1,13 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:difwa/routes/app_routes.dart';
+import 'package:difwa/screens/checkout_screen.dart';
+import 'package:difwa/utils/location_helper.dart';
 import 'package:difwa/widgets/CustomPopup.dart';
 import 'package:difwa/widgets/ImageCarouselApp.dart';
 import 'package:difwa/widgets/custom_appbar.dart';
 import 'package:difwa/widgets/order_details_component.dart';
 import 'package:difwa/widgets/package_selector_component.dart';
+import 'package:difwa/widgets/simmers/HomePageShimmer.dart';
 import 'package:difwa/widgets/subscribe_button_component.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+
+import '../widgets/simmers/PackageSelectorShimmer .dart';
 
 class BookNowScreen extends StatefulWidget {
   final VoidCallback onProfilePressed;
@@ -27,11 +33,31 @@ class _BookNowScreenState extends State<BookNowScreen> {
   double _totalPrice = 0;
   bool _isLoading = true;
   List<Map<String, dynamic>> _bottleItems = [];
-
+  String locationDetails = "Fetching location...";
   @override
   void initState() {
     super.initState();
     fetchBottleItems();
+    fetchLocation();
+  }
+
+  Future<void> fetchLocation() async {
+    Position? position = await LocationHelper.getCurrentLocation();
+    if (position != null) {
+      Map<String, dynamic>? locationData =
+          await LocationHelper.getAddressFromLatLng(position);
+      if (locationData != null) {
+        setState(() {
+          locationDetails =
+              "Address: ${locationData['address']}\n Pincode: ${locationData['pincode']}\n Lat: ${locationData['latitude']}, Lng: ${locationData['longitude']}";
+        });
+        print("locationDetails : $locationDetails");
+      }
+    } else {
+      setState(() {
+        locationDetails = "Location not available.";
+      });
+    }
   }
 
   /// Fetches bottle items from Firestore
@@ -81,9 +107,16 @@ class _BookNowScreenState extends State<BookNowScreen> {
     });
 
     if (package != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Selected Package: ${package['size']}L')),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //       content: Text(
+      //         'Selected Package: ${package['size']}L',
+      //         style: TextStyle(color: Colors.white), // Ensure text is visible
+      //       ),
+      //       duration: const Duration(milliseconds: 2), // Set duration to 2ms
+      //       backgroundColor: ThemeConstants.primaryColor // Set background color
+      //       ),
+      // );
       _calculateTotalPrice(); // Ensure immediate total price update
     }
   }
@@ -104,12 +137,6 @@ class _BookNowScreenState extends State<BookNowScreen> {
   /// Handles subscription button press
   void _onSubscribePressed() {
     if (_selectedPackage != null && _selectedIndex != -1) {
-      print(_bottleItems[_selectedIndex]);
-      print("bottle : $_quantity");
-      print("quantity : ${_bottleItems[_selectedIndex]['price']}");
-      print(
-          "vacantPrice :  ${_hasEmptyBottle ? _bottleItems[_selectedIndex]['vacantPrice'] : 0}");
-      print(" totalPrice : $_totalPrice");
       Get.toNamed(
         AppRoutes.subscription,
         arguments: {
@@ -139,77 +166,136 @@ class _BookNowScreenState extends State<BookNowScreen> {
     }
   }
 
+  /// Handles order button press
+  void _onOrderPressed() {
+    if (_selectedPackage != null && _selectedIndex != -1) {
+      try {} catch (e) {}
+      print(_bottleItems[_selectedIndex]);
+      print(_bottleItems[_selectedIndex]['price']);
+      print([DateTime.now()]);
+      final Map<String, dynamic> myOrderData = {
+        'bottle': _bottleItems[_selectedIndex],
+        'quantity': _quantity,
+        'price': _bottleItems[_selectedIndex]['price'],
+        'vacantPrice':
+            _hasEmptyBottle ? _bottleItems[_selectedIndex]['vacantPrice'] : 0,
+        'hasEmptyBottle': _hasEmptyBottle,
+        'totalPrice': _totalPrice,
+      };
+      print("Order Data: $myOrderData");
+      print(
+          "Total Price: ${_bottleItems[_selectedIndex]['price']} (Type: ${_bottleItems[_selectedIndex]['price'].runtimeType})");
+      print("Total Days:1");
+      print("Selected Dates: ${[DateTime.now()]}");
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CheckoutScreen(
+            orderData: myOrderData,
+            totalPrice: _totalPrice, // Ensure this is double
+            totalDays: 1,
+            selectedDates: [DateTime.now()],
+          ),
+        ),
+      );
+    } else {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CustomPopup(
+              title: "Oops! Bottle Not Selected",
+              description:
+                  "Please select a bottle before moving forward. This ensures you get the best!",
+              buttonText: "Got It!",
+              onButtonPressed: () {
+                Get.back();
+              },
+            );
+          });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
-          child: CustomAppbar(
-            onProfilePressed: widget.onProfilePressed,
-            onNotificationPressed: () {
-              Get.toNamed(
-                  AppRoutes.notification); // Navigate to notifications page
-            },
-            onMenuPressed: widget.onMenuPressed,
-            hasNotifications: true,
-            badgeCount: 5, // Example badge count
-            profileImageUrl:
-                'https://i.ibb.co/CpvLnmGf/cheerful-indian-businessman-smiling-closeup-portrait-jobs-career-campaign.jpg', // Profile picture URL
-          )),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(5.0),
-          child: Column(
-            children: [
-              // Image Carousel
-              SizedBox(
-                height: screenHeight * 0.20,
-                child: const ImageCarouselPage(),
-              ),
-              const SizedBox(height: 10),
+    return _isLoading
+        ? const HomePageShimmer()
+        : Scaffold(
+            backgroundColor: Colors.white,
+            appBar: PreferredSize(
+                preferredSize: const Size.fromHeight(60),
+                child: CustomAppbar(
+                  onProfilePressed: widget.onProfilePressed,
+                  onNotificationPressed: () {
+                    Get.toNamed(AppRoutes
+                        .notification); // Navigate to notifications page
+                  },
+                  onMenuPressed: widget.onMenuPressed,
+                  hasNotifications: true,
+                  badgeCount: 5, // Example badge count
+                  profileImageUrl:
+                      'https://i.ibb.co/CpvLnmGf/cheerful-indian-businessman-smiling-closeup-portrait-jobs-career-campaign.jpg', // Profile picture URL
+                )),
+            body: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Column(
+                  children: [
+                    // Image Carousel
+                    SizedBox(
+                      height: screenHeight * 0.20,
+                      child: const ImageCarouselPage(),
+                    ),
+                    const SizedBox(height: 10),
 
-              // Show loading or package selector
-              _isLoading
-                  ? const CircularProgressIndicator()
-                  : PackageSelectorComponent(
-                      bottleItems: _bottleItems,
-                      onSelected: _onPackageSelected,
+                    // Show loading or package selector
+                    _isLoading
+                        ? PackageSelectorShimmer()
+                        : PackageSelectorComponent(
+                            bottleItems: _bottleItems,
+                            onSelected: _onPackageSelected,
+                          ),
+
+                    const SizedBox(height: 16),
+
+                    // Order details component
+                    OrderDetailsComponent(
+                      key: ValueKey(_selectedPackage),
+                      selectedPackage: _selectedPackage,
+                      onOrderUpdated: (quantity, hasEmptyBottles, totalPrice) {
+                        if (_totalPrice != totalPrice) {
+                          setState(() {
+                            _quantity = quantity;
+                            _hasEmptyBottle = hasEmptyBottles;
+                            _totalPrice = totalPrice;
+                          });
+                        }
+                      },
                     ),
 
-              const SizedBox(height: 16),
-
-              // Order details component
-              OrderDetailsComponent(
-                key: ValueKey(_selectedPackage),
-                selectedPackage: _selectedPackage,
-                onOrderUpdated: (quantity, hasEmptyBottles, totalPrice) {
-                  if (_totalPrice != totalPrice) {
-                    setState(() {
-                      _quantity = quantity;
-                      _hasEmptyBottle = hasEmptyBottles;
-                      _totalPrice = totalPrice;
-                    });
-                  }
-                },
-              ),
-
-              const SizedBox(height: 20),
-              // Subscribe button
-              Padding(
-                padding: const EdgeInsets.only(left: 8, right: 8),
-                child: SubscribeButtonComponent(
-                  text: "Subscribe Now",
-                  icon: Icons.check_circle,
-                  onPressed: _onSubscribePressed,
+                    const SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8, right: 8),
+                      child: SubscribeButtonComponent(
+                        text: "Order Now",
+                        onPressed: _onOrderPressed,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    // Subscribe button
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8, right: 8),
+                      child: SubscribeButtonComponent(
+                        text: "Subscribe Now",
+                        icon: Icons.check_circle,
+                        onPressed: _onSubscribePressed,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
-    );
+            ),
+          );
   }
 }

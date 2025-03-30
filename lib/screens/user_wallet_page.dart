@@ -4,12 +4,15 @@ import 'package:app_links/app_links.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:difwa/controller/wallet_controller.dart';
 import 'package:difwa/routes/app_routes.dart';
+import 'package:difwa/widgets/custom_appbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class WalletScreen extends StatefulWidget {
-  const WalletScreen({super.key});
+  final VoidCallback onProfilePressed;
+  final VoidCallback onMenuPressed;
+  const WalletScreen(
+      {super.key, required this.onProfilePressed, required this.onMenuPressed});
 
   @override
   _WalletScreenState createState() => _WalletScreenState();
@@ -36,7 +39,6 @@ class _WalletScreenState extends State<WalletScreen> {
     _sub = _appLinks.uriLinkStream.listen((Uri? uri) {
       _handleDeepLink(uri);
     });
-
     Uri? initialLink = await _appLinks.getInitialLink();
     _handleDeepLink(initialLink);
   }
@@ -48,8 +50,7 @@ class _WalletScreenState extends State<WalletScreen> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text("Payment successful!"),
         ));
-        // Update wallet balance or any other relevant data
-        walletController?.updateWalletBalance(50.0); // Example value
+        walletController?.updateWalletBalance(50.0);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text("Payment failed. Please try again."),
@@ -73,23 +74,20 @@ class _WalletScreenState extends State<WalletScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SvgPicture.asset(
-            'assets/images/logo.svg',
-            height: 20,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_none, color: Colors.black),
-            onPressed: () {},
-          )
-        ],
-      ),
+      appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(60),
+          child: CustomAppbar(
+            onProfilePressed: widget.onProfilePressed,
+            onNotificationPressed: () {
+              Get.toNamed(
+                  AppRoutes.notification); // Navigate to notifications page
+            },
+            onMenuPressed: widget.onMenuPressed,
+            hasNotifications: true,
+            badgeCount: 5, // Example badge count
+            profileImageUrl:
+                'https://i.ibb.co/CpvLnmGf/cheerful-indian-businessman-smiling-closeup-portrait-jobs-career-campaign.jpg', // Profile picture URL
+          )),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -132,21 +130,33 @@ class _WalletScreenState extends State<WalletScreen> {
                         return Text('Error: ${snapshot.error}');
                       }
 
-                      if (snapshot.hasData) {
-                        var userDoc = snapshot.data!;
-                        double walletBalance = (userDoc['walletBalance'] is int)
-                            ? (userDoc['walletBalance'] as int).toDouble()
-                            : (userDoc['walletBalance'] ?? 0.0);
-                        return Text(
-                          "₹ ${walletBalance.toStringAsFixed(2)}",
+// Check if data exists
+                      if (!snapshot.hasData || !snapshot.data!.exists) {
+                        return const Text(
+                          "₹ 0.0",
                           style: TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
                           ),
                         );
-                      } else {
-                        return const Text('No data');
                       }
+                      // Extract document data
+                      var userDoc = snapshot.data!;
+                      double walletBalance = 0.0;
+
+                      if (userDoc.data() != null &&
+                          userDoc['walletBalance'] != null) {
+                        walletBalance =
+                            (userDoc['walletBalance'] as num).toDouble();
+                      }
+
+                      return Text(
+                        "₹ ${walletBalance.toStringAsFixed(2)}",
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
                     },
                   ),
                   const SizedBox(height: 10),

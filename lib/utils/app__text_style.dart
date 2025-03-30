@@ -103,6 +103,11 @@ class AppTextStyle {
     fontWeight: FontWeight.w700,
     color: Colors.white,
   );
+  static const TextStyle TextBlack24700 = TextStyle(
+    fontSize: 24,
+    fontWeight: FontWeight.w700,
+    color: Colors.black,
+  );
   static const TextStyle TextWhite18700 = TextStyle(
     fontSize: 18,
     fontWeight: FontWeight.w700,

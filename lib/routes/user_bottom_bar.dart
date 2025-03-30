@@ -32,7 +32,14 @@ class _HomeScreenState extends State<BottomUserHomePage> {
         },
       ),
       HistoryScreen(),
-      WalletScreen(),
+      WalletScreen(
+        onProfilePressed: () {
+          _onItemTapped(3);
+        },
+        onMenuPressed: () {
+          _onItemTapped(2);
+        },
+      ),
       ProfileScreen(),
     ];
   }

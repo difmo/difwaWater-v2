@@ -46,6 +46,12 @@ dependencies:
   logger: ^2.5.0
   vibration: ^3.1.3
   audioplayers: ^6.4.0
+  geolocator: ^13.0.3
+  geocoding: ^3.0.0
+  permission_handler: ^11.4.0
+  animated_text_kit: ^4.2.3
+  confetti: ^0.8.0
+  shimmer: ^3.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -121,4 +127,5 @@ flutter:
     - assets/bgimage.png
     - assets/imagebg.png
     - assets/images/onboard1.svg
+    - assets/success.json
 

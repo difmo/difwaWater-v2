@@ -3,6 +3,7 @@ import 'package:difwa/controller/admin_controller/add_items_controller.dart';
 import 'package:difwa/utils/app__text_style.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/widgets/logout_popup.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -33,7 +34,6 @@ class _StoreHomeState extends State<StoreHome> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -54,7 +54,7 @@ class _StoreHomeState extends State<StoreHome> {
               ),
               onPressed: () {
                     // _controller2.checkFunction();
-                LogoutDialog.showLogoutDialog(context);
+                // LogoutDialog.showLogoutDialog(context);
               },
             ),
           ],

@@ -8,6 +8,7 @@ import 'package:difwa/screens/personal_details.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/widgets/custom_button.dart';
 import 'package:difwa/widgets/logout_popup.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -20,7 +21,7 @@ class StoreProfileScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<StoreProfileScreen> {
   final AuthController _userData = Get.put(AuthController());
-    final AddStoreController controller = Get.put(AddStoreController());
+  final AddStoreController controller = Get.put(AddStoreController());
   UserDetailsModel? usersData;
   bool notificationsEnabled = true;
   bool _isToggled = false;
@@ -110,20 +111,20 @@ class _LoginScreenState extends State<StoreProfileScreen> {
                           ),
                         ],
                       ),
-                   
                     ],
                   ),
                 ),
                 Switch(
-                    value: _isToggled,
-                    activeColor: Colors.blue, // Thumb color when switch is ON
-                    activeTrackColor: Colors.blue
-                        .withOpacity(0.5), // Track color when switch is ON
-                    inactiveThumbColor:
-                        Colors.grey, // Thumb color when switch is OFF
-                    inactiveTrackColor: Colors.grey
-                        .withOpacity(0.5), // Track color when switch is OFF
-                     onChanged: _toggleSwitch,)
+                  value: _isToggled,
+                  activeColor: Colors.blue, // Thumb color when switch is ON
+                  activeTrackColor: Colors.blue
+                      .withOpacity(0.5), // Track color when switch is ON
+                  inactiveThumbColor:
+                      Colors.grey, // Thumb color when switch is OFF
+                  inactiveTrackColor: Colors.grey
+                      .withOpacity(0.5), // Track color when switch is OFF
+                  onChanged: _toggleSwitch,
+                )
               ],
             ),
             GestureDetector(
@@ -155,7 +156,24 @@ class _LoginScreenState extends State<StoreProfileScreen> {
                   width: double.infinity,
                   text: 'Logout',
                   onPressed: () {
-                    LogoutDialog.showLogoutDialog(context);
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return YesNoPopup(
+                            title: "Logout from app!",
+                            description:
+                                "Are you sure want to exit from application?",
+                            noButtonText: "No",
+                            yesButtonText: "Yes",
+                            onNoButtonPressed: () async {
+                              Navigator.pop(context); // Cancel action
+                            },
+                            onYesButtonPressed: () async {
+                              await FirebaseAuth.instance.signOut();
+                              Navigator.pushReplacementNamed(context, '/login');
+                            },
+                          );
+                        });
                   },
                 ),
               ),
