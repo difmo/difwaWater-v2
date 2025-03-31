@@ -207,7 +207,7 @@ class _AddBalanceScreenState extends State<AddBalanceScreen> {
                 enteredAmount = double.tryParse(value) ?? 0;
               }),
               decoration: InputDecoration(
-                prefixText: "\$ ",
+                prefixText: "\₹ ",
                 hintText: "0.00",
                 hintStyle: const TextStyle(color: Colors.grey),
                 border: OutlineInputBorder(
@@ -235,7 +235,7 @@ class _AddBalanceScreenState extends State<AddBalanceScreen> {
                         padding: const EdgeInsets.symmetric(
                             vertical: 12, horizontal: 20),
                       ),
-                      child: Text("+\$${amount.toString()}"),
+                      child: Text("+\₹${amount.toString()}"),
                     ),
                   )
                   .toList(),

@@ -5,6 +5,8 @@ import 'package:difwa/controller/earning_controller.dart';
 // import 'package:difwa/models/stores_models/store_model.dart';
 import 'package:difwa/models/user_models/user_details_model.dart';
 import 'package:difwa/routes/app_routes.dart';
+import 'package:difwa/widgets/CustomPopup.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -15,13 +17,16 @@ class AuthController extends GetxController {
   var userRole = ''.obs;
   EarningController _earningController = Get.put(EarningController());
 
-  
-
 ///////////////////////////////////////////////////////////////////////// SIGN UP WITH EMAIL //////////////////////////////////////////////////////////////////////////
 
   Future<bool> signwithemail(String email, String name, String password,
-      String number, bool isLoading) async {
+      String number, bool isLoading, BuildContext context) async {
     try {
+      print(email);
+      print(name);
+      print(password);
+      print(number);
+
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
         email: email,
@@ -35,10 +40,11 @@ class AuthController extends GetxController {
       _navigateToDashboard();
       return true;
     } on FirebaseAuthException catch (e) {
-      Get.snackbar('Error', e.message ?? 'An error occurred while signing up');
+      Get.snackbar('Oops! Signup Failed ',
+          e.message ?? 'An error occurred while signing up');
       return false;
     } catch (e) {
-      Get.snackbar('Error', 'An unexpected error occurred: $e');
+      Get.snackbar('Error2', 'An unexpected error occurred: $e');
       return false;
     }
   }
@@ -129,7 +135,6 @@ class AuthController extends GetxController {
         'role': 'isUser',
         'orderpin': generateRandomPin(),
         'walletBalance': 0.0,
-  
       }, SetOptions(merge: true));
     } else {
       await _firestore.collection('difwa-users').doc(uid).update({
@@ -155,7 +160,6 @@ class AuthController extends GetxController {
         'floor': floor,
         'email': email,
         'orderpin': generateRandomPin(),
-
       });
     } else {
       // If the user does not exist, create a new record
@@ -185,8 +189,6 @@ class AuthController extends GetxController {
       }
     }
   }
-
-
 
   Future<UserDetailsModel> fetchUserData() async {
     final user = _auth.currentUser;

@@ -9,6 +9,7 @@ class UserDetailsModel {
   final String orderpin;
   final double walletBalance;
   final String? profileImage;
+
   // Constructor with required fields
   UserDetailsModel({
     required this.docId,
@@ -39,7 +40,7 @@ class UserDetailsModel {
       'floor': floor,
       'role': role,
       'walletBalance': walletBalance,
-      'orderpin':orderpin,
+      'orderpin': orderpin, // Ensure it's stored as a String
       'docId': docId,
     };
   }
@@ -51,11 +52,13 @@ class UserDetailsModel {
       uid: json['uid'] ?? '',
       name: json['name'] ?? '',
       number: json['number'] ?? '',
-      orderpin: json['orderpin'] ?? '',
+      orderpin: json['orderpin']?.toString() ?? '', // ✅ Convert int to String
       email: json['email'] ?? '',
       floor: json['floor'] ?? '',
       role: json['role'] ?? 'isUser',
-      walletBalance: json['walletBalance']?.toDouble() ?? 0.0,
+      walletBalance: (json['walletBalance'] is int)
+          ? (json['walletBalance'] as int).toDouble() // ✅ Convert int to double
+          : (json['walletBalance'] ?? 0.0),
     );
   }
 }

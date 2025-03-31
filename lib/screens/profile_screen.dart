@@ -30,18 +30,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     try {
       UserDetailsModel user = await _userData.fetchUserData();
 
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          usersData = user;
-        });
-      }
+      // if (mounted) {
+      setState(() {
+        _isLoading = false;
+        usersData = user;
+      });
+      // }
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+      // if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+      // }
       print("Error fetching user data: $e");
     }
   }

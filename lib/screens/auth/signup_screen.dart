@@ -263,12 +263,12 @@ class _MobileNumberPageState extends State<MobileNumberPage>
 
                             try {
                               bool success = await authController.signwithemail(
-                                emailController.text,
-                                nameController.text,
-                                passwordController.text,
-                                selectedCountryCode + phoneController.text,
-                                isLoading,
-                              );
+                                  emailController.text,
+                                  nameController.text,
+                                  passwordController.text,
+                                  selectedCountryCode + phoneController.text,
+                                  isLoading,
+                                  context);
 
                               if (!success) {
                                 // Handle failure (if needed)
@@ -277,7 +277,7 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                                 isLoading = false;
                               }
                             } catch (e) {
-                              print("Error: $e");
+                              print("Errorr: $e");
                               isLoading = false;
                             } finally {
                               setState(() {

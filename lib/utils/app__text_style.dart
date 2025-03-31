@@ -50,6 +50,11 @@ class AppTextStyle {
     fontWeight: FontWeight.w600,
     color: ThemeConstants.whiteColor,
   );
+  static const TextStyle Textblack16600 = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+    color: ThemeConstants.whiteColor,
+  );
   static const TextStyle Text20600 = TextStyle(
     fontSize: 20,
     fontWeight: FontWeight.w600,

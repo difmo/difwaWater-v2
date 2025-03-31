@@ -45,7 +45,8 @@ class CustomPopup extends StatelessWidget {
 
             // Description
             Text(description,
-                textAlign: TextAlign.center, style: AppTextStyle.Text16600),
+                textAlign: TextAlign.center,
+                style: AppTextStyle.Textblack16600),
             const SizedBox(height: 20),
 
             // Animated Button with Ripple Effect
