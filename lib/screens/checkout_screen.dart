@@ -217,21 +217,13 @@ class CheckoutScreen extends StatelessWidget {
 
             // Wallet Balance Display
             Obx(() {
-              return checkoutController.walletBalance.value != null
-                  ? Text(
-                      '₹ ${checkoutController.walletBalance.value.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24),
-                    )
-                  : Text(
-                      '₹ 0.0',
-                      style: const TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24),
-                    );
+              return Text(
+                '₹ ${checkoutController.walletBalance.value.toStringAsFixed(2)}',
+                style: const TextStyle(
+                    color: Colors.blue,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24),
+              );
             }),
 
             const SizedBox(height: 24),
