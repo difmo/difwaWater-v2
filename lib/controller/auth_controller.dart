@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:difwa/controller/earning_controller.dart';
 // import 'package:difwa/models/stores_models/store_model.dart';
 import 'package:difwa/models/user_models/user_details_model.dart';
 import 'package:difwa/routes/app_routes.dart';
@@ -12,6 +13,9 @@ class AuthController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   var verificationId = ''.obs;
   var userRole = ''.obs;
+  EarningController _earningController = Get.put(EarningController());
+
+  
 
 ///////////////////////////////////////////////////////////////////////// SIGN UP WITH EMAIL //////////////////////////////////////////////////////////////////////////
 
@@ -125,6 +129,7 @@ class AuthController extends GetxController {
         'role': 'isUser',
         'orderpin': generateRandomPin(),
         'walletBalance': 0.0,
+  
       }, SetOptions(merge: true));
     } else {
       await _firestore.collection('difwa-users').doc(uid).update({
@@ -150,6 +155,7 @@ class AuthController extends GetxController {
         'floor': floor,
         'email': email,
         'orderpin': generateRandomPin(),
+
       });
     } else {
       // If the user does not exist, create a new record

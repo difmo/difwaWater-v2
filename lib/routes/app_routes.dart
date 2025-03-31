@@ -2,6 +2,8 @@ import 'package:difwa/models/address_model.dart';
 import 'package:difwa/routes/store_bottom_bar.dart';
 import 'package:difwa/routes/user_bottom_bar.dart';
 import 'package:difwa/screens/add_balance_screen.dart';
+import 'package:difwa/screens/admin_screens/payment_methods.dart';
+import 'package:difwa/screens/admin_screens/request_for_withdraw.dart';
 import 'package:difwa/screens/admin_screens/create_store_screen.dart';
 import 'package:difwa/screens/admin_screens/global_popup.dart';
 import 'package:difwa/screens/auth/adddress_form_page.dart';
@@ -34,15 +36,17 @@ static const fullScreenPopup = '/fullScreenPopup';
   //////// Admin stuff////////
   static const additem = '/additem';
   static const createstore = '/createstore';
+  static const requestforwithdraw= '/requestforwithdraw';
   static const storebottombar = '/storebottombar';
   static const store_home = '/store_home';
   static const store_profile = '/store_profile';
+  static const  paymentmethods = '/paymentmethods';
 
   static final List<GetPage> pages = [
     GetPage(
       name: splash,
       page: () => const SplashScreen(),
-      transition: Transition.fadeIn, // Smooth fade-in for splash screen
+      transition: Transition.fadeIn,
       transitionDuration: Duration(seconds: 1),
     ),
     GetPage(
@@ -110,6 +114,18 @@ static const fullScreenPopup = '/fullScreenPopup';
     GetPage(
       name: createstore,
       page: () => const CreateStorePage(),
+      transition: Transition.fadeIn, // Smooth fade-in for create store page
+      transitionDuration: Duration(milliseconds: 500),
+    ),
+    GetPage(
+      name: paymentmethods,
+      page: () => const PaymentMethods(),
+      transition: Transition.fadeIn, // Smooth fade-in for create store page
+      transitionDuration: Duration(milliseconds: 500),
+    ),
+    GetPage(
+      name: requestforwithdraw,
+      page: () => const RequestForWithdraw(),
       transition: Transition.fadeIn, // Smooth fade-in for create store page
       transitionDuration: Duration(milliseconds: 500),
     ),

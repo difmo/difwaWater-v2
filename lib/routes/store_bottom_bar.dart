@@ -11,7 +11,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:vibration/vibration.dart';
-import 'package:audioplayers/audioplayers.dart'; // Import audioplayers for sound
+import 'package:audioplayers/audioplayers.dart';
 
 class BottomStoreHomePage extends StatefulWidget {
   const BottomStoreHomePage({super.key});
@@ -25,14 +25,12 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
   late final List<Widget> _screens;
   late StreamSubscription _orderSubscription;
   final FirebaseController _authController = Get.put(FirebaseController());
-  final AudioPlayer _audioPlayer = AudioPlayer(); // Initialize the audio player
+  final AudioPlayer _audioPlayer = AudioPlayer(); 
   String merchantIdd = "";
 
-  // Variables to control the vibration and sound
   late bool _isVibrating;
   late bool _isSoundPlaying;
-  late StreamSubscription _vibrationSubscription;
-  late StreamSubscription _soundSubscription;
+
 
   @override
   void initState() {
@@ -40,31 +38,29 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
     _screens = [
       const StoreHome(),
       const StoreItems(),
-      AdminPanelScreen(), // Orders Screen
-      const StoreProfileScreen(), // Profile Screen
+      AdminPanelScreen(), 
+      const StoreProfileScreen(), 
     ];
     _authController.fetchMerchantId("").then((merchantId) {
       print("Fetched merchantId: $merchantId");
       setState(() {
         merchantIdd = merchantId!;
       });
-      _listenForNewOrders(); // Start listening for new orders after merchantId is fetched
+      _listenForNewOrders(); 
     });
 
-    // Initial state for vibration and sound
     _isVibrating = false;
     _isSoundPlaying = false;
   }
 
   // Listen to new orders
   void _listenForNewOrders() {
-    // Debugging: Print the merchantIdd to make sure it's correctly set
     print("Listening for new orders for merchantId: $merchantIdd");
 
     _orderSubscription = FirebaseFirestore.instance
         .collection('difwa-orders')
         .where('merchantId', isEqualTo: merchantIdd)
-        .where('status', isEqualTo: 'paid') // Check if the order is paid
+        .where('status', isEqualTo: 'paid') 
         .snapshots() // Listen to changes
         .listen((snapshot) {
       print("Snapshot received: ${snapshot.docs.length} documents found");

@@ -2,6 +2,8 @@ import 'package:difwa/config/app_color.dart';
 import 'package:difwa/controller/admin_controller/add_store_controller.dart';
 import 'package:difwa/controller/auth_controller.dart';
 import 'package:difwa/models/user_models/user_details_model.dart';
+import 'package:difwa/screens/admin_screens/earnings.dart';
+import 'package:difwa/screens/admin_screens/payment_methods.dart';
 import 'package:difwa/screens/auth/saved_address.dart';
 import 'package:difwa/screens/edit_personaldetails.dart';
 import 'package:difwa/screens/personal_details.dart';
@@ -135,14 +137,23 @@ class _LoginScreenState extends State<StoreProfileScreen> {
             ),
             GestureDetector(
               onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => EarningsDashboard())),
+              child: buildProfileOption('Earnings', 'all data ', Icons.person),
+            ),
+            GestureDetector(
+              onTap: () => Navigator.push(context,
                   MaterialPageRoute(builder: (context) => SavveAddressPage())),
               child: buildProfileOption('Delivery Address',
                   'Manage multiple addresses', Icons.location_on),
             ),
             buildProfileOption('Subscription Details',
                 'View/modify water plans', Icons.subscriptions),
-            buildProfileOption(
-                'Payment Methods', 'Manage payments', Icons.payment),
+            GestureDetector(
+               onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => PaymentMethods())),
+              child: buildProfileOption(
+                  'Payment Methods', 'Manage payments', Icons.payment),
+            ),
             _buildNotificationSetting(),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -245,10 +256,9 @@ Widget buildProfileOption(String title, String subtitle, IconData icon) {
     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
     child: Container(
       padding: EdgeInsets.all(8),
- 
       child: Row(
         children: [
-          Icon(icon, color:ThemeConstants.borderColor),
+          Icon(icon, color: ThemeConstants.borderColor),
           SizedBox(width: 16),
           Expanded(
             child: Column(

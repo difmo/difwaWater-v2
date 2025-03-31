@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:difwa/controller/admin_controller/add_items_controller.dart';
 import 'package:difwa/models/stores_models/store_model.dart';
 // import 'package:difwa/routes/app_routes.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ class AddStoreController extends GetxController {
   final shopnameController = TextEditingController();
   final storeaddressController = TextEditingController();
   File? imageFile;
-
+  FirebaseController _authController = Get.put(FirebaseController());
   @override
   void onClose() {
     upiIdController.dispose();
@@ -84,15 +85,10 @@ class AddStoreController extends GetxController {
           await FirebaseFirestore.instance.runTransaction((transaction) async {
         DocumentSnapshot counterSnapshot = await transaction.get(counterDoc);
 
-        // If the document doesn't exist, create it with initial count
         if (!counterSnapshot.exists) {
           await transaction.set(counterDoc, {'count': 0});
         }
-
-        // Retrieve the current count, ensuring it's an integer
         int userCount = counterSnapshot.exists ? counterSnapshot['count'] : 0;
-
-        // Generate the new merchant ID
         String merchantId =
             'DW$year${(userCount + 1).toString().padLeft(7, '0')}';
 
@@ -132,6 +128,7 @@ class AddStoreController extends GetxController {
       uid: userId,
       storeaddress: storeaddressController.text,
       imageUrl: imageUrl,
+      earnings: "0.0"
     );
   }
 
@@ -139,89 +136,123 @@ class AddStoreController extends GetxController {
     imageFile = image;
   }
 
-Future<bool> getIsActiveStore(String merchantId) async {
-  try {
-
-    QuerySnapshot storeQuerySnapshot = await FirebaseFirestore.instance
-        .collection('difwa-stores')
-        .where('merchantId', isEqualTo: merchantId) // Match merchantId with the current user's ID
-        .get();
-
-    // Step :  if the query returned any document
-    if (storeQuerySnapshot.docs.isNotEmpty) {
-      // Getfirst store document from the query result
-      DocumentSnapshot storeDoc = storeQuerySnapshot.docs.first;
-
-      bool isActive = storeDoc['isActive'] ?? false; // Default to false if not found
-      return isActive;
-    } else {
-      throw Exception('Store with Merchant ID $merchantId not found');
-    }
-  } catch (e) {
-    // Handle any errors
-    Get.snackbar(
-      'Error',
-      'Failed to fetch store status: ${e.toString()}',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.red,
-      colorText: Colors.white,
-    );
-    return false; // Return false if there's an error
-  }
-}
-
-
-Future<void> toggleStoreActiveStatusByCurrentUser() async {
-
-  try {
-
-    // Step 1: Get the current user's ID
-    User? currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser == null) {
-      throw Exception('User not authenticated');
-    }
-    String userId = currentUser.uid; 
-
-    DocumentSnapshot storeDoc = await FirebaseFirestore.instance
-        .collection('difwa-stores')
-        .doc(userId) // Use the current user's UID as the document ID (merchantId)
-        .get();
-
-    if (storeDoc.exists) {
-      bool currentStatus = storeDoc['isActive'] ?? false;
-
-      bool newStatus = !currentStatus;
-
-      await FirebaseFirestore.instance
+  Future<bool> getIsActiveStore(String merchantId) async {
+    try {
+      QuerySnapshot storeQuerySnapshot = await FirebaseFirestore.instance
           .collection('difwa-stores')
-          .doc(userId) // Use the userId (merchantId) as the document ID
-          .update({'isActive': newStatus});
-      
-      // Show success message
+          .where('merchantId', isEqualTo: merchantId)
+          .get();
+
+      if (storeQuerySnapshot.docs.isNotEmpty) {
+        DocumentSnapshot storeDoc = storeQuerySnapshot.docs.first;
+
+        bool isActive =
+            storeDoc['isActive'] ?? false; // Default to false if not found
+        return isActive;
+      } else {
+        throw Exception('Store with Merchant ID $merchantId not found');
+      }
+    } catch (e) {
+      // Handle any errors
       Get.snackbar(
-        'Success',
-        'Store active status updated to: $newStatus',
+        'Error',
+        'Failed to fetch store status: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.red,
         colorText: Colors.white,
       );
-    } else {
-      throw Exception('Store with Merchant ID $userId not found');
+      return false; // Return false if there's an error
     }
-  } catch (e) {
-    // Handle any errors
-    Get.snackbar(
-      'Error',
-      'Failed to toggle store status: ${e.toString()}',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.red,
-      colorText: Colors.white,
-    );
   }
-}
 
+  Future<UserModel?> fetchStoreData() async {
+    String? merchantId = await _authController.fetchMerchantId("");
+    if (merchantId == null) {
+      print("Merchant ID is null");
+      return null;
+    }
+
+    try {
+      QuerySnapshot storeQuerySnapshot = await FirebaseFirestore.instance
+          .collection('difwa-stores')
+          .where('merchantId', isEqualTo: merchantId)
+          .get();
+
+      if (storeQuerySnapshot.docs.isNotEmpty) {
+        DocumentSnapshot storeDoc = storeQuerySnapshot.docs.first;
+        UserModel storeData =
+            UserModel.fromMap(storeDoc.data() as Map<String, dynamic>);
+        return storeData;
+      } else {
+        throw Exception('Store with Merchant ID $merchantId not found');
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to fetch store data: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return null;
+    }
+  }
+
+  Future<void> toggleStoreActiveStatusByCurrentUser() async {
+    try {
+      // Step 1: Get the current user's ID
+      User? currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        throw Exception('User not authenticated');
+      }
+      String userId = currentUser.uid;
+
+      DocumentSnapshot storeDoc = await FirebaseFirestore.instance
+          .collection('difwa-stores')
+          .doc(
+              userId) // Use the current user's UID as the document ID (merchantId)
+          .get();
+
+      if (storeDoc.exists) {
+        bool currentStatus = storeDoc['isActive'] ?? false;
+
+        bool newStatus = !currentStatus;
+
+        await FirebaseFirestore.instance
+            .collection('difwa-stores')
+            .doc(userId) // Use the userId (merchantId) as the document ID
+            .update({'isActive': newStatus});
+
+        // Show success message
+        Get.snackbar(
+          'Success',
+          'Store active status updated to: $newStatus',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+      } else {
+        throw Exception('Store with Merchant ID $userId not found');
+      }
+    } catch (e) {
+      // Handle any errors
+      Get.snackbar(
+        'Error',
+        'Failed to toggle store status: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
 
   Future<void> _updateUserRole(String userId, String merchantId) async {
+    String? merchantId = await _authController.fetchMerchantId("");
+    if (merchantId == null) {
+      print("Merchant ID is null");
+      return;
+    }
+
     DocumentSnapshot userDoc = await FirebaseFirestore.instance
         .collection('difwa-users')
         .doc(userId)
@@ -231,7 +262,11 @@ Future<void> toggleStoreActiveStatusByCurrentUser() async {
       await FirebaseFirestore.instance
           .collection('difwa-users')
           .doc(userId)
-          .update({'role': 'isStoreKeeper', 'merchantId': merchantId,'isActive':false});
+          .update({
+        'role': 'isStoreKeeper',
+        'merchantId': merchantId,
+        'isActive': false
+      });
     } else {
       await FirebaseFirestore.instance
           .collection('difwa-users')
@@ -268,6 +303,44 @@ Future<void> toggleStoreActiveStatusByCurrentUser() async {
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white);
+  }
+
+  Future<void> deleteStore() async {
+    try {
+      String userId = await _getCurrentUserId();
+      await FirebaseFirestore.instance
+          .collection('difwa-stores')
+          .doc(userId)
+          .delete();
+      Get.snackbar('Success', 'Store deleted successfully',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white);
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to delete store: ${e.toString()}',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white);
+    }
+  }
+
+  Future<void> updateStoreDetails(Map<String, dynamic> updates) async {
+    try {
+      String userId = await _getCurrentUserId();
+      await FirebaseFirestore.instance
+          .collection('difwa-stores')
+          .doc(userId)
+          .update(updates);
+      Get.snackbar('Success', 'Store details updated successfully',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white);
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to update store: ${e.toString()}',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white);
+    }
   }
 
   GlobalKey<FormState> get formKey => _formKey;
