@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class FullScreenPopupPage extends StatelessWidget {
+  const FullScreenPopupPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Dialog(

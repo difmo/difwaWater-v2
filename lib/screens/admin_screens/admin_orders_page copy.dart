@@ -313,7 +313,7 @@ class OrderListPage extends StatelessWidget {
       String dailyOrderId,
       dynamic usersData) async {
     try {
-      var pin;
+      String pin;
       if (newStatus == "Completed") {
         print("PRI :: $newStatus");
         pin = await _showPinDialog(context);
@@ -322,7 +322,7 @@ class OrderListPage extends StatelessWidget {
         } else {
           _showErrorDialog(context, "Entered pipn is wrong ",
               "Please insure your pin is correct");
-              return;
+          return;
         }
       } else {
         print("PRI1 :: $newStatus");

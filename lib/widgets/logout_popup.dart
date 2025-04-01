@@ -1,5 +1,4 @@
 import 'package:difwa/utils/app__text_style.dart';
-import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
 
 class YesNoPopup extends StatelessWidget {

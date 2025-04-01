@@ -342,7 +342,7 @@ class OrderListPage extends StatelessWidget {
       String dailyOrderId,
       dynamic usersData) async {
     try {
-      var pin;
+      String pin;
       if (newStatus == "Completed") {
         print("PRI :: $newStatus");
         pin = await _showPinDialog(context);

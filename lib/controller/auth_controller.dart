@@ -15,7 +15,7 @@ class AuthController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   var verificationId = ''.obs;
   var userRole = ''.obs;
-  EarningController _earningController = Get.put(EarningController());
+  final EarningController _earningController = Get.put(EarningController());
 
 ///////////////////////////////////////////////////////////////////////// SIGN UP WITH EMAIL //////////////////////////////////////////////////////////////////////////
 

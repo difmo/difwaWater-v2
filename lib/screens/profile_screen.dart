@@ -208,8 +208,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               subtitle: "Sign out of your account",
                               icon: Icons.logout,
                               onTap: () {
-                                if (!context.mounted)
+                                if (!context.mounted) {
                                   return; // Ensure the context is valid
+                                }
 
                                 showDialog(
                                   context: context,

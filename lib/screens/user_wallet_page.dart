@@ -227,7 +227,7 @@ class _WalletScreenState extends State<WalletScreen> {
               color: Colors.green,
               title: "Received from \nJames Wilson",
               date: "Oct 24, 2023 • Completed",
-              amount: "+\₹850.00",
+              amount: "+₹850.00",
               amountColor: Colors.green,
             ),
             _buildTransactionItem(
@@ -235,7 +235,7 @@ class _WalletScreenState extends State<WalletScreen> {
               color: Colors.red,
               title: "Amazon Purchase",
               date: "Oct 23, 2023 • Completed",
-              amount: "-\₹129.99",
+              amount: "-₹129.99",
               amountColor: Colors.red,
             ),
             _buildTransactionItem(
@@ -243,7 +243,7 @@ class _WalletScreenState extends State<WalletScreen> {
               color: Colors.orange,
               title: "Netflix Subscription",
               date: "Oct 22, 2023 • Pending",
-              amount: "-\₹14.99",
+              amount: "-₹14.99",
               amountColor: Colors.orange,
             ),
           ],

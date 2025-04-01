@@ -17,7 +17,7 @@ class AddStoreController extends GetxController {
   final shopnameController = TextEditingController();
   final storeaddressController = TextEditingController();
   File? imageFile;
-  FirebaseController _authController = Get.put(FirebaseController());
+  final FirebaseController _authController = Get.put(FirebaseController());
   @override
   void onClose() {
     upiIdController.dispose();
@@ -86,7 +86,7 @@ class AddStoreController extends GetxController {
         DocumentSnapshot counterSnapshot = await transaction.get(counterDoc);
 
         if (!counterSnapshot.exists) {
-          await transaction.set(counterDoc, {'count': 0});
+          transaction.set(counterDoc, {'count': 0});
         }
         int userCount = counterSnapshot.exists ? counterSnapshot['count'] : 0;
         String merchantId =
@@ -118,18 +118,17 @@ class AddStoreController extends GetxController {
   UserModel _createUserModel(
       String userId, String merchantId, String? imageUrl) {
     return UserModel(
-      userId: userId,
-      upiId: upiIdController.text,
-      mobile: mobileController.text,
-      email: emailController.text,
-      shopName: shopnameController.text,
-      ownerName: ownernameController.text,
-      merchantId: merchantId,
-      uid: userId,
-      storeaddress: storeaddressController.text,
-      imageUrl: imageUrl,
-      earnings: "0.0"
-    );
+        userId: userId,
+        upiId: upiIdController.text,
+        mobile: mobileController.text,
+        email: emailController.text,
+        shopName: shopnameController.text,
+        ownerName: ownernameController.text,
+        merchantId: merchantId,
+        uid: userId,
+        storeaddress: storeaddressController.text,
+        imageUrl: imageUrl,
+        earnings: "0.0");
   }
 
   void setImage(File image) {

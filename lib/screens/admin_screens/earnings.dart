@@ -7,19 +7,21 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class EarningsDashboard extends StatefulWidget {
+  const EarningsDashboard({super.key});
+
   @override
   _EarningsDashboardState createState() => _EarningsDashboardState();
 }
 
 class _EarningsDashboardState extends State<EarningsDashboard> {
   final EarningController _earningController = Get.put(EarningController());
-  
+
   Map<String, int> earnings = {
     "today": 0,
     "yesterday": 0,
     "weekly": 0,
     "monthly": 0,
-    "total":0,
+    "total": 0,
   };
 
   List<Map<String, dynamic>> transactions = [
@@ -46,7 +48,8 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
 
   void _fetchEarningsByRange() async {
     if (selectedDateRange != null) {
-      int fetchedRangeEarnings = await _earningController.fetchEarningsByDateRange(
+      int fetchedRangeEarnings =
+          await _earningController.fetchEarningsByDateRange(
         selectedDateRange!.start,
         selectedDateRange!.end,
       );
@@ -77,7 +80,8 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
         backgroundColor: const Color.fromARGB(255, 170, 217, 255),
         title: Text(
           "Earnings Dashboard",
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+          style: TextStyle(
+              fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
         ),
       ),
       backgroundColor: Colors.white,
@@ -87,7 +91,7 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 16),
-                   Container(
+            Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -142,7 +146,8 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
                     alignment: Alignment.bottomRight,
                     child: TextButton(
                       onPressed: () {
-                        Get.toNamed(AppRoutes.requestforwithdraw,arguments: earnings["total"]);
+                        Get.toNamed(AppRoutes.requestforwithdraw,
+                            arguments: earnings["total"]);
                       },
                       child: const Text(
                         "Withdraw",
@@ -153,7 +158,6 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
                 ],
               ),
             ),
-
             const SizedBox(height: 24),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -167,15 +171,18 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
               ),
             ),
             SizedBox(height: 16),
-            Text("Select Date Range", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text("Select Date Range",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             Row(
               children: [
                 Expanded(
                   child: selectedDateRange == null
-                      ? Text("No date range selected", style: TextStyle(color: Colors.grey))
+                      ? Text("No date range selected",
+                          style: TextStyle(color: Colors.grey))
                       : Text(
                           "${DateFormat.yMMMd().format(selectedDateRange!.start)} - ${DateFormat.yMMMd().format(selectedDateRange!.end)}",
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                 ),
                 IconButton(
@@ -187,7 +194,8 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
             if (selectedDateRange != null)
               _buildEarningsCard("Custom Range", rangeEarnings),
             SizedBox(height: 16),
-            Text("Transactions", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text("Transactions",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             Expanded(child: _buildEarningsList()),
             SizedBox(height: 16),
             CustomButton(text: "Refresh", onPressed: _fetchEarnings)
@@ -207,7 +215,8 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
           children: [
             Text(title, style: TextStyle(color: Colors.grey)),
             SizedBox(height: 4),
-            Text("₹$amount", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text("₹$amount",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
@@ -223,8 +232,10 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
         return Card(
           color: ThemeConstants.whiteColor,
           child: ListTile(
-            title: Text(transaction['time'], style: TextStyle(fontSize: 14, color: Colors.grey)),
-            trailing: Text("₹${transaction['amount']}", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            title: Text(transaction['time'],
+                style: TextStyle(fontSize: 14, color: Colors.grey)),
+            trailing: Text("₹${transaction['amount']}",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ),
         );
       },

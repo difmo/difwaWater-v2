@@ -4,7 +4,6 @@ import 'package:difwa/utils/app__text_style.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 class StoreHome extends StatefulWidget {
   const StoreHome({super.key});
@@ -50,7 +49,7 @@ class _StoreHomeState extends State<StoreHome> {
                 color: Colors.white,
               ),
               onPressed: () {
-                    // _controller2.checkFunction();
+                // _controller2.checkFunction();
                 // LogoutDialog.showLogoutDialog(context);
               },
             ),
@@ -61,10 +60,7 @@ class _StoreHomeState extends State<StoreHome> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Order Summary',
-                style: AppTextStyle.Text18700
-              ),
+              const Text('Order Summary', style: AppTextStyle.Text18700),
               const SizedBox(height: 16),
               const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -97,21 +93,21 @@ class _StoreHomeState extends State<StoreHome> {
                       .where('merchantId', isEqualTo: merchantIdd)
                       .snapshots(),
                   builder: (context, snapshot) {
-                  print("merchantIdd");
-                  print(merchantIdd);
+                    print("merchantIdd");
+                    print(merchantIdd);
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
                     }
-      
+
                     if (snapshot.hasError) {
                       return const Center(child: Text('Error loading orders'));
                     }
-      
+
                     final orders = snapshot.data?.docs ?? [];
                     if (orders.isEmpty) {
                       return const Center(child: Text('No orders available.'));
                     }
-      
+
                     return ListView.builder(
                       itemCount: orders.length,
                       itemBuilder: (context, index) {
@@ -119,7 +115,7 @@ class _StoreHomeState extends State<StoreHome> {
                             orders[index].data() as Map<String, dynamic>;
                         final orderId = orders[index].id;
                         final orderStatus = order['status'] ?? 'pending';
-      
+
                         return Card(
                           color: Colors.white,
                           margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -129,7 +125,8 @@ class _StoreHomeState extends State<StoreHome> {
                             subtitle: Text('Status: $orderStatus'),
                             trailing: Text(
                               '₹ ${order['totalPrice']}',
-                              style: const TextStyle(fontWeight: FontWeight.bold),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
                         );
@@ -184,16 +181,13 @@ class _OrderCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: ThemeConstants.blackColor,
         borderRadius: BorderRadius.circular(12),
-        
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: AppTextStyle.Text18700.copyWith(color: Colors.white)
-          ),
+          Text(title,
+              textAlign: TextAlign.center,
+              style: AppTextStyle.Text18700.copyWith(color: Colors.white)),
           const SizedBox(height: 8),
           Text(
             '$orderCount',

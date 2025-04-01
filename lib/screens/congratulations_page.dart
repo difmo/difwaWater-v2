@@ -52,7 +52,12 @@ class _CongratulationsPageState extends State<CongratulationsPage> {
                 emissionFrequency: 0.02,
                 numberOfParticles: 10,
                 gravity: 0.3,
-                colors: [Colors.red, Colors.blue, Colors.green, Colors.yellow],
+                colors: const [
+                  Colors.red,
+                  Colors.blue,
+                  Colors.green,
+                  Colors.yellow
+                ],
               ),
             ),
 

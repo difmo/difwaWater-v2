@@ -12,7 +12,7 @@ class RequestForWithdraw extends StatefulWidget {
 
 class _RequestForWithdrawState extends State<RequestForWithdraw> {
   TextEditingController amountController = TextEditingController();
-  AddStoreController _addStoreController = Get.put(AddStoreController());
+  final AddStoreController _addStoreController = Get.put(AddStoreController());
   WalletController? walletController;
   String totalEarnings = "";
   double enteredAmount = 0.0;
@@ -35,12 +35,10 @@ class _RequestForWithdrawState extends State<RequestForWithdraw> {
   }
 
   void _withdrawMoney() async {
-
-    print("Withdraw request for \$${enteredAmount}");
+    print("Withdraw request for \$$enteredAmount");
 
     double? parsedEarnings = double.tryParse(totalEarnings);
-    if (parsedEarnings != null && enteredAmount > parsedEarnings)
-    {
+    if (parsedEarnings != null && enteredAmount > parsedEarnings) {
       print("So sorry enter less then of total amount");
 
       _addStoreController.updateStoreDetails({});
@@ -69,7 +67,8 @@ class _RequestForWithdrawState extends State<RequestForWithdraw> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("Current Balance", style: TextStyle(color: Colors.grey, fontSize: 16)),
+            const Text("Current Balance",
+                style: TextStyle(color: Colors.grey, fontSize: 16)),
             const SizedBox(height: 4),
             Text(
               "₹ $totalEarnings",
@@ -121,7 +120,10 @@ class _RequestForWithdrawState extends State<RequestForWithdraw> {
             const SizedBox(height: 20),
             const Text(
               "Transaction History",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black),
             ),
             const SizedBox(height: 10),
             const Text(
@@ -142,7 +144,10 @@ class _RequestForWithdrawState extends State<RequestForWithdraw> {
                 ),
                 child: const Text(
                   "Withdraw",
-                  style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
             ),

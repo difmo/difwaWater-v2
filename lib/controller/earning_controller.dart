@@ -4,8 +4,8 @@ import 'package:difwa/controller/admin_controller/add_store_controller.dart';
 import 'package:get/get.dart';
 
 class EarningController extends GetxController {
-  FirebaseController _authController = Get.put(FirebaseController());
-  AddStoreController _addstoreController = Get.put(AddStoreController());
+  final FirebaseController _authController = Get.put(FirebaseController());
+  final AddStoreController _addstoreController = Get.put(AddStoreController());
   Future<Map<String, int>> fetchEarnings() async {
     try {
       String? merchantId = await _authController.fetchMerchantId("");
@@ -32,7 +32,7 @@ class EarningController extends GetxController {
       double monthlyEarnings = 0.0;
       double totalEarnings = 0.0;
 
-      querySnapshot.docs.forEach((doc) {
+      for (var doc in querySnapshot.docs) {
         var data = doc.data() as Map<String, dynamic>;
         Timestamp orderTimestamp = data['timestamp'];
         DateTime orderDate = orderTimestamp.toDate();
@@ -53,7 +53,7 @@ class EarningController extends GetxController {
         if (orderDate.isAfter(monthStart)) {
           monthlyEarnings += totalPrice;
         }
-      });
+      }
 
       await _addstoreController
           .updateStoreDetails({"earnings": totalEarnings.toInt()});

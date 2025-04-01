@@ -35,16 +35,16 @@ class ProfileShimmer extends StatelessWidget {
               ],
             ),
             child: Row(
-              children: [
+              children: const [
                 ShimmerWidget.circular(height: 80, width: 80),
-                const SizedBox(width: 16),
+                SizedBox(width: 16),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ShimmerWidget.rectangular(height: 16, width: 120),
-                    const SizedBox(height: 6),
+                    SizedBox(height: 6),
                     ShimmerWidget.rectangular(height: 14, width: 160),
-                    const SizedBox(height: 6),
+                    SizedBox(height: 6),
                     ShimmerWidget.rectangular(height: 14, width: 100),
                   ],
                 )
