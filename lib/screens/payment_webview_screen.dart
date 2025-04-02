@@ -4,8 +4,15 @@ import 'package:webview_flutter_android/webview_flutter_android.dart';
 
 class PaymentWebViewScreen extends StatefulWidget {
   final String initialUrl;
+  final double amount;
+  final String userId;
 
-  const PaymentWebViewScreen({super.key, required this.initialUrl});
+  const PaymentWebViewScreen({
+    super.key,
+    required this.initialUrl,
+    required this.amount,
+    required this.userId,
+  });
 
   @override
   State<PaymentWebViewScreen> createState() => _PaymentWebViewScreenState();
@@ -13,54 +20,95 @@ class PaymentWebViewScreen extends StatefulWidget {
 
 class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
   late final WebViewController _controller;
-  bool _isLoading = true;
+  bool _isLoading = true; // to manage loading state
+  bool _isDone = true; // to manage done state for first URL check
+
   @override
   void initState() {
     super.initState();
 
-    final PlatformWebViewControllerCreationParams params =
-        PlatformWebViewControllerCreationParams();
-
-    _controller = WebViewController.fromPlatformCreationParams(params)
+    // Initialize WebViewController
+    _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onUrlChange: (url) {
-            print("🌐 Loading URL: ${url.url}");
-            setState(() => _isLoading = true);
+      ..setNavigationDelegate(NavigationDelegate(
+        // Handling URL changes
+        onUrlChange: (UrlChange urlChange) {
+          print("🌐 Loading URL: ${urlChange.url}");
 
-            // ✅ Detect success or failure and handle navigation
-            if (url.url.toString().contains("status") &&
-                url.url.toString().contains("payment_id")) {
-              Uri uri = Uri.parse(url.toString());
-              String? status = uri.queryParameters["status"];
-              String? paymentId = uri.queryParameters["payment_id"];
-              print("Payment Status: $status");
-              print("Payment ID: $paymentId");
+          setState(() {
+            _isLoading = true;
+          });
 
-              // ✅ Payment Success — Navigate & pass data
+          String url = urlChange.url.toString();
+
+          // Parse the URL
+          Uri uri = Uri.parse(url);
+
+          // Extract query parameters
+          String? paymentId = uri.queryParameters["payment_id"];
+          String? status = uri.queryParameters["status"];
+
+          // Print values
+          print("URL: $url");
+          print("Payment ID: $paymentId");
+          print("Status: $status");
+
+          // Check if URL contains the required query parameters
+          if (urlChange.url!.contains("status") &&
+              urlChange.url!.contains("payment_id")) {
+            Uri uri = Uri.parse(urlChange.url!); // Convert URL to Uri object
+            String? status = uri.queryParameters["status"];
+            String? paymentId = uri.queryParameters["payment_id"];
+
+            print("Parsed URL: $uri");
+            print("Payment Status: $status");
+            print("Payment ID: $paymentId");
+
+            // Handle payment result
+            if (status != null && paymentId != null) {
               if (status == "success") {
                 Navigator.pop(
                     context, {"status": "success", "payment_id": paymentId});
               } else {
-                // ❌ Payment Failed — Pop with failure
                 Navigator.pop(context, {"status": "failed"});
               }
+            } else {
+              // In case status or payment_id is missing
+              print("Error: status or payment_id is missing.");
+              Navigator.pop(context, {"status": "failed"});
             }
-          },
-          onPageFinished: (String url) {
-            setState(() => _isLoading = false);
-            print("✅ Finished Loading: $url");
-          },
-          onWebResourceError: (error) {
-            print("❌ Webview Error: $error");
-            setState(() {
-              _isLoading = false;
-            });
-          },
-        ),
-      )
-      ..loadRequest(Uri.parse(widget.initialUrl));
+          } else {
+            print("URL does not contain required parameters.");
+          }
+        },
+
+        // This gets called when the page finishes loading
+        onPageFinished: (String url) {
+          print("✅ Finished Loading: $url");
+
+          if (url.contains("status") && url.contains("payment_id")) {
+            Uri uri = Uri.parse(url);
+            String? status = uri.queryParameters["status"];
+            String? paymentId = uri.queryParameters["payment_id"];
+            print("Payment Status: $status");
+            print("Payment ID: $paymentId");
+          }
+
+          setState(() {
+            _isDone = false; // Set the flag to false after checking once
+            _isLoading = false;
+          });
+        },
+
+        // Handling WebView errors
+        onWebResourceError: (WebResourceError error) {
+          print("❌ Webview Error: $error");
+          setState(() {
+            _isLoading = false;
+          });
+        },
+      ))
+      ..loadRequest(Uri.parse(widget.initialUrl)); // Load the initial URL
 
     // Handle Android-specific WebChromeClient issues
     if (_controller.platform is AndroidWebViewController) {
@@ -84,7 +132,7 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: _onWillPop,
+      onWillPop: _onWillPop, // Preventing back navigation if necessary
       child: SafeArea(
         child: Scaffold(
           backgroundColor: Colors.white,

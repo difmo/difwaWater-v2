@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:difwa/config/app_color.dart';
 import 'package:difwa/controller/admin_controller/add_items_controller.dart';
 import 'package:difwa/controller/admin_controller/add_store_controller.dart';
-import 'package:difwa/controller/payment_history_controller.dart';
+import 'package:difwa/controller/admin_controller/payment_history_controller.dart';
 import 'package:difwa/models/stores_models/store_model.dart';
 import 'package:difwa/screens/admin_screens/store_home.dart';
 import 'package:difwa/screens/admin_screens/admin_orders_page.dart';
