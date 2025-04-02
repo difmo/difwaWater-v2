@@ -121,19 +121,6 @@ class AddStoreController extends GetxController {
   UserModel _createUserModel(
       String userId, String merchantId, String? imageUrl) {
     return UserModel(
-<<<<<<< HEAD
-        userId: userId,
-        upiId: upiIdController.text,
-        mobile: mobileController.text,
-        email: emailController.text,
-        shopName: shopnameController.text,
-        ownerName: ownernameController.text,
-        merchantId: merchantId,
-        uid: userId,
-        storeaddress: storeaddressController.text,
-        imageUrl: imageUrl,
-        earnings: "0.0");
-=======
       userId: userId,
       upiId: upiIdController.text,
       mobile: mobileController.text,
@@ -146,7 +133,6 @@ class AddStoreController extends GetxController {
       imageUrl: imageUrl,
       earnings: 0.0
     );
->>>>>>> 4bf2947 (save)
   }
 
   void setImage(File image) {

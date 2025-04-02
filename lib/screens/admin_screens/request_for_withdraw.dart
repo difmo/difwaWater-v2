@@ -1,4 +1,6 @@
+import 'package:difwa/controller/admin_controller/add_store_controller.dart';
 import 'package:difwa/controller/payment_history_controller.dart';
+import 'package:difwa/controller/wallet_controller.dart';
 import 'package:difwa/utils/app__text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,15 +14,11 @@ class RequestForWithdraw extends StatefulWidget {
 }
 
 class _RequestForWithdrawState extends State<RequestForWithdraw> {
-<<<<<<< HEAD
   TextEditingController amountController = TextEditingController();
   final AddStoreController _addStoreController = Get.put(AddStoreController());
   WalletController? walletController;
-=======
-  final TextEditingController amountController = TextEditingController();
   final PaymentHistoryController _paymentHistoryController =
       Get.put(PaymentHistoryController());
->>>>>>> 4bf2947 (save)
   String totalEarnings = "";
   double enteredAmount = 0.0;
 
@@ -74,20 +72,6 @@ class _RequestForWithdrawState extends State<RequestForWithdraw> {
     super.dispose();
   }
 
-<<<<<<< HEAD
-  void _withdrawMoney() async {
-    print("Withdraw request for \$$enteredAmount");
-
-    double? parsedEarnings = double.tryParse(totalEarnings);
-    if (parsedEarnings != null && enteredAmount > parsedEarnings) {
-      print("So sorry enter less then of total amount");
-
-      _addStoreController.updateStoreDetails({});
-    }
-  }
-
-=======
->>>>>>> 4bf2947 (save)
   @override
   Widget build(BuildContext context) {
     return Scaffold(

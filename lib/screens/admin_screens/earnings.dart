@@ -21,12 +21,9 @@ class EarningsDashboard extends StatefulWidget {
 
 class _EarningsDashboardState extends State<EarningsDashboard> {
   final EarningController _earningController = Get.put(EarningController());
-<<<<<<< HEAD
-=======
   final PaymentHistoryController _paymentHistoryController =
       Get.put(PaymentHistoryController());
   final AddStoreController _addStoreController = Get.put(AddStoreController());
->>>>>>> 4bf2947 (save)
 
   Map<String, int> earnings = {
     "today": 0,
@@ -126,10 +123,7 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 16),
-<<<<<<< HEAD
-=======
             // Total Balance Container
->>>>>>> 4bf2947 (save)
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -186,11 +180,7 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
                     child: TextButton(
                       onPressed: () {
                         Get.toNamed(AppRoutes.requestforwithdraw,
-<<<<<<< HEAD
-                            arguments: earnings["total"]);
-=======
                             arguments:total);
->>>>>>> 4bf2947 (save)
                       },
                       child: const Text(
                         "Withdraw",
@@ -215,10 +205,7 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
               ),
             ),
             SizedBox(height: 16),
-<<<<<<< HEAD
-=======
             // Date Range Selector
->>>>>>> 4bf2947 (save)
             Text("Select Date Range",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             Row(
@@ -242,10 +229,7 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
             if (selectedDateRange != null)
               _buildEarningsCard("Custom Range", rangeEarnings),
             SizedBox(height: 16),
-<<<<<<< HEAD
-=======
             // Transactions
->>>>>>> 4bf2947 (save)
             Text("Transactions",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             Expanded(child: _buildEarningsList()),
@@ -287,12 +271,6 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
         return Card(
           color: ThemeConstants.whiteColor,
           child: ListTile(
-<<<<<<< HEAD
-            title: Text(transaction['time'],
-                style: TextStyle(fontSize: 14, color: Colors.grey)),
-            trailing: Text("₹${transaction['amount']}",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-=======
             title: Text(
                 transaction.timestamp != null
                     ? DateFormat.yMMMd().format(transaction.timestamp)
@@ -312,7 +290,6 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
               isCredit ? Icons.arrow_upward : Icons.arrow_downward,
               color: isCredit ? Colors.green : Colors.red,
             ),
->>>>>>> 4bf2947 (save)
           ),
         );
       },
