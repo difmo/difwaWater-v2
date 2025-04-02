@@ -4,8 +4,27 @@ import 'package:difwa/controller/admin_controller/add_store_controller.dart';
 import 'package:get/get.dart';
 
 class EarningController extends GetxController {
+<<<<<<< HEAD
   final FirebaseController _authController = Get.put(FirebaseController());
   final AddStoreController _addstoreController = Get.put(AddStoreController());
+=======
+  FirebaseController _authController = Get.put(FirebaseController());
+  AddStoreController _addstoreController = Get.put(AddStoreController());
+
+
+  // Future<void> setEarningsStore(double orderPrice)
+  // {
+  //   try{
+
+  //   }catch(e){
+        
+  //   }
+  // }
+    
+
+
+
+>>>>>>> 4bf2947 (save)
   Future<Map<String, int>> fetchEarnings() async {
     try {
       String? merchantId = await _authController.fetchMerchantId("");
@@ -55,8 +74,8 @@ class EarningController extends GetxController {
         }
       }
 
-      await _addstoreController
-          .updateStoreDetails({"earnings": totalEarnings.toInt()});
+      // await _addstoreController
+      //     .updateStoreDetails({"earnings": totalEarnings});
 
       return {
         "today": todayEarnings.toInt(),

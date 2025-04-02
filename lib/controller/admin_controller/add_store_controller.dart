@@ -16,6 +16,9 @@ class AddStoreController extends GetxController {
   final ownernameController = TextEditingController();
   final shopnameController = TextEditingController();
   final storeaddressController = TextEditingController();
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   File? imageFile;
   final FirebaseController _authController = Get.put(FirebaseController());
   @override
@@ -118,6 +121,7 @@ class AddStoreController extends GetxController {
   UserModel _createUserModel(
       String userId, String merchantId, String? imageUrl) {
     return UserModel(
+<<<<<<< HEAD
         userId: userId,
         upiId: upiIdController.text,
         mobile: mobileController.text,
@@ -129,6 +133,20 @@ class AddStoreController extends GetxController {
         storeaddress: storeaddressController.text,
         imageUrl: imageUrl,
         earnings: "0.0");
+=======
+      userId: userId,
+      upiId: upiIdController.text,
+      mobile: mobileController.text,
+      email: emailController.text,
+      shopName: shopnameController.text,
+      ownerName: ownernameController.text,
+      merchantId: merchantId,
+      uid: userId,
+      storeaddress: storeaddressController.text,
+      imageUrl: imageUrl,
+      earnings: 0.0
+    );
+>>>>>>> 4bf2947 (save)
   }
 
   void setImage(File image) {
@@ -164,38 +182,45 @@ class AddStoreController extends GetxController {
     }
   }
 
-  Future<UserModel?> fetchStoreData() async {
-    String? merchantId = await _authController.fetchMerchantId("");
-    if (merchantId == null) {
-      print("Merchant ID is null");
-      return null;
-    }
-
-    try {
-      QuerySnapshot storeQuerySnapshot = await FirebaseFirestore.instance
-          .collection('difwa-stores')
-          .where('merchantId', isEqualTo: merchantId)
-          .get();
-
-      if (storeQuerySnapshot.docs.isNotEmpty) {
-        DocumentSnapshot storeDoc = storeQuerySnapshot.docs.first;
-        UserModel storeData =
-            UserModel.fromMap(storeDoc.data() as Map<String, dynamic>);
-        return storeData;
-      } else {
-        throw Exception('Store with Merchant ID $merchantId not found');
-      }
-    } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to fetch store data: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return null;
-    }
+Future<UserModel?> fetchStoreData() async {
+  String? merchantId = await _authController.fetchMerchantId("");
+  if (merchantId == null) {
+    return null;
   }
+  print("fetch store data2");
+
+  try {
+    QuerySnapshot storeQuerySnapshot = await FirebaseFirestore.instance
+        .collection('difwa-stores')
+        .where('merchantId', isEqualTo: merchantId)
+        .get();
+
+    if (storeQuerySnapshot.docs.isNotEmpty) {
+      DocumentSnapshot storeDoc = storeQuerySnapshot.docs.first;
+      
+      UserModel storeData =
+          UserModel.fromMap(storeDoc.data() as Map<String, dynamic>);
+
+      if (storeData.earnings == null || storeData.earnings == 0.0) {
+        print("Earnings are null or empty.");
+      }
+
+      return storeData;
+    } else {
+      throw Exception('Store with Merchant ID $merchantId not found');
+    }
+  } catch (e) {
+    Get.snackbar(
+      'Error',
+      'Failed to fetch store data: ${e.toString()}',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
+    return null;
+  }
+}
+
 
   Future<void> toggleStoreActiveStatusByCurrentUser() async {
     try {
@@ -302,6 +327,24 @@ class AddStoreController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white);
+  }
+
+
+  Future<String?> fetchMerchantId() async {
+    final userIdd = _auth.currentUser?.uid;
+
+    try {
+      DocumentSnapshot storeDoc =
+          await _firestore.collection('difwa-stores').doc(userIdd).get();
+
+      if (!storeDoc.exists) {
+        throw Exception("Store document does not exist for this user.");
+      }
+
+      return storeDoc['merchantId'];
+    } catch (e) {
+      throw Exception("Failed to fetch merchantId: $e");
+    }
   }
 
   Future<void> deleteStore() async {

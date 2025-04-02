@@ -1,7 +1,8 @@
-import 'package:difwa/controller/admin_controller/add_store_controller.dart';
-import 'package:difwa/controller/wallet_controller.dart';
+import 'package:difwa/controller/payment_history_controller.dart';
+import 'package:difwa/utils/app__text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:difwa/models/stores_models/withdraw_request_model.dart';
 
 class RequestForWithdraw extends StatefulWidget {
   const RequestForWithdraw({super.key});
@@ -11,21 +12,60 @@ class RequestForWithdraw extends StatefulWidget {
 }
 
 class _RequestForWithdrawState extends State<RequestForWithdraw> {
+<<<<<<< HEAD
   TextEditingController amountController = TextEditingController();
   final AddStoreController _addStoreController = Get.put(AddStoreController());
   WalletController? walletController;
+=======
+  final TextEditingController amountController = TextEditingController();
+  final PaymentHistoryController _paymentHistoryController =
+      Get.put(PaymentHistoryController());
+>>>>>>> 4bf2947 (save)
   String totalEarnings = "";
   double enteredAmount = 0.0;
+
+  List<WithdrawalRequestModel> withdrawalRequests = []; // Corrected list type
 
   @override
   void initState() {
     super.initState();
     totalEarnings = Get.arguments.toString();
-    walletController = WalletController(
-      context: context,
-      amountController: amountController,
-    );
-    walletController?.fetchUserWalletBalance();
+    fetchWithdrawalRequests(); // Fetch requests on screen load
+  }
+
+  Future<void> fetchWithdrawalRequests() async {
+    try {
+      print("Fetching withdrawal requests...");
+
+      List requests = await _paymentHistoryController.fetchAllRequestForWithdraw();
+      print("Fetched requests: $requests"); // Debugging: Show raw data
+
+      setState(() {
+        withdrawalRequests = requests.cast<WithdrawalRequestModel>();
+      });
+
+      print("Withdrawal requests updated in state: $withdrawalRequests"); // Debugging: Confirm state update
+    } catch (e) {
+      print("Error fetching withdrawal requests: $e"); // Debugging: Log the error
+      Get.snackbar("Error", "Failed to load withdrawal requests.",
+          snackPosition: SnackPosition.BOTTOM);
+    }
+  }
+
+  void _withdrawMoney() async {
+    double? parsedEarnings = double.tryParse(totalEarnings);
+
+    if (parsedEarnings != null &&
+        enteredAmount > 0 &&
+        enteredAmount <= parsedEarnings) {
+      await _paymentHistoryController.requestForWithdraw(enteredAmount);
+      Get.snackbar("Success", "Your withdrawal request has been submitted!",
+          snackPosition: SnackPosition.BOTTOM);
+      fetchWithdrawalRequests(); // Refresh the list after new request
+    } else {
+      Get.snackbar("Error", "Invalid withdrawal amount.",
+          snackPosition: SnackPosition.BOTTOM);
+    }
   }
 
   @override
@@ -34,6 +74,7 @@ class _RequestForWithdrawState extends State<RequestForWithdraw> {
     super.dispose();
   }
 
+<<<<<<< HEAD
   void _withdrawMoney() async {
     print("Withdraw request for \$$enteredAmount");
 
@@ -45,6 +86,8 @@ class _RequestForWithdrawState extends State<RequestForWithdraw> {
     }
   }
 
+=======
+>>>>>>> 4bf2947 (save)
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,9 +122,11 @@ class _RequestForWithdrawState extends State<RequestForWithdraw> {
               controller: amountController,
               keyboardType: TextInputType.number,
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              onChanged: (value) => setState(() {
-                enteredAmount = double.tryParse(value) ?? 0;
-              }),
+              onChanged: (value) {
+                setState(() {
+                  enteredAmount = double.tryParse(value) ?? 0;
+                });
+              },
               decoration: InputDecoration(
                 prefixText: "₹ ",
                 hintText: "0.00",
@@ -151,6 +196,33 @@ class _RequestForWithdrawState extends State<RequestForWithdraw> {
                 ),
               ),
             ),
+            const SizedBox(height: 20),
+            const Text(
+              "Withdrawal Requests",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            withdrawalRequests.isEmpty
+                ? const Text("No withdrawal requests found.")
+                : ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: withdrawalRequests.length,
+                    itemBuilder: (context, index) {
+                      final request = withdrawalRequests[index];
+                      return Card(
+                        color: Colors.black,
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        child: ListTile(
+                          title: Text("₹${request.amount.toStringAsFixed(2)}",style: AppTextStyle.Text16600.copyWith(color: Colors.white),),
+                          subtitle: Text("Status: ${request.paymentStatus}",style: AppTextStyle.Text16600.copyWith(color: Colors.white)),
+                          trailing: Text(
+                          style: AppTextStyle.Text16600.copyWith(color: Colors.white),
+                              "${request.timestamp.toLocal().toString().substring(0, 16)}"),
+                        ),
+                      );
+                    },
+                  ),
           ],
         ),
       ),
