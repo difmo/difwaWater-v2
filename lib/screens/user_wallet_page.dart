@@ -82,10 +82,12 @@ class _WalletScreenState extends State<WalletScreen> {
           .map((doc) =>
               WalletHistoryModal.fromMap(doc.data() as Map<String, dynamic>))
           .toList();
-    } catch (e) {
+    }
+    
+     catch (e) {
       debugPrint("Error fetching wallet history: $e");
       return [];
-    }
+    }   
   }
 
   @override
