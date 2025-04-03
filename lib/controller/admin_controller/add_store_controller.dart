@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:difwa/controller/admin_controller/add_items_controller.dart';
 import 'package:difwa/models/stores_models/store_model.dart';
-// import 'package:difwa/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -54,14 +53,15 @@ class AddStoreController extends GetxController {
 
         UserModel newUser = _createUserModel(userId, merchantId, imageUrl);
       print("hello4");
-        await _updateUserRole(userId, merchantId);
         await _saveUserStore(newUser);
+        await _updateUserRole(userId, merchantId);
 
         _showSuccessSnackbar(merchantId);
         // Get.offAllNamed(AppRoutes.storebottombar);
 
         return true;
       } catch (e) {
+        print("hello7");
         print(e);
         _handleError(e);
         return false;

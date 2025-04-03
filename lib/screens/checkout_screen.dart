@@ -6,6 +6,7 @@ import 'package:difwa/screens/auth/saved_address.dart';
 import 'package:difwa/utils/app__text_style.dart';
 import 'package:difwa/utils/generators.dart';
 import 'package:difwa/widgets/subscribe_button_component.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -35,7 +36,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   late final AddressController _addressController;
   final WalletController _walletController2 = Get.put(WalletController());
   Address? addresss;
-
+  String? userUid = FirebaseAuth.instance.currentUser?.uid;
   @override
   void initState() {
     super.initState();
@@ -310,7 +311,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         widget.orderData['price'],
                         "Debited",
                         Generators.generatePaymentId(),
-                        "Success",_walletController2.currentUserIdd);
+                        "Success",
+                        userUid);
                   } else {
                     print("Please Create An Address");
                   }

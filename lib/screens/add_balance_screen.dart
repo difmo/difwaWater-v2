@@ -18,6 +18,7 @@ class _AddBalanceScreenState extends State<AddBalanceScreen> {
   TextEditingController amountController = TextEditingController();
   WalletController? walletController;
   final WalletController _walletController2 = Get.put(WalletController());
+  String? userUid = FirebaseAuth.instance.currentUser?.uid;
   @override
   void initState() {
     super.initState();
@@ -84,8 +85,8 @@ class _AddBalanceScreenState extends State<AddBalanceScreen> {
         String paymentId = result['payment_id'] ?? 'No payment_id';
         print("Payment Status from add balance: $status");
         print("Payment ID: $paymentId");
-        await _walletController2.saveWalletHistory(
-            amount, "Credited", paymentId,status,_walletController2.currentUserIdd);
+        await _walletController2.saveWalletHistory(amount, "Credited",
+            paymentId, status, userUid);
         // Now you can use the correct paymentId here
       } else {
         print("No result returned from PaymentWebViewScreen.");
