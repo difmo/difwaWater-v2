@@ -1,4 +1,10 @@
+import 'dart:ffi';
+
+import 'package:difwa/controller/admin_controller/add_store_controller.dart';
 import 'package:difwa/controller/earning_controller.dart';
+import 'package:difwa/controller/payment_history_controller.dart';
+import 'package:difwa/models/stores_models/store_model.dart';
+import 'package:difwa/models/stores_models/vendor_payment_model.dart';
 import 'package:difwa/routes/app_routes.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/widgets/custom_button.dart';
@@ -15,6 +21,9 @@ class EarningsDashboard extends StatefulWidget {
 
 class _EarningsDashboardState extends State<EarningsDashboard> {
   final EarningController _earningController = Get.put(EarningController());
+  final PaymentHistoryController _paymentHistoryController =
+      Get.put(PaymentHistoryController());
+  final AddStoreController _addStoreController = Get.put(AddStoreController());
 
   Map<String, int> earnings = {
     "today": 0,
@@ -24,28 +33,50 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
     "total": 0,
   };
 
-  List<Map<String, dynamic>> transactions = [
-    {"time": "2025-03-29 12:30 PM", "amount": 500},
-    {"time": "2025-03-28 03:15 PM", "amount": 1200},
-    {"time": "2025-03-27 09:45 AM", "amount": 850},
-  ];
-
+  List<PaymentHistoryModel> transactions = [];
   DateTimeRange? selectedDateRange;
+  double? total;
   int rangeEarnings = 0;
+  String? merchantId;
 
   @override
   void initState() {
     super.initState();
     _fetchEarnings();
+    _fetchEarnings2();
+    _fetchStoreData();
   }
+
+  // Fetch Earnings (Today, Yesterday, Weekly, Monthly, Total)
 
   void _fetchEarnings() async {
     var fetchedEarnings = await _earningController.fetchEarnings();
     setState(() {
       earnings = fetchedEarnings;
     });
+    await _paymentHistoryController.fetchPaymentHistoryByMerchantId();
   }
 
+  void _fetchStoreData() async {
+    UserModel? storedata = await _addStoreController.fetchStoreData();
+
+    print("storedata234");
+    print("Store Data11: ${storedata?.earnings}");
+    setState(() {
+      total = storedata?.earnings;
+    });
+  }
+
+  // Fetch Payment History for the merchantId
+  void _fetchEarnings2() async {
+    var fetchedPaymentHistory =
+        await _paymentHistoryController.fetchPaymentHistoryByMerchantId();
+    setState(() {
+      transactions = fetchedPaymentHistory;
+    });
+  }
+
+  // Fetch Earnings by Date Range
   void _fetchEarningsByRange() async {
     if (selectedDateRange != null) {
       int fetchedRangeEarnings =
@@ -59,6 +90,7 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
     }
   }
 
+  // Show Date Range Picker
   Future<void> _selectDateRange(BuildContext context) async {
     DateTimeRange? picked = await showDateRangePicker(
       context: context,
@@ -91,6 +123,7 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 16),
+            // Total Balance Container
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -114,7 +147,7 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    "₹${earnings["total"] ?? 0}",
+                    "₹${total == null ? 0.0 : total}",
                     style: TextStyle(color: Colors.black, fontSize: 66),
                   ),
                   const SizedBox(height: 10),
@@ -147,18 +180,19 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
                     child: TextButton(
                       onPressed: () {
                         Get.toNamed(AppRoutes.requestforwithdraw,
-                            arguments: earnings["total"]);
+                            arguments:total);
                       },
                       child: const Text(
                         "Withdraw",
                         style: TextStyle(color: Colors.blue),
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
             const SizedBox(height: 24),
+            // Earnings Cards (Today, Yesterday, Weekly, Monthly)
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -171,6 +205,7 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
               ),
             ),
             SizedBox(height: 16),
+            // Date Range Selector
             Text("Select Date Range",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             Row(
@@ -194,6 +229,7 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
             if (selectedDateRange != null)
               _buildEarningsCard("Custom Range", rangeEarnings),
             SizedBox(height: 16),
+            // Transactions
             Text("Transactions",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             Expanded(child: _buildEarningsList()),
@@ -205,6 +241,7 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
     );
   }
 
+  // Earnings Card for Today, Yesterday, etc.
   Widget _buildEarningsCard(String title, int amount) {
     return Card(
       color: ThemeConstants.whiteColor,
@@ -223,19 +260,36 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
     );
   }
 
+  // Earnings List (Transactions)
   Widget _buildEarningsList() {
     return ListView.builder(
       shrinkWrap: true,
       itemCount: transactions.length,
       itemBuilder: (context, index) {
         var transaction = transactions[index];
+        bool isCredit = transaction.amountStatus == 'Credited';
         return Card(
           color: ThemeConstants.whiteColor,
           child: ListTile(
-            title: Text(transaction['time'],
+            title: Text(
+                transaction.timestamp != null
+                    ? DateFormat.yMMMd().format(transaction.timestamp)
+                    : 'Unknown Time',
                 style: TextStyle(fontSize: 14, color: Colors.grey)),
-            trailing: Text("₹${transaction['amount']}",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            trailing: Text(
+              "₹${transaction.amount}",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: isCredit
+                    ? Colors.green
+                    : Colors.red, // Credit in green, debit in red
+              ),
+            ),
+            leading: Icon(
+              isCredit ? Icons.arrow_upward : Icons.arrow_downward,
+              color: isCredit ? Colors.green : Colors.red,
+            ),
           ),
         );
       },
