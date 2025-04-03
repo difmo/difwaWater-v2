@@ -6,11 +6,11 @@ class FirebaseController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<String?> fetchMerchantId(String userId) async {
-    final userId = _auth.currentUser?.uid;
+    final userIdd = _auth.currentUser?.uid;
 
     try {
       DocumentSnapshot storeDoc =
-          await _firestore.collection('difwa-stores').doc(userId).get();
+          await _firestore.collection('difwa-stores').doc(userIdd).get();
 
       if (!storeDoc.exists) {
         throw Exception("Store document does not exist for this user.");

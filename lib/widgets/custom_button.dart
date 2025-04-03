@@ -19,7 +19,7 @@ class CustomButton extends StatelessWidget {
     super.key,
     required this.text,
     required this.onPressed,
-    this.backgroundColor = AppColors.buttonbgColor,
+    this.backgroundColor = AppColors.logoprimary,
     this.textColor = Colors.white,
     this.icon,
     this.borderRadius = 30.0,
@@ -47,7 +47,7 @@ class CustomButton extends StatelessWidget {
         //     borderRadius: BorderRadius.circular(10),
         //     child: Image.asset(
         //       'assets/button/blbg.png',
-             
+
         //     ),
         //   ),
         // ),
@@ -60,73 +60,74 @@ class CustomButton extends StatelessWidget {
         //     borderRadius: BorderRadius.circular(10),
         //     child: Image.asset(
         //       'assets/button/trbg.png',
-             
+
         //     ),
         //   ),
         // ),
 
         // Button
-        Container(
-  decoration: BoxDecoration(
-    gradient: AppColors.buttonBgGradient, // Apply gradient here
-    // border: Border.all(color: borderColor ?? AppColors.buttonbgColor),
-    borderRadius: BorderRadius.circular(10),
-  ),
-  width: buttonWidth,
-  height: buttonHeight,
-  child: ElevatedButton(
-    onPressed: onPressed,
-    style: ElevatedButton.styleFrom(
-      backgroundColor: Colors.transparent, // Make button transparent
-      padding: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(left ? borderRadius : 30),
-          bottomLeft: Radius.circular(left ? borderRadius : 30),
-          topRight: Radius.circular(left ? borderRadius : 30),
-          bottomRight: Radius.circular(left ? borderRadius : 30),
-        ),
-        side: borderColor != null
-            ? BorderSide(color: borderColor!)
-            : BorderSide.none,
-      ),
-      elevation: 0,
-    ),
-    child: Ink(
-      decoration: BoxDecoration(
-        gradient: AppColors.buttonBgGradient, // Apply gradient inside Ink for ripple effect
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Container(
-        alignment: Alignment.center,
-        width: double.infinity,
-        height: double.infinity,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (left && icon != null) ...[
-              icon!,
-              const SizedBox(width: 8),
-            ],
-            Text(
-              text,
-              style: TextStyle(
-                fontSize: fontSize,
-                fontWeight: FontWeight.bold,
-                color: AppColors.mywhite, // Ensures contrast with gradient
+        SizedBox(
+          // decoration: BoxDecoration(
+          // color: AppColors.logoprimary, // Apply gradient here
+          //   // border: Border.all(color: borderColor ?? AppColors.buttonbgColor),
+          //   borderRadius: BorderRadius.circular(10),
+          // ),
+          width: buttonWidth,
+          height: buttonHeight,
+          child: ElevatedButton(
+            onPressed: onPressed,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.logoprimary,
+              padding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(left ? borderRadius : 30),
+                  bottomLeft: Radius.circular(left ? borderRadius : 30),
+                  topRight: Radius.circular(left ? borderRadius : 30),
+                  bottomRight: Radius.circular(left ? borderRadius : 30),
+                ),
+                side: borderColor != null
+                    ? BorderSide(color: borderColor!)
+                    : BorderSide.none,
+              ),
+              elevation: 0,
+            ),
+            child: Ink(
+              decoration: BoxDecoration(
+                color: AppColors
+                    .logoprimary, 
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Container(
+                alignment: Alignment.center,
+                width: double.infinity,
+                height: double.infinity,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (left && icon != null) ...[
+                      icon!,
+                      const SizedBox(width: 8),
+                    ],
+                    Text(
+                      text,
+                      style: TextStyle(
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.bold,
+                        color:
+                            AppColors.mywhite, // Ensures contrast with gradient
+                      ),
+                    ),
+                    if (!left && icon != null) ...[
+                      const SizedBox(width: 8),
+                      icon!,
+                    ],
+                  ],
+                ),
               ),
             ),
-            if (!left && icon != null) ...[
-              const SizedBox(width: 8),
-              icon!,
-            ],
-          ],
-        ),
-      ),
-    ),
-  ),
-)
-
+          ),
+        )
       ],
     );
   }

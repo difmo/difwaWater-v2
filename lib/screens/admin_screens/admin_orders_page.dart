@@ -1,5 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:difwa/controller/admin_controller/add_items_controller.dart';
+import 'package:difwa/controller/auth_controller.dart';
+import 'package:difwa/models/user_models/user_details_model.dart';
+import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class AdminPanelScreen extends StatefulWidget {
   const AdminPanelScreen({super.key});
@@ -11,16 +16,44 @@ class AdminPanelScreen extends StatefulWidget {
 class _AdminPanelScreenState extends State<AdminPanelScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final FirebaseController _authController = Get.put(FirebaseController());
+  final AuthController _userData = Get.put(AuthController());
+  String merchantIdd = "";
+  UserDetailsModel? usersData;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _fetchUserData();
+    print("hello");
+    _authController.fetchMerchantId("").then((merchantId) {
+      print(merchantId);
+      setState(() {
+        merchantIdd = merchantId!;
+      });
+      print("133");
+    });
+  }
+
+  void _fetchUserData() async {
+    try {
+      UserDetailsModel user = await _userData.fetchUserData();
+      print(user.name);
+      print("order pin = ");
+      print(user.orderpin);
+      setState(() {
+        usersData = user;
+      });
+    } catch (e) {
+      print("Error fetching user data: $e");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ThemeConstants.whiteColor,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -43,10 +76,52 @@ class _AdminPanelScreenState extends State<AdminPanelScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: const [
-          OrderListPage(status: 'pending'),
-          OrderListPage(status: 'completed'),
-          OrderListPage(status: 'cancelled'),
+        children: [
+          OrderListPage(
+            status: 'pending',
+            merchantId: merchantIdd,
+            userDetails: usersData ??
+                UserDetailsModel(
+                    docId: '',
+                    uid: '',
+                    name: '',
+                    number: '',
+                    email: '',
+                    floor: '',
+                    role: '',
+                    walletBalance: 0.0,
+                    orderpin: ''), // Provide a default value or handle null
+          ),
+          OrderListPage(
+            status: 'completed',
+            merchantId: merchantIdd,
+            userDetails: usersData ??
+                UserDetailsModel(
+                    docId: '',
+                    uid: '',
+                    name: '',
+                    number: '',
+                    email: '',
+                    floor: '',
+                    role: '',
+                    walletBalance: 0.0,
+                    orderpin: ''), // Provide a default value or handle null
+          ),
+          OrderListPage(
+            status: 'cancelled',
+            merchantId: merchantIdd,
+            userDetails: usersData ??
+                UserDetailsModel(
+                    docId: '',
+                    uid: '',
+                    name: '',
+                    number: '',
+                    email: '',
+                    floor: '',
+                    role: '',
+                    walletBalance: 0.0,
+                    orderpin: ''), // Provide a default value or handle null
+          ),
         ],
       ),
     );
@@ -55,13 +130,24 @@ class _AdminPanelScreenState extends State<AdminPanelScreen>
 
 class OrderListPage extends StatelessWidget {
   final String status;
+  final String merchantId;
+  final UserDetailsModel userDetails;
 
-  const OrderListPage({super.key, required this.status});
+  const OrderListPage(
+      {super.key,
+      required this.status,
+      required this.merchantId,
+      required this.userDetails});
 
   @override
   Widget build(BuildContext context) {
+    // DateTime currentDate = DateTime.now();
+    DateTime currentDate = DateTime(2025, 4, 18);
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('difwa-orders').snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection('difwa-orders')
+          .where('merchantId', isEqualTo: merchantId)
+          .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -88,6 +174,7 @@ class OrderListPage extends StatelessWidget {
             final orderId = orders[index].id;
 
             return Card(
+              color: ThemeConstants.whiteColor,
               margin: const EdgeInsets.symmetric(vertical: 8.0),
               child: ListTile(
                 title: Text('Order ID: $orderId'),
@@ -108,32 +195,52 @@ class OrderListPage extends StatelessWidget {
                           .map<Widget>((dateData) {
                         DateTime date = DateTime.parse(dateData['date']);
                         String dateStatus = dateData['status'] ?? 'pending';
+                        bool isCurrentDate = _isSameDay(date, currentDate);
                         return ListTile(
                           title: Text('Date: ${date.toLocal()}'),
                           subtitle: Text('Status: $dateStatus'),
                           trailing: PopupMenuButton<String>(
-                            onSelected: (value) async {
-                              await changeDateStatus(
-                                  orderId, dateData['date'], value);
-                            },
+                            onSelected: isCurrentDate
+                                ? (value) async {
+                                    print("daily order id");
+                                    print(dateData['dailyOrderId']);
+                                    await changeDateStatus(
+                                        context, // Pass context here
+                                        orderId,
+                                        dateData['date'],
+                                        value,
+                                        dateData['dailyOrderId'],
+                                        userDetails);
+                                  }
+                                : null,
                             itemBuilder: (context) => [
-                              if (dateStatus != 'cancelled')
+                              if (dateStatus == 'pending' &&
+                                  dateStatus != "Cancel")
                                 const PopupMenuItem<String>(
-                                  value: 'cancelled',
-                                  child: Text('Cancel Date'),
+                                  value: 'Preparing',
+                                  child: Text('Preparing'),
                                 ),
-                              if (dateStatus != 'completed')
+                              if (dateStatus == 'Preparing' &&
+                                  dateStatus != "Cancel")
                                 const PopupMenuItem<String>(
-                                  value: 'completed',
-                                  child: Text('Mark as Completed'),
+                                  value: 'Shipped',
+                                  child: Text('Shipped'),
                                 ),
-                              if (dateStatus != 'pending')
+                              if (dateStatus == 'Shipped' &&
+                                  dateStatus != "Cancel")
                                 const PopupMenuItem<String>(
-                                  value: 'pending',
-                                  child: Text('Mark as Pending'),
+                                  value: 'Completed',
+                                  child: Text('Completed'),
+                                ),
+                              if (dateStatus == 'pending')
+                                const PopupMenuItem<String>(
+                                  value: 'Cancel',
+                                  child: Text('Cancel'),
                                 ),
                             ],
                           ),
+                          enabled:
+                              isCurrentDate, // Disable if it's not the current date
                         );
                       }).toList(),
                     ),
@@ -144,7 +251,8 @@ class OrderListPage extends StatelessWidget {
                     if (value == 'cancel') {
                       await cancelOrder(orderId);
                     } else {
-                      await changeOrderStatus(orderId, value);
+                      await changeOrderStatus(
+                          context, orderId, value); // Pass context here
                     }
                   },
                   itemBuilder: (context) => [
@@ -152,16 +260,6 @@ class OrderListPage extends StatelessWidget {
                       const PopupMenuItem<String>(
                         value: 'cancel',
                         child: Text('Cancel Order'),
-                      ),
-                    if (status != 'completed')
-                      const PopupMenuItem<String>(
-                        value: 'completed',
-                        child: Text('Mark as Completed'),
-                      ),
-                    if (status != 'pending')
-                      const PopupMenuItem<String>(
-                        value: 'pending',
-                        child: Text('Mark as Pending'),
                       ),
                   ],
                 ),
@@ -173,55 +271,144 @@ class OrderListPage extends StatelessWidget {
     );
   }
 
-  Future<void> changeOrderStatus(String orderId, String newStatus) async {
-    try {
-      DateTime currentTime = DateTime.now(); // Get current local time
-
-      await FirebaseFirestore.instance
-          .collection('difwa-orders')
-          .doc(orderId)
-          .update({
-        'statusHistory': FieldValue.arrayUnion([
-          {
-            'status': newStatus,
-            'timestamp':
-                currentTime, // Use local time here instead of serverTimestamp
-          }
-        ]),
-      });
-    } catch (e) {
-      print('Error updating date status: $e');
-    }
+  bool _isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
   }
 
-  Future<void> changeDateStatus(
-      String orderId, String date, String newStatus) async {
-    DateTime currentTime = DateTime.now(); // Get current local time
+  Future<bool> _showConfirmationDialog(
+      BuildContext context, String title, String message) async {
+    return await showDialog<bool>(
+          context: context,
+          barrierDismissible:
+              false, // User must tap a button to close the dialog
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text(title),
+              content: Text(message),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(false); // User cancels
+                  },
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(true); // User confirms
+                  },
+                  child: const Text('Confirm'),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false; // Default to false if dialog is dismissed without action
+  }
 
+  Future<void> changeOrderStatus(
+      BuildContext context, String orderId, String newStatus) async {
     try {
-      final orderDoc =
-          FirebaseFirestore.instance.collection('difwa-orders').doc(orderId);
-      final orderSnapshot = await orderDoc.get();
-      final orderData = orderSnapshot.data() as Map<String, dynamic>;
-
-      final selectedDates =
-          List<Map<String, dynamic>>.from(orderData['selectedDates']);
-      final dateIndex =
-          selectedDates.indexWhere((item) => item['date'] == date);
-
-      if (dateIndex != -1) {
-        selectedDates[dateIndex]['status'] = newStatus;
-
-        await orderDoc.update({
-          'selectedDates': selectedDates,
+      bool confirm = await _showConfirmationDialog(
+          context,
+          'Change Order Status',
+          'Are you sure you want to change the order status to $newStatus?');
+      if (confirm) {
+        DateTime currentTime = DateTime.now();
+        await FirebaseFirestore.instance
+            .collection('difwa-orders')
+            .doc(orderId)
+            .set({
           'statusHistory': FieldValue.arrayUnion([
             {
               'status': newStatus,
-              'date': date,
               'timestamp': currentTime,
             }
           ]),
         });
+        print('Order status updated successfully');
+      }
+    } catch (e) {
+      print('Error updating order status: $e');
+    }
+  }
+
+  Future<void> changeDateStatus(
+      BuildContext context,
+      String orderId,
+      String date,
+      String newStatus,
+      String dailyOrderId,
+      dynamic usersData) async {
+    try {
+      String pin;
+      if (newStatus == "Completed") {
+        print("PRI :: $newStatus");
+        pin = await _showPinDialog(context);
+        if (usersData.orderpin == pin) {
+          print("PRI3 :: $pin");
+        } else {
+          _showErrorDialog(context, "Entered pipn is wrong ",
+              "Please insure your pin is correct");
+          return;
+        }
+      } else {
+        print("PRI1 :: $newStatus");
+      }
+
+      bool confirm = await _showConfirmationDialog(
+          context,
+          'Change Date Status',
+          'Are you sure you want to change the status of the date to $newStatus?');
+      if (confirm) {
+        DateTime currentTime = DateTime.now();
+        final orderDoc =
+            FirebaseFirestore.instance.collection('difwa-orders').doc(orderId);
+        final orderSnapshot = await orderDoc.get();
+
+        if (!orderSnapshot.exists) {
+          print('Order not found');
+          return;
+        }
+
+        final orderData = orderSnapshot.data() as Map<String, dynamic>;
+
+        if (orderData['selectedDates'] == null ||
+            orderData['selectedDates'] is! List) {
+          print('Selected dates not found or invalid');
+          return;
+        }
+
+        final selectedDates =
+            List<Map<String, dynamic>>.from(orderData['selectedDates']);
+
+        // Find the index of the date in selectedDates list based on dailyOrderId
+        final dateIndex = selectedDates
+            .indexWhere((item) => item['dailyOrderId'] == dailyOrderId);
+
+        // If the date is found, update the status and add to statusHistory
+        if (dateIndex != -1) {
+          selectedDates[dateIndex]['status'] = newStatus;
+          // Update the status for the specific date
+          selectedDates[dateIndex]['statusHistory']['status'] = newStatus;
+
+          if (selectedDates[dateIndex]['statusHistory'] == null) {
+            selectedDates[dateIndex]['statusHistory'] = {};
+          }
+
+          selectedDates[dateIndex]['statusHistory']['${newStatus}Time'] =
+              currentTime;
+
+          await orderDoc.update({
+            'selectedDates': selectedDates,
+          });
+
+          print('Order date status updated successfully');
+        } else {
+          print(
+              'Date with dailyOrderId $dailyOrderId not found in selectedDates');
+        }
       }
     } catch (e) {
       print('Error updating date status: $e');
@@ -245,5 +432,60 @@ class OrderListPage extends StatelessWidget {
     } catch (e) {
       print('Error cancelling order: $e');
     }
+  }
+
+  Future<String> _showPinDialog(BuildContext context) async {
+    TextEditingController pinController = TextEditingController();
+    String enteredPin = '';
+
+    // Show a dialog to enter pin
+    await showDialog<String>(
+      context: context,
+      barrierDismissible: false, // User must tap a button to close the dialog
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Enter Pin to Complete Order'),
+          content: TextField(
+            controller: pinController,
+            obscureText: true, // Obscure the input for pin security
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(hintText: 'Enter your pin'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                enteredPin = pinController.text.trim();
+                Navigator.of(context).pop(enteredPin); // Return the entered pin
+              },
+              child: const Text('Submit'),
+            ),
+          ],
+        );
+      },
+    );
+
+    return enteredPin;
+  }
+
+  Future<void> _showErrorDialog(
+      BuildContext context, String title, String message) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // User must tap a button to close the dialog
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

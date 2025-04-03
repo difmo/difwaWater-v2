@@ -15,7 +15,7 @@ import 'package:get/get.dart';
 class AddressForm extends StatefulWidget {
   final Address address;
   final String flag;
-  AddressForm({
+  const AddressForm({
     super.key,
     required this.address,
     required this.flag,
@@ -27,7 +27,6 @@ class AddressForm extends StatefulWidget {
 
 class _AddressFormState extends State<AddressForm> {
   // Controllers for text fields
-  final _formKey = GlobalKey<FormState>();
   final TextEditingController _streetController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
@@ -37,7 +36,8 @@ class _AddressFormState extends State<AddressForm> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _floorController = TextEditingController();
   bool _isChecked = false;
-  bool _isdeleted = false; // Checkbox state
+  bool _isdeleted = false;
+  final bool _isSelected = false; // Checkbox state
 
   final AddressController _addressController = Get.put(AddressController());
 
@@ -54,7 +54,6 @@ class _AddressFormState extends State<AddressForm> {
   final _formfloor = GlobalKey<FormState>();
 
   bool _isSubmitting = false; // State to handle submission progress
-  bool _isAddressSaved = false;
 
   @override
   void initState() {
@@ -88,6 +87,7 @@ class _AddressFormState extends State<AddressForm> {
           saveAddress: _isChecked,
           userId: "", // Dynamically get the userId if necessary
           isDeleted: _isdeleted,
+          isSelected: _isSelected,
           docId: "", // Empty for a new address
           floor: _floorController.text,
         ),
@@ -117,6 +117,7 @@ class _AddressFormState extends State<AddressForm> {
           saveAddress: _isChecked,
           userId: "", // Dynamically get the userId if necessary
           isDeleted: _isdeleted,
+          isSelected: _isSelected,
           docId: widget.address.docId, // Pass the existing docId for update
           floor: _floorController.text,
         ),
@@ -173,7 +174,7 @@ class _AddressFormState extends State<AddressForm> {
                           });
                         },
                         initialSelection: 'IN',
-                        favorite: ['+91', '+1'],
+                        favorite: const ['+91', '+1'],
                         showCountryOnly: false,
                         showOnlyCountryWhenClosed: false,
                         alignLeft: false,

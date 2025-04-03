@@ -1,11 +1,13 @@
-import 'dart:ui';
-
+import 'package:difwa/config/app_constant.dart';
 import 'package:difwa/screens/checkout_screen.dart';
 import 'package:difwa/utils/app__text_style.dart';
 import 'package:difwa/utils/theme_constant.dart';
-import 'package:difwa/widgets/custom_button.dart';
+import 'package:difwa/widgets/FrequencyOption.dart';
+import 'package:difwa/widgets/PackageOption.dart';
+import 'package:difwa/widgets/subscribe_button_component.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class SubscriptionScreen extends StatefulWidget {
@@ -16,8 +18,8 @@ class SubscriptionScreen extends StatefulWidget {
 }
 
 class _SubscriptionScreenState extends State<SubscriptionScreen> {
-  int selectedPackageIndex = -1;
-  int selectedFrequencyIndex = -1;
+  int selectedPackageIndex = 0;
+  int selectedFrequencyIndex = 0;
   DateTime? startDate;
   DateTime? endDate;
   List<DateTime> selectedDates = [];
@@ -25,45 +27,28 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   late Map<String, dynamic> orderData;
   late double totalPrice;
   late double overAllTotalo;
-  late int totalDays;
-  late double bottlePrice = 200.0;
+  late double bottlePrice = 0.0;
 
-  @override
-  void initState() {
-    super.initState();
-    orderData = Get.arguments ?? {};
-    bottlePrice = orderData['price'];
-    print("aaja");
-    print(orderData);
-    print(bottlePrice);
+//old code
+  String? selectedDateRange;
+  String selectedFrequency = "Every Day";
+  int totalDays = 0;
+  double pricePerDay = 0.0;
+  bool showError = false;
 
-    totalPrice = bottlePrice * orderData['quantity'];
-    print(totalPrice);
-
-    // if (orderData['hasEmptyBottle']) {
-    //   totalPrice += orderData['vacantPrice'] * orderData['quantity'];
-    // }
-    startDate = DateTime.now().add(const Duration(days: 1));
-    totalDays = getTotalDays();
-  }
-
-  int getTotalDays() {
-    return selectedDates.length;
-  }
-
-  Future<void> _selectCustomDateRange(BuildContext context) async {
-    final DateTimeRange? picked = await showDateRangePicker(
+  Future<void> _selectDateRange() async {
+    DateTimeRange? picked = await showDateRangePicker(
       context: context,
-      initialDateRange: DateTimeRange(
-        start: startDate ?? DateTime.now(),
-        end: endDate ?? DateTime.now().add(const Duration(days: 30)),
-      ),
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2101),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(DateTime.now().year + 1),
     );
 
     if (picked != null) {
       setState(() {
+        selectedDateRange =
+            "${DateFormat('dd MMM').format(picked.start)} - ${DateFormat('dd MMM').format(picked.end)}";
+        totalDays = picked.end.difference(picked.start).inDays + 1;
+        showError = false;
         startDate = picked.start;
         endDate = picked.end;
       });
@@ -79,13 +64,13 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
     if (selectedFrequencyIndex == 0) {
       while (currentDate.isBefore(endDate)) {
-        selectedDates.add(currentDate);
         currentDate = currentDate.add(const Duration(days: 1));
+        selectedDates.add(currentDate);
       }
     } else if (selectedFrequencyIndex == 1) {
       while (currentDate.isBefore(endDate)) {
-        selectedDates.add(currentDate);
         currentDate = currentDate.add(const Duration(days: 2));
+        selectedDates.add(currentDate);
       }
     } else if (selectedFrequencyIndex == 2) {
       while (currentDate.isBefore(endDate)) {
@@ -97,98 +82,95 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     }
   }
 
-Future<void> _selectCustomDatesDialog(BuildContext context) async {
-  getDatesBasedOnFrequency();
-  
-  // Create a temporary list to manage selection state
-  List<DateTime> tempSelectedDates = List.from(selectedDates);
-
-  await showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Select Dates'),
-        content: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                width: 500,
-                height: 400,
-                child: TableCalendar(
-                  firstDay: DateTime.utc(2000, 1, 1),
-                  lastDay: DateTime.utc(2100, 12, 31),
-                  focusedDay: DateTime.now(),
-                  selectedDayPredicate: (day) {
-                    return tempSelectedDates.any((selectedDate) => isSameDay(selectedDate, day));
-                  },
-                  onDaySelected: (selectedDay, focusedDay) {
-                    setState(() {
-                      if (tempSelectedDates.contains(selectedDay)) {
-                        tempSelectedDates.remove(selectedDay);
-                      } else {
-                        tempSelectedDates.add(selectedDay);
-                      }
-                    });
-                  },
-                  calendarStyle: const CalendarStyle(
-                    selectedDecoration: BoxDecoration(
-                      color: Colors.blue,
-                      shape: BoxShape.circle,
+  Future<void> _selectCustomDatesDialog(BuildContext context) async {
+    getDatesBasedOnFrequency();
+    List<DateTime> tempSelectedDates = List.from(selectedDates);
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select Dates'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(
+                  width: 500,
+                  height: 400,
+                  child: TableCalendar(
+                    firstDay: DateTime.utc(2000, 1, 1),
+                    lastDay: DateTime.utc(2100, 12, 31),
+                    focusedDay: DateTime.now(),
+                    selectedDayPredicate: (day) {
+                      return tempSelectedDates
+                          .any((selectedDate) => isSameDay(selectedDate, day));
+                    },
+                    onDaySelected: (selectedDay, focusedDay) {
+                      setState(() {
+                        if (tempSelectedDates.contains(selectedDay)) {
+                          tempSelectedDates.remove(selectedDay);
+                        } else {
+                          tempSelectedDates.add(selectedDay);
+                        }
+                      });
+                    },
+                    calendarStyle: const CalendarStyle(
+                      selectedDecoration: BoxDecoration(
+                        color: Colors.blue,
+                        shape: BoxShape.circle,
+                      ),
+                      todayDecoration: BoxDecoration(
+                        color: Colors.orange,
+                        shape: BoxShape.circle,
+                      ),
+                      defaultDecoration: BoxDecoration(
+                        color: Colors.transparent,
+                      ),
+                      outsideDecoration: BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
                     ),
-                    todayDecoration: BoxDecoration(
-                      color: Colors.orange,
-                      shape: BoxShape.circle,
+                    daysOfWeekStyle: const DaysOfWeekStyle(
+                      weekdayStyle: TextStyle(color: Colors.black),
+                      weekendStyle: TextStyle(color: Colors.black),
                     ),
-                    defaultDecoration: BoxDecoration(
-                      color: Colors.transparent,
-                    ),
-                    outsideDecoration: BoxDecoration(
-                      color: Colors.red, 
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  daysOfWeekStyle: const DaysOfWeekStyle(
-                    weekdayStyle: TextStyle(color: Colors.black),
-                    weekendStyle: TextStyle(color: Colors.black),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-            ],
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              setState(() {
-                selectedDates = tempSelectedDates;
-              });
-              Navigator.of(context).pop();
-            },
-            child: const Text('OK'),
-          ),
-          TextButton(
-            onPressed: () {
-              setState(() {
-                tempSelectedDates.clear(); // Clear selection if needed
-              });
-            },
-            child: const Text('Clear Selection'),
-          ),
-        ],
-      );
-    },
-  );
+          actions: [
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  selectedDates = tempSelectedDates;
+                });
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  tempSelectedDates.clear(); // Clear selection if needed
+                });
+              },
+              child: const Text('Clear Selection'),
+            ),
+          ],
+        );
+      },
+    );
 
-  // Update totalDays and totalPrice after selection
-  totalDays = getTotalDays();
-  totalPrice = bottlePrice * orderData['quantity'];
-  if (orderData['hasEmptyBottle']) {
-    totalPrice += orderData['vacantPrice'] * orderData['quantity'];
+    // Update totalDays and totalPrice after selection
+    totalDays = getTotalDays();
+    totalPrice = bottlePrice * orderData['quantity'];
+    if (orderData['hasEmptyBottle']) {
+      totalPrice += orderData['vacantPrice'] * orderData['quantity'];
+    }
+    print("totalPricedk: $totalPrice");
   }
-}
-
-
 
   List<DateTime> getDatesBasedOnFrequency() {
     List<DateTime> dates = [];
@@ -217,263 +199,341 @@ Future<void> _selectCustomDatesDialog(BuildContext context) async {
     return dates;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ThemeConstants.whiteColor,
-      appBar: AppBar(
-        backgroundColor: ThemeConstants.whiteColor,
-        title: const Text('Subscribe'),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Card(
-                color: ThemeConstants.primaryColorNew,
-                shape: const RoundedRectangleBorder(
-                  side: BorderSide(
-                      width: 1, color: ThemeConstants.primaryColorNew),
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(10),
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        child: Image.asset(
-                          'assets/images/water.jpg',
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${orderData['bottle']['size']}L',
-                              style: AppTextStyle.Text16600.copyWith(
-                                  color: ThemeConstants.whiteColor),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Price: ₹ $bottlePrice per bottle',
-                              style: AppTextStyle.Text12400.copyWith(
-                                  color: ThemeConstants.whiteColor),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'One Bottle Price: ₹ $totalPrice',
-                              style: AppTextStyle.Text12400.copyWith(
-                                  color: ThemeConstants.whiteColor),
-                            ),
-                            Text(
-                              'Vacant Bottle Price: ₹ ${orderData['vacantPrice'] * orderData['quantity']}',
-                              style: AppTextStyle.Text12400.copyWith(
-                                  color: ThemeConstants.whiteColor),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Package Duration:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  buildChoiceChip(
-                    label: "1 Month",
-                    selected: (selectedPackageIndex == 0),
-                    onSelected: (bool selected) {
-                      setState(() {
-                        selectedPackageIndex = 0;
-                        endDate = startDate?.add(const Duration(days: 30));
-                      });
-                      _generateDates();
-                    },
-                  ),
-                  buildChoiceChip(
-                    label: "3 Month",
-                    selected: (selectedPackageIndex == 1),
-                    onSelected: (bool selected) {
-                      setState(() {
-                        selectedPackageIndex = 1;
-                        endDate = startDate?.add(const Duration(days: 90));
-                      });
-                      _generateDates();
-                    },
-                  ),
-                  buildChoiceChip(
-                    label: "6 Month",
-                    selected: (selectedPackageIndex == 2),
-                    onSelected: (bool selected) {
-                      setState(() {
-                        selectedPackageIndex = 2;
-                        endDate = startDate?.add(const Duration(days: 180));
-                      });
-                      _generateDates();
-                    },
-                  ),
-                  buildChoiceChip(
-                    label: "1 Year",
-                    selected: (selectedPackageIndex == 3),
-                    onSelected: (bool selected) {
-                      setState(() {
-                        selectedPackageIndex = 3;
-                        endDate = startDate?.add(const Duration(days: 365));
-                      });
-                      _generateDates();
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              CustomButton(
-                width: 200,
-                baseTextColor: ThemeConstants.whiteColor,
-                text: "Select Date Range",
-                onPressed: () {
-                  _selectCustomDateRange(context);
-                },
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Frequency:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  ChoiceChip(
-                    checkmarkColor: ThemeConstants.whiteColor,
-                    selectedColor: ThemeConstants.primaryColorNew,
-                    backgroundColor: ThemeConstants.whiteColor,
-                    label: Text('Every Day',
-                        style: TextStyle(
-                            color: selectedFrequencyIndex == 0
-                                ? Colors.white
-                                : Colors.black)),
-                    selected: selectedFrequencyIndex == 0,
-                    onSelected: (bool selected) {
-                      setState(() {
-                        selectedFrequencyIndex = 0;
-                        _generateDates();
-                      });
-                    },
-                  ),
-                  ChoiceChip(
-                    checkmarkColor: ThemeConstants.whiteColor,
-                    selectedColor: ThemeConstants.primaryColorNew,
-                    backgroundColor: ThemeConstants.whiteColor,
-                    label: Text('Alternate Days',
-                        style: TextStyle(
-                            color: selectedFrequencyIndex == 1
-                                ? Colors.white
-                                : Colors.black)),
-                    selected: selectedFrequencyIndex == 1,
-                    onSelected: (bool selected) {
-                      setState(() {
-                        selectedFrequencyIndex = 1;
-                        _generateDates(); // Recalculate dates
-                      });
-                    },
-                  ),
-                  ChoiceChip(
-                    checkmarkColor: ThemeConstants.whiteColor,
-                    selectedColor: ThemeConstants.primaryColorNew,
-                    backgroundColor: ThemeConstants.whiteColor,
-                    label: Text('Except Sundays',
-                        style: TextStyle(
-                            color: selectedFrequencyIndex == 2
-                                ? Colors.white
-                                : Colors.black)),
-                    selected: selectedFrequencyIndex == 2,
-                    onSelected: (bool selected) {
-                      setState(() {
-                        selectedFrequencyIndex = 2;
-                        _generateDates();
-                      });
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              CustomButton(
-                width: 200,
-                baseTextColor: ThemeConstants.whiteColor,
-                text: "Select Custom Dates",
-                onPressed: () {
-                  _selectCustomDatesDialog(context);
-                },
-              ),
-              const SizedBox(height: 16),
-              Text('Total Days: ${getTotalDays()} days'),
-              Text('For One Day: ₹$totalPrice'),
-              const SizedBox(height: 16),
-              Text(
-                'Total Price: ₹ ${totalPrice * getTotalDays() + orderData['vacantPrice'] * orderData['quantity']} ',
-                style: AppTextStyle.Text18700,
-              ),
-              const SizedBox(height: 16),
-              CustomButton(
-                width: 200,
-                baseTextColor: ThemeConstants.whiteColor,
-                text: "Go to Checkout",
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CheckoutScreen(
-                        orderData: orderData,
-                        totalPrice: totalPrice,
-                        totalDays: getTotalDays(),
-                        selectedDates: selectedDates,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
+  Widget _buildSelectionBox(String title, IconData icon, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+              color: showError && selectedDateRange == null
+                  ? ThemeConstants.red
+                  : ThemeConstants.grey),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 18, color: Colors.black),
+            SizedBox(
+              width: 8,
+            ),
+            Text(title, style: AppTextStyle.Text14500),
+          ],
         ),
       ),
     );
   }
 
-  Widget buildChoiceChip({
-    required String label,
-    required bool selected,
-    required Function(bool) onSelected,
-  }) {
-    return ChoiceChip(
-        checkmarkColor: ThemeConstants.whiteColor,
-        selectedColor: ThemeConstants.primaryColorNew,
-        backgroundColor: ThemeConstants.whiteColor,
-        label: Text(
-          label,
-          style: TextStyle(
-            color: selected ? Colors.white : Colors.black,
-          ),
+  void _handleCheckout() {
+    // if (selectedPackageIndex == -1 || selectedDateRange == null) {
+    //   setState(() {
+    //     showError = true;
+    //   });
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(
+    //       content: Text("Please select a package duration and date range!"),
+    //       backgroundColor: Colors.red,
+    //     ),
+    //   );
+    //   return;
+    // }
+
+    print("Order Data: $orderData");
+    print("Total Price: $totalPrice (Type: ${totalPrice.runtimeType})");
+    print("Total Days: ${getTotalDays()}");
+    print("Selected Dates: $selectedDates");
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CheckoutScreen(
+          orderData: orderData,
+          totalPrice: totalPrice, // Ensure this is double
+          totalDays: getTotalDays(),
+          selectedDates: selectedDates,
         ),
-        selected: selected,
-        onSelected: onSelected);
+      ),
+    );
+  }
+
+  bool isValidUrl(String? url) {
+    if (url == null || url.isEmpty) return false;
+    Uri? uri = Uri.tryParse(url);
+    return uri != null && uri.hasScheme && uri.hasAuthority;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    orderData = Get.arguments ?? {};
+    bottlePrice = orderData['price'];
+    print("aaja");
+    print(orderData);
+    print(bottlePrice);
+
+    totalPrice = bottlePrice;
+    print(totalPrice);
+    if (orderData['hasEmptyBottle']) {
+      totalPrice += orderData['vacantPrice'] * orderData['quantity'];
+    }
+    startDate = DateTime.now().add(const Duration(days: 1));
+
+    _generateDates();
+    setState(() {
+      selectedFrequencyIndex = 0;
+      selectedFrequency = "Every Day";
+      totalDays = getTotalDays();
+    });
+    print("totalPricedk: $totalPrice");
+  }
+
+  int getTotalDays() {
+    return selectedDates.length;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text("Subscribe", style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Product Card
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: Image.network(
+                      bottleImageUrl,
+                      width: 96,
+                      height: 96,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(
+                          Icons.image_not_supported,
+                          size: 80,
+                          color: Colors.grey,
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("${orderData['bottle']['size']}L",
+                          style: AppTextStyle.TextWhite18700),
+                      SizedBox(height: 4),
+                      Text("Price: ₹ $bottlePrice per bottle",
+                          style: AppTextStyle.TextWhite16700),
+                      Text(
+                          "Vacant Bottle Price: ₹ ${orderData['vacantPrice'] * orderData['quantity']}",
+                          style: AppTextStyle.TextWhite16700),
+                      Text("One Bottle Price: ₹ $totalPrice",
+                          style: AppTextStyle.TextWhite16700),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Package Duration
+            const Text("Package Duration:", style: AppTextStyle.Text18700),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: List.generate(4, (index) {
+                return PackageOption(
+                  title: [
+                    "1\nMonth",
+                    "3\nMonths",
+                    "6\nMonths",
+                    "1\nYear"
+                  ][index],
+                  index: index,
+                  selectedIndex: selectedPackageIndex,
+                  onTap: () {
+                    print(index);
+                    setState(() {
+                      showError = false;
+                      selectedPackageIndex = index;
+                      print(index);
+                      if (index == 0) {
+                        endDate = startDate?.add(const Duration(days: 30));
+                      }
+                      if (index == 1) {
+                        endDate = startDate?.add(const Duration(days: 90));
+                      }
+                      if (index == 2) {
+                        endDate = startDate?.add(const Duration(days: 180));
+                      }
+                      if (index == 3) {
+                        endDate = startDate?.add(const Duration(days: 365));
+                      }
+                    });
+                    selectedDates.add(endDate!);
+                    _generateDates();
+                    totalDays = getTotalDays();
+                  },
+                );
+              }),
+            ),
+
+            const SizedBox(height: 16),
+
+            // Select Date Range
+            _buildSelectionBox(
+                "Select Date Range", Icons.calendar_month, _selectDateRange),
+            // if (showError || selectedDateRange == null)
+            //   const Padding(
+            //     padding: EdgeInsets.only(top: 8),
+            //     child: Text("Please select a date range!",
+            //         style: TextStyle(color: Colors.red)),
+            //   ),
+            const SizedBox(height: 20),
+            const Text("Frequency:", style: AppTextStyle.Text18700),
+            // Frequency Selection
+
+            Column(
+              children: [
+                FrequencyOption(
+                  title: "Every Day",
+                  value: "Every Day",
+                  selectedValue: selectedFrequency,
+                  icon: Icons.calendar_today,
+                  onTap: () {
+                    setState(() {
+                      selectedFrequencyIndex = 0;
+                      selectedFrequency = "Every Day";
+                      _generateDates();
+                      totalDays = getTotalDays();
+                    });
+                  },
+                ),
+                FrequencyOption(
+                  title: "Alternate Days",
+                  value: "Alternate Days",
+                  selectedValue: selectedFrequency,
+                  icon: Icons.swap_horiz,
+                  onTap: () {
+                    setState(() {
+                      selectedFrequencyIndex = 1;
+                      selectedFrequency = "Alternate Days";
+                      _generateDates();
+                      totalDays = getTotalDays();
+                    });
+                  },
+                ),
+                FrequencyOption(
+                  title: "Except Sundays",
+                  value: "Except Sundays",
+                  selectedValue: selectedFrequency,
+                  icon: Icons.block,
+                  onTap: () {
+                    setState(() {
+                      selectedFrequencyIndex = 2;
+                      selectedFrequency = "Except Sundays";
+                      _generateDates();
+                      totalDays = getTotalDays();
+                    });
+                  },
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
+            // Select Custom Dates
+            _buildSelectionBox("Select Custom Dates", Icons.calendar_today, () {
+              _selectCustomDatesDialog(context);
+            }),
+            const SizedBox(height: 16),
+
+            // Total Price Section
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("Total Days:", style: AppTextStyle.Text14500),
+                      Text("$totalDays days", style: AppTextStyle.Text16700),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("For One Day:", style: AppTextStyle.Text14500),
+                      Text("₹$totalPrice", style: AppTextStyle.Text16700),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 8,
+            ),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Total Price:",
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
+                      Text(
+                        "₹ ${orderData['price'] * getTotalDays() + orderData['vacantPrice'] * orderData['quantity']} ",
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 16),
+            SubscribeButtonComponent(
+                text: 'Go to Checkout',
+                icon: Icons.shopping_cart_checkout,
+                onPressed: _handleCheckout),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -1,7 +1,6 @@
-import 'dart:ui';
-
 import 'package:difwa/controller/admin_controller/add_items_controller.dart';
 import 'package:difwa/screens/admin_screens/add_item.dart';
+import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
 
 class StoreItems extends StatelessWidget {
@@ -12,9 +11,13 @@ class StoreItems extends StatelessWidget {
     final FirebaseController controller = FirebaseController();
 
     return Scaffold(
+      backgroundColor: ThemeConstants.backgroundColor,
       appBar: AppBar(
-        title: const Text('Store Items'),
-        backgroundColor: Colors.blue,
+        title: const Text(
+          'Store Items',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: ThemeConstants.blackColor,
       ),
       body: StreamBuilder<List<Map<String, dynamic>>>(
         stream: controller.fetchBottleItems(),
@@ -30,6 +33,7 @@ class StoreItems extends StatelessWidget {
           final bottleItems = snapshot.data ?? [];
 
           return ListView.builder(
+            
             padding: const EdgeInsets.all(16),
             itemCount: bottleItems.length,
             itemBuilder: (context, index) {
@@ -45,6 +49,7 @@ class StoreItems extends StatelessWidget {
               }
 
               return Card(
+                color: ThemeConstants.backgroundColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16.0),
                 ),
@@ -93,12 +98,12 @@ class StoreItems extends StatelessWidget {
                       Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: () {
-                              // Handle edit
-                            },
-                          ),
+                          // IconButton(
+                          //   icon: const Icon(Icons.edit),
+                          //   onPressed: () {
+                          //     // Handle edit
+                          //   },
+                          // ),
                           IconButton(
                             icon: const Icon(Icons.delete),
                             onPressed: () async {
@@ -126,8 +131,8 @@ class StoreItems extends StatelessWidget {
             MaterialPageRoute(builder: (context) => const AddItem()),
           );
         },
-        backgroundColor: Colors.blue,
-        child: const Icon(Icons.add),
+        backgroundColor: ThemeConstants.blackColor,
+        child: const Icon(Icons.add,color: ThemeConstants.whiteColor,),
       ),
     );
   }

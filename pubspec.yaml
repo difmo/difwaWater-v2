@@ -16,6 +16,8 @@ dependencies:
   firebase_auth:
   firebase_storage:
   get: ^4.6.6
+  order_tracker:
+  order_tracker_zen:
   flutter_svg: any
   intl: ^0.19.0
   lottie: ^3.3.1
@@ -23,6 +25,7 @@ dependencies:
   table_calendar: ^3.1.3
   url_launcher: ^6.3.1
   carousel_slider:
+  app_badge_plus:
   smooth_page_indicator: ^1.0.0
   country_code_picker: ^3.0.0
   flutter_animate: ^4.5.2
@@ -35,7 +38,21 @@ dependencies:
   app_links: ^6.4.0
   icons_plus: ^5.0.0
   animated_icon: ^0.0.9
-
+  image_picker: ^1.1.2
+  google_fonts: ^6.2.1
+  webview_flutter: ^4.10.0
+  webview_flutter_android: ^4.3.4
+  webview_flutter_wkwebview: ^3.18.4
+  logger: ^2.5.0
+  vibration: ^3.1.3
+  audioplayers: ^6.4.0
+  geolocator: ^13.0.3
+  geocoding: ^3.0.0
+  permission_handler: ^11.4.0
+  animated_text_kit: ^4.2.3
+  confetti: ^0.8.0
+  shimmer: ^3.0.0
+  fl_chart: ^0.70.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -57,12 +74,14 @@ flutter:
     - assets/posters/1.jpg
     - assets/posters/5.png
     - assets/posters/tiffin.svg
+    - assets/images/
     - assets/images/otp.svg
     - assets/images/logo.svg
     - assets/images/error.svg
     - assets/images/sublogo.svg
     - assets/images/logowithtitle.svg
     - assets/audio/order.mp3
+    - assets/audio/zomato_ring_5.mp3
     - assets/images/splashbg.svg
     - assets/images/cardvector.svg
     - assets/lottie/loader.json
@@ -75,6 +94,7 @@ flutter:
     - assets/images/stonb22.svg
     - assets/images/stonb33.svg
     - assets/images/water.jpg
+    - assets/images/dlogo.svg
     - assets/images/bottal.jpg
     - assets/images/gb.png
     - assets/images/default_avatar.png
@@ -104,7 +124,9 @@ flutter:
     - assets/button/trbg.png
     - assets/icons/iconbg.svg
     - assets/icons/iconbg.png
-
+    - assets/icons/
     - assets/bgimage.png
     - assets/imagebg.png
+    - assets/images/onboard1.svg
+    - assets/success.json
 

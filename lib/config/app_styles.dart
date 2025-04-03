@@ -1,11 +1,7 @@
-import 'dart:ui';
-
 import 'package:difwa/config/app_color.dart';
 import 'package:flutter/material.dart';
 
 class AppStyle {
-  //// primary color start///////////
-
   static TextStyle heading1 = const TextStyle(
     fontSize: 18,
     fontWeight: FontWeight.bold,

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter/material.dart';
-
 class HeroLayoutCard extends StatelessWidget {
   final ImageInfo imageInfo;
 
@@ -58,19 +56,20 @@ class HeroLayoutCard extends StatelessWidget {
   }
 }
 
-
-
-
-
-
 // lib/models/image_info.dart
 enum ImageInfo {
-  image0('The Flow', 'Sponsored | Season 1 Now Streaming', 'assets/images/water.jpg'),
-  image1('Through the Pane', 'Sponsored | Season 1 Now Streaming', 'assets/images/water.jpg'),
-  image2('Iridescence', 'Sponsored | Season 1 Now Streaming', 'assets/images/water.jpg'),
-  image3('Sea Change', 'Sponsored | Season 1 Now Streaming', 'assets/images/water.jpg'),
-  image4('Blue Symphony', 'Sponsored | Season 1 Now Streaming', 'assets/images/water.jpg'),
-  image5('When It Rains', 'Sponsored | Season 1 Now Streaming', 'assets/images/water.jpg');
+  image0('The Flow', 'Sponsored | Season 1 Now Streaming',
+      'assets/images/water.jpg'),
+  image1('Through the Pane', 'Sponsored | Season 1 Now Streaming',
+      'assets/images/water.jpg'),
+  image2('Iridescence', 'Sponsored | Season 1 Now Streaming',
+      'assets/images/water.jpg'),
+  image3('Sea Change', 'Sponsored | Season 1 Now Streaming',
+      'assets/images/water.jpg'),
+  image4('Blue Symphony', 'Sponsored | Season 1 Now Streaming',
+      'assets/images/water.jpg'),
+  image5('When It Rains', 'Sponsored | Season 1 Now Streaming',
+      'assets/images/water.jpg');
 
   const ImageInfo(this.title, this.subtitle, this.url);
   final String title;

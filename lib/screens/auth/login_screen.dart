@@ -1,4 +1,5 @@
 import 'dart:ui'; // Import for BackdropFilter
+import 'package:difwa/config/app_color.dart';
 import 'package:difwa/config/app_styles.dart';
 import 'package:difwa/utils/validators.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,7 @@ class _LoginScreenState extends State<LoginScreenPage> {
   final _formKeyEmail = GlobalKey<FormState>();
   final _formKeyPassword = GlobalKey<FormState>();
   bool isLoading = false;
-  
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -49,21 +50,22 @@ class _LoginScreenState extends State<LoginScreenPage> {
           //   ),
           // ),
           // Bottom background image
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: SvgPicture.asset(
-              'assets/bgimage/bottom.svg',
-              fit: BoxFit.cover,
-              width: MediaQuery.of(context).size.width,
-            ),
-          ),
+          // Positioned(
+          //   bottom: 0,
+          //   left: 0,
+          //   right: 0,
+          //   child: SvgPicture.asset(
+          //     'assets/bgimage/bottom.svg',
+          //     fit: BoxFit.cover,
+          //     width: MediaQuery.of(context).size.width,
+          //   ),
+          // ),
           // Main content (Form, etc.)
           Center(
             child: SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.only(
+                    top: 30.0, left: 16, right: 16, bottom: 16),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -74,7 +76,7 @@ class _LoginScreenState extends State<LoginScreenPage> {
                     ),
                     const SizedBox(height: 30),
                     Text(
-                      "Enter your details",
+                      "Welcome Back! ",
                       style: AppStyle.headingBlack.copyWith(
                         fontSize: isSmallScreen ? 20 : 24,
                       ),
@@ -82,7 +84,7 @@ class _LoginScreenState extends State<LoginScreenPage> {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      "Please enter your name and the required verification details",
+                      "Log in to order water instantly or \n manage your vendor account.",
                       style: AppStyle.greyText18.copyWith(
                         fontSize: isSmallScreen ? 14 : 18,
                       ),
@@ -95,11 +97,14 @@ class _LoginScreenState extends State<LoginScreenPage> {
                       child: CommonTextField(
                         controller: _emailController,
                         inputType: InputType.email,
-                        onChanged: (String) {_formKeyEmail.currentState!.validate();},
+                        onChanged: (String) {
+                          _formKeyEmail.currentState!.validate();
+                        },
                         label: 'Email',
-                        hint: 'Enter Your Email',
+                        hint: 'Enter Email',
                         icon: Icons.email,
-                        validator: Validators.validateEmail, // Apply validation function
+                        validator: Validators
+                            .validateEmail, // Apply validation function
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -109,63 +114,87 @@ class _LoginScreenState extends State<LoginScreenPage> {
                       child: CommonTextField(
                         controller: _passwordController,
                         inputType: InputType.visiblePassword,
-                        onChanged: (String) {_formKeyPassword.currentState!.validate();},
+                        onChanged: (String) {
+                          _formKeyPassword.currentState!.validate();
+                        },
                         label: 'Password',
-                        hint: 'Enter Your Password',
+                        hint: 'Enter Password',
                         icon: Icons.lock,
                         suffixIcon: Icons.visibility_off,
-                        validator: Validators.validatePassword, // Apply validation function
+                        validator: Validators
+                            .validatePassword, // Apply validation function
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    // Login Button
-                    SizedBox(
-                      child: CustomButton(
-                        baseTextColor: ThemeConstants.whiteColor,
-                        onPressed: () async {
-                                  if (_formKeyEmail.currentState!.validate() &&
-                                      _formKeyPassword.currentState!
-                                          .validate()) {}
-                          await authController.loginwithemail(
-                              _emailController.text, _passwordController.text);
-
-                          setState(() {
-                            isLoading = false; // Hide loader after login
-                          });
-                        },
-                        text: 'Login',
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    // Forgot Password and Sign Up
+                    // const SizedBox(height: 5),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         TextButton(
                           onPressed: () {
-                            Get.toNamed(AppRoutes.login);
+                            Get.toNamed(AppRoutes.signUp);
                           },
                           child: const Text(
                             'Forgot Password?',
-                            style: TextStyle(color: Colors.blue),
+                            style: TextStyle(
+                              color: AppColors.logosecondry,
+                            ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(
+                      child: CustomButton(
+                        baseTextColor: ThemeConstants.whiteColor,
+                        onPressed: () async {
+                          if (_formKeyEmail.currentState!.validate() &&
+                              _formKeyPassword.currentState!.validate()) {
+                            setState(() {
+                              isLoading = true;
+                            });
+                            try {
+                              bool success =
+                                  await authController.loginwithemail(
+                                _emailController.text,
+                                _passwordController.text,
+                                isLoading,
+                              );
+
+                              if (!success) {
+                                Get.snackbar("Login Failed",
+                                    "Invalid email or password.");
+                                isLoading = false;
+                              }
+                            } catch (e) {
+                              print("Error during login: $e");
+                              Get.snackbar("Error", "Something went wrong");
+                              isLoading = false;
+                            } finally {
+                              setState(() {
+                                isLoading = false; // Stop loader after login
+                              });
+                            }
+                          }
+                        },
+                        width: double.infinity,
+                        text: 'SignIn',
+                      ),
+                    ),
+                    const SizedBox(height: 16),
                     Container(
-                      padding: const EdgeInsets.only(top: 80),
+                      padding: const EdgeInsets.only(top: 00),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Text("Don't have an account?"),
                           TextButton(
                             onPressed: () {
-                              Get.toNamed(AppRoutes.login);
+                              Get.toNamed(AppRoutes.signUp);
                             },
                             child: const Text(
-                              'Sign Up',
-                              style: TextStyle(color: Colors.blue),
+                              'Sign Up Now',
+                              style: TextStyle(
+                                color: AppColors.logosecondry,
+                              ),
                             ),
                           ),
                         ],
@@ -180,10 +209,12 @@ class _LoginScreenState extends State<LoginScreenPage> {
           if (isLoading)
             Positioned.fill(
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0), // Blur effect
+                filter:
+                    ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0), // Blur effect
                 child: Container(
                   // ignore: deprecated_member_use
-                  color: Colors.black.withOpacity(0.5), // Semi-transparent overlay
+                  color:
+                      Colors.black.withOpacity(0.5), // Semi-transparent overlay
                   child: Center(
                     child: Lottie.asset(
                       'assets/lottie/loader.json', // Path to your Lottie file

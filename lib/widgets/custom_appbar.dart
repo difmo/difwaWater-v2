@@ -1,11 +1,12 @@
-import 'package:difwa/config/app_color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomAppbar extends StatefulWidget {
   final VoidCallback onProfilePressed;
   final VoidCallback onNotificationPressed;
   final VoidCallback onMenuPressed;
   final bool hasNotifications;
+  final int badgeCount; // Badge count for notifications
   final String? profileImageUrl;
 
   const CustomAppbar({
@@ -14,106 +15,133 @@ class CustomAppbar extends StatefulWidget {
     required this.onNotificationPressed,
     required this.onMenuPressed,
     required this.hasNotifications,
+    required this.badgeCount,
     this.profileImageUrl,
   });
 
-  
-
   @override
-  _CustomToolbarState createState() => _CustomToolbarState();
+  State<CustomAppbar> createState() => _CustomAppbarState();
 }
 
-class _CustomToolbarState extends State<CustomAppbar> {
+class _CustomAppbarState extends State<CustomAppbar> {
   bool get hasNotifications => widget.hasNotifications;
+  int get badgeCount => widget.badgeCount;
   String? get profileImageUrl => widget.profileImageUrl;
 
   @override
   Widget build(BuildContext context) {
-    double topPadding = MediaQuery.of(context).padding.top + 16;
+    double topPadding = MediaQuery.of(context).padding.top + 8;
 
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.white, Color.fromARGB(255, 255, 255, 255)],
+          colors: [Color(0xFFf8f8f8), Colors.white],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
         border: Border(
           bottom: BorderSide(
-            color: Color.fromARGB(255, 244, 244, 244),
+            color: Color.fromARGB(255, 230, 230, 230),
             width: 1.0,
           ),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
       ),
-      padding: EdgeInsets.only(top: topPadding, left: 16, right: 16, bottom: 4),
+      padding: EdgeInsets.only(top: topPadding, left: 16, right: 16, bottom: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Left side - Water Drop Icon and Text
+          // Left side - Logo and App Name
           Row(
             children: [
-              Container(
-                decoration: const BoxDecoration(
-                  color: AppColors.myblack, // Black background
-                  shape: BoxShape.circle, // Circular shape
-                ),
-                padding: EdgeInsets.all(4), // Adjust padding to fit the icon
-                child: const Icon(
-                  Icons.water_drop,
-                  color: Colors.white,
-                  size: 20, // Adjust the icon size
-                ),
+              SvgPicture.asset(
+                'assets/images/dlogo.svg',
+                height: 40,
               ),
-              SizedBox(width: 4),
-              const Text(
-                'FreshDropHydrate',
-                style: TextStyle(
-                  color: AppColors.myblack,
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                  
-                ),
-              ),
+              const SizedBox(width: 10),
             ],
           ),
-          // Right side - Notification, Menu, Profile
+
+          // Right side - Menu, Notifications, Profile
           Row(
             children: [
+              // Menu Icon Button
+              IconButton(
+                icon: const Icon(
+                  Icons.grid_view_rounded,
+                  color: Color(0xFF4A4A4A),
+                  size: 28,
+                ),
+                onPressed: widget.onMenuPressed,
+              ),
+
+              // Notification Icon with Badge
               Stack(
                 clipBehavior: Clip.none,
                 children: [
                   IconButton(
-                    icon: Icon(
-                      Icons.circle_notifications,
-                      color: hasNotifications ? AppColors.myblack : Colors.black,
-                      size: 30,
+                    icon: const Icon(
+                      Icons.notifications_none_rounded,
+                      color: Color(0xFF4A4A4A),
+                      size: 28,
                     ),
                     onPressed: widget.onNotificationPressed,
                   ),
-                  if (hasNotifications)
+                  if (badgeCount > 0)
                     Positioned(
-                      top: 0,
-                      right: 0,
-                      child: CircleAvatar(
-                        radius: 6,
-                        backgroundColor: AppColors.primary,
+                      right: 6,
+                      top: 6,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.white, width: 1),
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 18,
+                          minHeight: 18,
+                        ),
+                        child: Text(
+                          '$badgeCount',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
                 ],
               ),
-              // IconButton(
-              //   icon: const Icon(Icons.grid_view),
-              //   onPressed: widget.onMenuPressed,
-              // ),
-              // IconButton(
-              //   icon: const Icon(Icons.person),
-              //   onPressed: widget.onProfilePressed,
-              // ),
-              if (profileImageUrl != null)
-                CircleAvatar(
-                  radius: 16,
-                  backgroundImage: NetworkImage(profileImageUrl!),
+
+              const SizedBox(width: 8),
+
+              // Profile Avatar Icon
+              GestureDetector(
+                onTap: widget.onProfilePressed,
+                child: CircleAvatar(
+                  radius: 18,
+                  backgroundColor: const Color(0xFFE0E0E0),
+                  backgroundImage: profileImageUrl != null
+                      ? NetworkImage(profileImageUrl!)
+                      : null,
+                  child: profileImageUrl == null
+                      ? const Icon(
+                          Icons.person_outline,
+                          color: Color(0xFF4A4A4A),
+                          size: 24,
+                        )
+                      : null,
                 ),
+              ),
             ],
           ),
         ],

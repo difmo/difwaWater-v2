@@ -1,81 +1,224 @@
-// void updateDateStatus(String orderId, String date, String newStatus) async {
-//   DocumentReference orderRef =
-//       FirebaseFirestore.instance.collection('difwaorders').doc(orderId);
+import 'dart:math';
 
-//   try {
-//     // Get the current timestamp from the server
-//     Timestamp currentTimestamp = Timestamp.now();
+import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:difwa/models/stores_models/store_model.dart';
+import 'package:difwa/models/user_models/user_details_model.dart';
+import 'package:difwa/routes/app_routes.dart';
+import 'package:get/get.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-//     DocumentSnapshot orderSnapshot = await orderRef.get();
+class AuthController extends GetxController {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  var verificationId = ''.obs;
+  var userRole = ''.obs;
 
-//     if (orderSnapshot.exists) {
-//       List<dynamic> selectedDates = orderSnapshot['selectedDates'];
+///////////////////////////////////////////////////////////////////////// SIGN UP WITH EMAIL //////////////////////////////////////////////////////////////////////////
 
-//       List<dynamic> updatedDates = selectedDates.map((dateObj) {
-//         if (dateObj['date'] == date) {
-//           List<dynamic> statusHistory = List.from(dateObj['statusHistory']);
-//           statusHistory.add({
-//             'status': newStatus,
-//             'time': currentTimestamp, // Use fetched timestamp instead
-//           });
+  Future<bool> signwithemail(String email, String name, String password,
+      String number, bool isLoading) async {
+    try {
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-//           return {
-//             'date': dateObj['date'],
-//             'statusHistory': statusHistory,
-//           };
-//         }
-//         return dateObj;
-//       }).toList();
+      // Save additional user details in Firestore
+      await _saveUserDataemail(
+          userCredential.user!.uid, email, name, number, 'defaultFloor');
+      await _fetchUserRole();
+      _navigateToDashboard();
+      return true;
+    } on FirebaseAuthException catch (e) {
+      Get.snackbar('Error', e.message ?? 'An error occurred while signing up');
+      return false;
+    } catch (e) {
+      Get.snackbar('Error', 'An unexpected error occurred: $e');
+      return false;
+    }
+  }
 
-//       await orderRef.update({'selectedDates': updatedDates});
-//     }
-//   } catch (e) {
-//     print('Error updating date status: $e');
-//   }
-// }
+///////////////////////////////////////////////////////////////////////// LOGIN WITH EMAIL //////////////////////////////////////////////////////////////////////////
+  Future<bool> loginwithemail(
+      String email, String password, bool isLoading) async {
+    try {
+      await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      await _fetchUserRole();
+      _navigateToDashboard();
+      return true;
+    } on FirebaseAuthException catch (e) {
+      Get.snackbar('Error', e.message ?? 'An error occurred while logging in');
+      return false;
+    } catch (e) {
+      Get.snackbar('Error', 'An unexpected error occurred: $e');
+      return false;
+    }
+  }
+
+///////////////////////////////////////////////////////////////////////// VERIFY USER //////////////////////////////////////////////////////////////////////////
+  Future<void> verifyUserExistenceAndLogin(
+      String email, String password) async {
+    try {
+      await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      await _fetchUserRole();
+      _navigateToHomePage();
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        _navigateToLoginPage();
+      } else if (e.code == 'wrong-password') {
+        Get.snackbar('Error', 'Incorrect password. Please try again.');
+      } else {
+        Get.snackbar(
+            'Error', e.message ?? 'An error occurred while logging in');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'An unexpected error occurred: $e');
+    }
+  }
+
+///////////////////////////////////////////////////////////////////////// NAVIGATION //////////////////////////////////////////////////////////////////////////
+  void _navigateToHomePage() {
+    Get.offNamed('/home');
+  }
+
+  void _navigateToLoginPage() {
+    Get.offNamed('/login');
+  }
+
+  void _navigateToDashboard() {
+    if (userRole.value == 'isUser') {
+      Get.offAllNamed(AppRoutes.userbottom);
+    } else if (userRole.value == 'isStoreKeeper') {
+      Get.offAllNamed(AppRoutes.storebottombar);
+    } else {
+      Get.offAllNamed(AppRoutes.login);
+    }
+  }
+
+  int generateRandomPin() {
+    Random random = Random();
+    // Generate a random number between 100000 and 999999 (inclusive)
+    int pin = 100000 + random.nextInt(900000);
+    return pin;
+  }
+
+///////////////////////////////////////////////////////////////////////// SAVE USER DETAILS ////////////////////////////////////////////////////////////////////
+  Future<void> _saveUserDataemail(String uid, String email, String name,
+      String number, String floor) async {
+    DocumentSnapshot userDoc =
+        await _firestore.collection('difwa-users').doc(uid).get();
+
+    if (!userDoc.exists) {
+      await _firestore.collection('difwa-users').doc(uid).set({
+        'uid': uid,
+        'name': name,
+        'number': number,
+        'email': email,
+        'floor': floor,
+        'role': 'isUser',
+        'orderpin': generateRandomPin(),
+        'walletBalance': 0.0,
+      }, SetOptions(merge: true));
+    } else {
+      await _firestore.collection('difwa-users').doc(uid).update({
+        'name': name,
+        'number': number,
+        'floor': floor,
+        'orderpin': generateRandomPin(),
+      });
+    }
+  }
+
+///////////////////////////////////////////////////////////////////////// SAVE USER DETAILS ////////////////////////////////////////////////////////////////////
+  Future<void> updateUserDetails(String uid, String email, String name,
+      String number, String floor) async {
+    DocumentSnapshot userDoc =
+        await _firestore.collection('difwa-users').doc(uid).get();
+
+    if (userDoc.exists) {
+      // If the user exists, update their details
+      await _firestore.collection('difwa-users').doc(uid).update({
+        'name': name,
+        'number': number,
+        'floor': floor,
+        'email': email,
+        'orderpin': generateRandomPin(),
+      });
+    } else {
+      // If the user does not exist, create a new record
+      await _firestore.collection('difwa-users').doc(uid).set({
+        'uid': uid,
+        'name': name,
+        'number': number,
+        'email': email,
+        'floor': floor,
+        'role': 'isUser',
+        'walletBalance': 0.0,
+        'orderpin': generateRandomPin(),
+      }, SetOptions(merge: true));
+    }
+  }
+
+///////////////////////////////////////////////////////////////////////// FETCH USER ROLE  //////////////////////////////////////////////////////////////////////
+  Future<void> _fetchUserRole() async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc =
+          await _firestore.collection('difwa-users').doc(user.uid).get();
+      if (userDoc.exists) {
+        userRole.value = userDoc['role'] ?? 'isUser';
+      } else {
+        userRole.value = 'isUser';
+      }
+    }
+  }
 
 
 
-// Widget buildStatusHistory(List<dynamic> statusHistory) {
-//   return Column(
-//     crossAxisAlignment: CrossAxisAlignment.start,
-//     children: statusHistory.map((history) {
-//       Timestamp time = history['time'];
-//       DateTime dateTime = time.toDate();
+  Future<UserDetailsModel> fetchUserData() async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc =
+          await _firestore.collection('difwa-users').doc(user.uid).get();
+      if (userDoc.exists) {
+        print("User data: ${userDoc.data()}");
 
-//       return Text(
-//         '${history['status']} on ${DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime)}',
-//         style: TextStyle(fontSize: 14, color: Colors.grey),
-//       );
-//     }).toList(),
-//   );
-// }
+        var userDetails =
+            UserDetailsModel.fromJson(userDoc.data() as Map<String, dynamic>);
+        print("UserDetailsModel: $userDetails");
 
-// Widget buildOrderDetails(Map<String, dynamic> order) {
-//   List<dynamic> selectedDates = order['selectedDates'];
+        return userDetails;
+      }
+    }
+    return UserDetailsModel(
+        docId: "",
+        uid: "",
+        name: "",
+        number: "",
+        email: "",
+        floor: "",
+        role: "",
+        walletBalance: 0.0,
+        orderpin: '');
+  }
 
-//   return ListView.builder(
-//     itemCount: selectedDates.length,
-//     itemBuilder: (context, index) {
-//       Map<String, dynamic> dateInfo = selectedDates[index];
+///////////////////////////////////////////////////////////////////////// HANDLE ROLE CHANGED //////////////////////////////////////////////////////////////////
 
-//       return Card(
-//         child: ListTile(
-//           title: Text('Date: ${dateInfo['date']}'),
-//           subtitle: buildStatusHistory(dateInfo['statusHistory']),
-//         ),
-//       );
-//     },
-//   );
-// }
-// List<Map<String, dynamic>> selectedDatesWithHistory = widget.selectedDates
-//     .map((date) => {
-//           'date': date.toIso8601String(),
-//           'statusHistory': [
-//             {
-//               'status': 'pending',
-//               'time': Timestamp.now(), // Use Timestamp.now() instead
-//             }
-//           ],
-//         })
-//     .toList();
+///////////////////////////////////////////////////////////////////////// HANDLE LOGOUT //////////////////////////////////////////////////////////////////////////
+  Future<void> logout() async {
+    try {
+      await _auth.signOut();
+      Get.snackbar('Success', 'Logged out successfully');
+      Get.offAllNamed(AppRoutes.login);
+    } catch (e) {
+      Get.snackbar('Error', 'Error logging out: $e');
+    }
+  }
+}

@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:difwa/config/app_color.dart';
 import 'package:difwa/config/app_styles.dart';
 import 'package:difwa/routes/app_routes.dart';
@@ -34,7 +32,6 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
     );
   }
 
-
   void _onNext() {
     if (_currentIndex < 2) {
       _pageController.nextPage(
@@ -59,31 +56,22 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
             },
             children: [
               _buildOnboardingPage(
-                topImage: 'assets/images/stonb1.svg',
-                middleImage: 'assets/images/stonb11.svg',
-                title: 'Fresh Water',
-                topImageHeight: 400,
-                newHeading: 'Healthy Choices!',
+                middleImage: 'assets/images/stonb22.svg',
+                newHeading: 'Streamlined Order Management',
                 newDescription:
-                    'Choose from a variety of nutritious options every day.',
+                    'Welcome to Difwa! Simplify your water delivery business today.',
                 titleColor: Colors.white,
                 showButton: false,
               ),
               _buildOnboardingPage(
-                topImage: 'assets/images/stonb2.svg',
                 middleImage: 'assets/images/stonb22.svg',
-                title: 'Quality Ingredients',
-                topImageHeight: 230,
                 newHeading: 'Farm to Table!',
                 newDescription: 'Experience the freshness of local produce.',
                 titleColor: Colors.black,
                 showButton: false,
               ),
               _buildOnboardingPage(
-                topImage: 'assets/images/stonb3.svg',
                 middleImage: 'assets/images/stonb33.svg',
-                title: 'Start Today!',
-                topImageHeight: 440,
                 newHeading: 'Join Our Community!',
                 newDescription:
                     'Connect with fellow food lovers and share recipes.',
@@ -112,10 +100,7 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
   }
 
   Widget _buildOnboardingPage({
-    required String topImage,
     required String middleImage,
-    required String title,
-    required double topImageHeight,
     required String newHeading,
     required String newDescription,
     required Color titleColor,
@@ -127,28 +112,15 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
       child: Stack(
         children: [
           // Background image
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: SvgPicture.asset(
-              topImage,
-              fit: BoxFit.fill,
-              height: topImageHeight,
-            ),
-          ),
+       
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text(title, style: AppStyle.heading1),
-                ),
+               
                 const SizedBox(height: 130),
                 SvgPicture.asset(
                   middleImage,
-                  height: 250,
                 ),
                 const SizedBox(height: 30),
                 Padding(
@@ -166,15 +138,16 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
                 if (showButton)
                   ElevatedButton(
                     style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(Colors.white),
+                      backgroundColor: WidgetStateProperty.all(Colors.red),
                       foregroundColor:
-                          WidgetStateProperty.all(Colors.red), // Set text color
+                          WidgetStateProperty.all(Colors.white), // Set text color
                     ),
                     onPressed: onNextPressed, // Call the passed function
                     child: const Text(
-                      "Create My Store",
+                      "Create Store",
                       style: TextStyle(
-                          color: Colors.red), // Ensure text color is red
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold), // Ensure text color is red
                     ),
                   ),
 
