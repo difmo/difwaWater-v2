@@ -13,10 +13,9 @@ class Address {
   String userId;
   final String floor;
 
-  // Constructor with required fields
   Address({
     required this.docId,
-    required String name,
+    required String name,  
     required this.street,
     required this.city,
     required this.state,
@@ -28,13 +27,13 @@ class Address {
     required this.isSelected,
     required this.userId,
     required this.floor,
-  }) : name = _capitalize(name);
+  }) : name = _capitalize(name); 
+
   static String _capitalize(String name) {
     if (name.isEmpty) return "";
     return name[0].toUpperCase() + name.substring(1);
   }
 
-  // Convert Address object to JSON for Firestore
   Map<String, dynamic> toJson() {
     return {
       'name': name,
@@ -53,13 +52,29 @@ class Address {
     };
   }
 
-  // Create an Address object from Firestore document
+  static Address defaultAddress() {
+    return Address(
+      docId: 'default',
+      userId: 'default_user',
+      name: 'Default User',
+      street: '123 Default St.',
+      city: 'Default City',
+      state: 'Default State',
+      zip: '00000',
+      country: 'Default Country',
+      phone: '000-000-0000',
+      saveAddress: false,
+      isSelected: false,
+      isDeleted: false,
+      floor: '1st',
+    );
+  }
+
   factory Address.fromJson(Map<String, dynamic> json) {
     return Address(
       name: json['name'] ?? '',
       docId: json['docId'] ?? '',
-      street: json['street'] ??
-          '', // Default to empty string if the field doesn't exist
+      street: json['street'] ?? '',
       city: json['city'] ?? '',
       state: json['state'] ?? '',
       zip: json['zip'] ?? '',
@@ -67,8 +82,8 @@ class Address {
       phone: json['phone'] ?? '',
       isDeleted: json['isDeleted'] ?? false,
       saveAddress: json['saveAddress'] ?? false,
-      isSelected: json['isSelected'] ?? false, // Default to false if missing
-      userId: json['userId'] ?? '', // Default to empty string if missing
+      isSelected: json['isSelected'] ?? false,
+      userId: json['userId'] ?? '',
       floor: json['floor'] ?? '',
     );
   }

@@ -1,13 +1,19 @@
 import 'package:difwa/config/app_constant.dart';
+import 'package:difwa/controller/address_controller.dart';
+import 'package:difwa/controller/wallet_controller.dart';
+import 'package:difwa/models/address_model.dart';
+import 'package:difwa/screens/auth/saved_address.dart';
 import 'package:difwa/utils/app__text_style.dart';
+import 'package:difwa/utils/generators.dart';
 import 'package:difwa/widgets/subscribe_button_component.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/controller/checkout_controller.dart';
 
-class CheckoutScreen extends StatelessWidget {
+class CheckoutScreen extends StatefulWidget {
   final Map<String, dynamic> orderData;
   final double totalPrice;
   final int totalDays;
@@ -22,10 +28,26 @@ class CheckoutScreen extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final CheckoutController checkoutController = Get.put(CheckoutController());
-    checkoutController.fetchWalletBalance();
+  _CheckoutScreenState createState() => _CheckoutScreenState();
+}
 
+class _CheckoutScreenState extends State<CheckoutScreen> {
+  late final CheckoutController checkoutController;
+  late final AddressController _addressController;
+  final WalletController _walletController2 = Get.put(WalletController());
+  Address? addresss;
+  String? userUid = FirebaseAuth.instance.currentUser?.uid;
+  @override
+  void initState() {
+    super.initState();
+    checkoutController = Get.put(CheckoutController());
+    _addressController = Get.put(AddressController());
+    checkoutController.fetchWalletBalance();
+    // _getSelectedAddress();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ThemeConstants.whiteColor,
       appBar: AppBar(
@@ -75,15 +97,16 @@ class CheckoutScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 8),
-                          Text("${orderData['bottle']['size']}L",
+                          Text("${widget.orderData['bottle']['size']}L",
                               style: AppTextStyle.TextWhite18700),
                           SizedBox(height: 4),
-                          Text("Price: ₹ ${orderData['price']} per bottle",
+                          Text(
+                              "Price: ₹ ${widget.orderData['price']} per bottle",
                               style: AppTextStyle.TextWhite16700),
                           Text(
-                              "Vacant Bottle Price: ₹ ${orderData['vacantPrice'] * orderData['quantity']}",
+                              "Vacant Bottle Price: ₹ ${widget.orderData['vacantPrice'] * widget.orderData['quantity']}",
                               style: AppTextStyle.TextWhite16700),
-                          Text("One Bottle Price: ₹ $totalPrice",
+                          Text("One Bottle Price: ₹ ${widget.totalPrice}",
                               style: AppTextStyle.TextWhite16700),
                         ],
                       ),
@@ -137,7 +160,7 @@ class CheckoutScreen extends StatelessWidget {
                     focusedDay: DateTime.now(),
                     headerVisible: false,
                     selectedDayPredicate: (day) {
-                      return selectedDates
+                      return widget.selectedDates
                           .any((selectedDate) => isSameDay(selectedDate, day));
                     },
                     calendarStyle: CalendarStyle(
@@ -174,7 +197,8 @@ class CheckoutScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text("Total Days:", style: AppTextStyle.Text14500),
-                      Text("$totalDays days", style: AppTextStyle.Text16700),
+                      Text("${widget.totalDays} days",
+                          style: AppTextStyle.Text16700),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -201,7 +225,7 @@ class CheckoutScreen extends StatelessWidget {
                             fontWeight: FontWeight.bold, fontSize: 18),
                       ),
                       Text(
-                        "₹${orderData['price'] * totalDays + orderData['vacantPrice'] * orderData['quantity']} ",
+                        "₹${widget.orderData['price'] * widget.totalDays + widget.orderData['vacantPrice'] * widget.orderData['quantity']} ",
                         style: const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 18),
                       ),
@@ -227,20 +251,71 @@ class CheckoutScreen extends StatelessWidget {
             }),
 
             const SizedBox(height: 24),
+            StreamBuilder<Address?>(
+              stream: _addressController.getSelectedAddress(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                }
+                if (snapshot.hasData && snapshot.data != null) {
+                  final address = snapshot.data!;
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                          '${address.name}, ${address.street}, ${address.city}, ${address.state}, ${address.zip}',
+                          style: const TextStyle(fontSize: 14)),
+                      Text('Country: ${address.country}',
+                          style: const TextStyle(fontSize: 14)),
+                      Text('Phone: ${address.phone}',
+                          style: const TextStyle(fontSize: 14)),
+                      TextButton(
+                        onPressed: () async {
+                          final Address? newAddress =
+                              await Get.to(() => SavveAddressPage());
+                          if (newAddress != null) {
+                            // _addressController.updateSelectedAddress(newAddress);
+                          }
+                        },
+                        child: const Text('Change Address',
+                            style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold)),
+                      ),
+                    ],
+                  );
+                } else {
+                  return const Text('No address selected.');
+                }
+              },
+            ),
 
             // Payment Button
             SubscribeButtonComponent(
                 text: 'Pay Now',
-                // icon: Icons.shopping_cart_checkout,
-                onPressed: () {
-                  checkoutController.processPayment(
-                      orderData,
-                      orderData['price'],
-                      totalDays,
-                      (orderData['vacantPrice'] * orderData['quantity'])
-                          .toDouble(),
-                      selectedDates,
-                      context);
+                onPressed: () async {
+                  if (await _addressController.hasAddresses()) {
+                    print("selected address");
+
+                    await checkoutController.processPayment(
+                        widget.orderData,
+                        widget.orderData['price'],
+                        widget.totalDays,
+                        (widget.orderData['vacantPrice'] *
+                                widget.orderData['quantity'])
+                            .toDouble(),
+                        widget.selectedDates,
+                        context);
+
+                    await _walletController2.saveWalletHistory(
+                        widget.orderData['price'],
+                        "Debited",
+                        Generators.generatePaymentId(),
+                        "Success",
+                        userUid);
+                  } else {
+                    print("Please Create An Address");
+                  }
                 }),
           ],
         ),

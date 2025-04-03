@@ -1,5 +1,4 @@
-import 'package:difwa/controller/admin_controller/add_store_controller.dart';
-import 'package:difwa/controller/payment_history_controller.dart';
+import 'package:difwa/controller/admin_controller/payment_history_controller.dart';
 import 'package:difwa/controller/wallet_controller.dart';
 import 'package:difwa/utils/app__text_style.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +14,6 @@ class RequestForWithdraw extends StatefulWidget {
 
 class _RequestForWithdrawState extends State<RequestForWithdraw> {
   TextEditingController amountController = TextEditingController();
-  final AddStoreController _addStoreController = Get.put(AddStoreController());
   WalletController? walletController;
   final PaymentHistoryController _paymentHistoryController =
       Get.put(PaymentHistoryController());

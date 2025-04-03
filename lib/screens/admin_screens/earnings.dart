@@ -1,8 +1,7 @@
-import 'dart:ffi';
 
 import 'package:difwa/controller/admin_controller/add_store_controller.dart';
 import 'package:difwa/controller/earning_controller.dart';
-import 'package:difwa/controller/payment_history_controller.dart';
+import 'package:difwa/controller/admin_controller/payment_history_controller.dart';
 import 'package:difwa/models/stores_models/store_model.dart';
 import 'package:difwa/models/stores_models/vendor_payment_model.dart';
 import 'package:difwa/routes/app_routes.dart';

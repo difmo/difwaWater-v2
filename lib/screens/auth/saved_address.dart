@@ -13,7 +13,8 @@ class SavveAddressPage extends StatelessWidget {
     final AddressController addressController = Get.put(AddressController());
 
     return Scaffold(
-      appBar: AppBar(title: Text('Address Book', style: TextStyle(fontWeight: FontWeight.bold),)),
+    backgroundColor:  Colors.white,
+      appBar: AppBar( backgroundColor: Colors.white, title: Text('Address Book', style: TextStyle(fontWeight: FontWeight.bold),)),
       body: GetBuilder<AddressController>(
         init: addressController,
         builder: (_) {
