@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:difwa/models/address_model.dart';
 import 'package:difwa/utils/generators.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/widgets/CustomPopup.dart';
@@ -86,6 +87,7 @@ class CheckoutController extends GetxController {
   }
 
   Future<void> processPayment(
+      Address? address,
       Map<String, dynamic> orderData,
       double totalPrice,
       int totalDays,
@@ -138,6 +140,7 @@ class CheckoutController extends GetxController {
           'totalDays': totalDays,
           'selectedDates': selectedDatesWithHistory,
           'orderData': orderData,
+          'address':address,
           'status': 'paid',
           'timestamp': FieldValue.serverTimestamp(),
           'merchantId': orderData['bottle']['merchantId'],

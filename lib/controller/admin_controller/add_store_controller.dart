@@ -193,7 +193,7 @@ class AddStoreController extends GetxController {
           print("Earnings are null or empty.");
         }
 
-        return storeData;
+        return storeData; 
       } else {
         throw Exception('Store with Merchant ID $merchantId not found');
       }

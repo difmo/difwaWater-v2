@@ -21,7 +21,6 @@ class PaymentWebViewScreen extends StatefulWidget {
 class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
   late final WebViewController _controller;
   bool _isLoading = true; // to manage loading state
-  bool _isDone = true; // to manage done state for first URL check
 
   @override
   void initState() {
@@ -95,7 +94,6 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
           }
 
           setState(() {
-            _isDone = false; // Set the flag to false after checking once
             _isLoading = false;
           });
         },
