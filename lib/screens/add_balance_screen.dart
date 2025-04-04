@@ -4,6 +4,8 @@ import 'package:difwa/screens/payment_webview_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 class AddBalanceScreen extends StatefulWidget {
   const AddBalanceScreen({super.key});
@@ -15,15 +17,13 @@ class AddBalanceScreen extends StatefulWidget {
 class _AddBalanceScreenState extends State<AddBalanceScreen> {
   TextEditingController amountController = TextEditingController();
   WalletController? walletController;
-
+  final WalletController _walletController2 = Get.put(WalletController());
+  String? userUid = FirebaseAuth.instance.currentUser?.uid;
   @override
   void initState() {
     super.initState();
-    walletController = WalletController(
-      context: context,
-      amountController: amountController,
-    );
-    walletController?.fetchUserWalletBalance();
+    walletController = WalletController();
+    // walletController?.fetchUserWalletBalance();
   }
 
   @override
@@ -34,6 +34,7 @@ class _AddBalanceScreenState extends State<AddBalanceScreen> {
   double currentBalance = 2458.65;
   double enteredAmount = 0.0;
   String selectedPaymentMethod = "Visa ending in 4242";
+  String paymentId = "";
 
   final List<Map<String, String>> paymentMethods = [
     {"type": "visa", "card": "Visa ending in 4242", "expiry": "Expires 12/24"},
@@ -65,13 +66,32 @@ class _AddBalanceScreenState extends State<AddBalanceScreen> {
     if (amount >= 30.0) {
       String url =
           'https://www.difwa.com/payment-page?amount=$amount&userId=$currentUserId&returnUrl=app://payment-result';
+
       // Open WebView and wait for the result
       final result = await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => PaymentWebViewScreen(initialUrl: url),
+          builder: (context) => PaymentWebViewScreen(
+            initialUrl: url,
+            amount: amount,
+            userId: currentUserId!,
+          ),
         ),
       );
+      print("Payment Status from add balance: $result");
+
+      if (result != null && result is Map<String, dynamic>) {
+        String status = result['status'] ?? 'No status';
+        String paymentId = result['payment_id'] ?? 'No payment_id';
+        print("Payment Status from add balance: $status");
+        print("Payment ID: $paymentId");
+        await _walletController2.saveWalletHistory(amount, "Credited",
+            paymentId, status, userUid);
+        // Now you can use the correct paymentId here
+      } else {
+        print("No result returned from PaymentWebViewScreen.");
+      }
+
       _addMoneySuccess(result);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -109,7 +129,8 @@ class _AddBalanceScreenState extends State<AddBalanceScreen> {
       );
       return;
     }
-
+    print("result");
+    print(result);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -157,7 +178,7 @@ class _AddBalanceScreenState extends State<AddBalanceScreen> {
             StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection('difwa-users')
-                  .doc(walletController?.currentUserId)
+                  .doc(walletController?.currentUserIdd)
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {

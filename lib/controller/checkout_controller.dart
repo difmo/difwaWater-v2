@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:difwa/utils/generators.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/widgets/CustomPopup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:difwa/screens/congratulations_page.dart';
+import 'package:uuid/uuid.dart';
 
 class CheckoutController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -78,6 +80,11 @@ class CheckoutController extends GetxController {
     }
   }
 
+  String generatePaymentId() {
+    var uuid = Uuid();
+    return 'PAY-${uuid.v4()}';
+  }
+
   Future<void> processPayment(
       Map<String, dynamic> orderData,
       double totalPrice,
@@ -125,6 +132,7 @@ class CheckoutController extends GetxController {
 
         await _firestore.collection('difwa-orders').doc(newBulkOrderId).set({
           'bulkOrderId': newBulkOrderId,
+          'paymentId': Generators.generatePaymentId(),
           'userId': currentUserId,
           'totalPrice': totalAmount,
           'totalDays': totalDays,

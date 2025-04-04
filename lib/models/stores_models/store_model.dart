@@ -6,7 +6,7 @@ class UserModel {
   final String shopName;
   final String ownerName;
   final String merchantId;
-  final String earnings;
+  final double earnings;  // Change earnings to a double
   final String uid;
   final String? imageUrl;
   final String? storeaddress;
@@ -19,7 +19,7 @@ class UserModel {
     required this.shopName,
     required this.ownerName,
     required this.merchantId,
-    required this.earnings,
+    required this.earnings,  // Make sure earnings is passed as double
 
     required this.uid,
     required this.imageUrl,
@@ -36,7 +36,7 @@ class UserModel {
       shopName: map['shopName'] ?? '',
       ownerName: map['ownerName'] ?? '',
       merchantId: map['merchantId'] ?? '',
-      earnings: map['earnings'] ?? '',
+      earnings: map['earnings'] != null ? map['earnings'].toDouble() : 0.0, // Ensure it's a double
       uid: map['uid'] ?? '',
       imageUrl: map['imageUrl'], // Optional, can be null
       storeaddress: map['storeaddress'], // Optional, can be null
@@ -53,7 +53,7 @@ class UserModel {
       'shopName': shopName,
       'ownerName': ownerName,
       'merchantId': merchantId,
-      'earnings': earnings,
+      'earnings': earnings,  // Store as double
       'uid': uid,
       'imageUrl': imageUrl,
       'storeaddress': storeaddress,

@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:difwa/config/app_color.dart';
 import 'package:difwa/controller/admin_controller/add_items_controller.dart';
+import 'package:difwa/controller/admin_controller/add_store_controller.dart';
+import 'package:difwa/controller/admin_controller/payment_history_controller.dart';
+import 'package:difwa/models/stores_models/store_model.dart';
 import 'package:difwa/screens/admin_screens/store_home.dart';
 import 'package:difwa/screens/admin_screens/admin_orders_page.dart';
 import 'package:difwa/screens/admin_screens/store_items.dart';
@@ -25,12 +28,15 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
   late final List<Widget> _screens;
   late StreamSubscription _orderSubscription;
   final FirebaseController _authController = Get.put(FirebaseController());
-  final AudioPlayer _audioPlayer = AudioPlayer(); 
+  final AddStoreController _addStoreController = Get.put(AddStoreController());
+  final PaymentHistoryController _paymentHistoryController =
+      Get.put(PaymentHistoryController());
+
+  final AudioPlayer _audioPlayer = AudioPlayer();
   String merchantIdd = "";
 
   late bool _isVibrating;
   late bool _isSoundPlaying;
-
 
   @override
   void initState() {
@@ -38,47 +44,52 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
     _screens = [
       const StoreHome(),
       const StoreItems(),
-      AdminPanelScreen(), 
-      const StoreProfileScreen(), 
+      AdminPanelScreen(),
+      const StoreProfileScreen(),
     ];
     _authController.fetchMerchantId("").then((merchantId) {
-      print("Fetched merchantId: $merchantId");
       setState(() {
         merchantIdd = merchantId!;
       });
-      _listenForNewOrders(); 
+      _listenForNewOrders();
     });
 
     _isVibrating = false;
     _isSoundPlaying = false;
   }
 
-  // Listen to new orders
   void _listenForNewOrders() {
     print("Listening for new orders for merchantId: $merchantIdd");
 
     _orderSubscription = FirebaseFirestore.instance
         .collection('difwa-orders')
         .where('merchantId', isEqualTo: merchantIdd)
-        .where('status', isEqualTo: 'paid') 
-        .snapshots() // Listen to changes
+        .where('status', isEqualTo: 'paid') // Listen for paid orders
+        .snapshots()
         .listen((snapshot) {
       print("Snapshot received: ${snapshot.docs.length} documents found");
 
       if (snapshot.docs.isNotEmpty) {
-        // New paid order detected, show the popup
-        _showPopup(context);
+        var orderDoc = snapshot.docs.first; // Fetch the first order
+        var orderData = orderDoc.data();
 
-        // Start vibrating and playing sound if not already
+        print("New order found with totalPrice: ${orderData['totalPrice']}");
+
+        _showPopup(context, orderData);
+
         if (!_isVibrating) {
+          print("Starting vibration...");
           _startVibration();
         }
         if (!_isSoundPlaying) {
+          print("Starting sound...");
           _startSound();
         }
       } else {
         print("No paid orders found");
       }
+    }, onError: (error) {
+      print("Error while listening to Firestore: $error");
     });
   }
 
@@ -86,14 +97,14 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
   void _startVibration() async {
     if (await Vibration.hasVibrator()) {
       _isVibrating = true;
-      Vibration.vibrate(pattern: [500, 500], repeat: 0); // Repeat vibration
+      Vibration.vibrate(pattern: [500, 500], repeat: 0);
     }
   }
 
   // Start playing the ringtone continuously
   void _startSound() async {
     await _audioPlayer.setSource(AssetSource('audio/zomato_ring_5.mp3'));
-    _audioPlayer.setReleaseMode(ReleaseMode.loop); // Make the sound loop
+    _audioPlayer.setReleaseMode(ReleaseMode.loop);
     _audioPlayer.play(AssetSource('audio/zomato_ring_5.mp3'));
     _isSoundPlaying = true;
   }
@@ -116,23 +127,23 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
     });
   }
 
-  // Update the order status in Firestore
+  // void _addPaymentHistory(String amount, String amountStatus, String userId,
+  //     String paymentId, String paymentStatus, String bulkOrderId) {
+  //   _paymentHistoryController.savePaymentHistory(
+  //       amount, amountStatus, userId, paymentId, paymentStatus, bulkOrderId);
+  // }
+
   void _updateOrderStatus(String status) {
-    // You would need to get the document reference of the order you want to update
     FirebaseFirestore.instance
         .collection('difwa-orders')
         .where('merchantId', isEqualTo: merchantIdd)
-        .where('status',
-            isEqualTo:
-                'paid') // Filter based on your conditions (e.g., 'paid' status)
+        .where('status', isEqualTo: 'paid')
         .limit(1)
         .get()
         .then((snapshot) {
       if (snapshot.docs.isNotEmpty) {
-        // Assuming we're updating the first order found (modify as necessary)
         var orderDoc = snapshot.docs.first;
         orderDoc.reference.update({'status': status}).then((_) {
-          // Successfully updated the order status
           print('Order status updated to $status');
         }).catchError((error) {
           print('Failed to update order status: $error');
@@ -143,7 +154,6 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
 
   @override
   void dispose() {
-    // Cancel the subscription when the widget is disposed
     _orderSubscription.cancel();
     if (_isVibrating) _stopVibration();
     if (_isSoundPlaying) _stopSound();
@@ -154,177 +164,198 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ThemeConstants.whiteColor,
-      body: _screens[_selectedIndex], // Display the selected screen
-      bottomNavigationBar: Container(
-        margin: const EdgeInsets.only(bottom: 0),
-        padding: const EdgeInsets.only(top: 5.0),
-        decoration: BoxDecoration(
-          boxShadow: const [
-            BoxShadow(
-              color: AppColors.inputfield, // Shadow color from AppColors
-              blurRadius: 3.0,
-              spreadRadius: 0.5,
-              offset: Offset(0, 4), // Direction of the shadow
-            ),
-          ],
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(0), // No rounded corners on the top
-            bottom: Radius.circular(8), // Bottom corner radius
+      body: _screens[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        selectedLabelStyle: TextStyle(color: Colors.blue),
+        unselectedItemColor: Colors.black,
+        backgroundColor: Colors.white,
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: _buildSvgIcon(
+                'assets/icons/home.svg', 'assets/icons/home_filled.svg', 0),
+            label: 'Home',
           ),
-        ),
-        child: BottomNavigationBar(
-          selectedLabelStyle: TextStyle(color: Colors.blue),
-          unselectedItemColor: Colors.black,
-          backgroundColor: Colors.white,
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: _buildSvgIcon(
-                  'assets/icons/home.svg', 'assets/icons/home_filled.svg', 0),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: _buildSvgIcon(
-                  'assets/icons/order.svg', 'assets/icons/order_filled.svg', 1),
-              label: 'Bottles',
-            ),
-            BottomNavigationBarItem(
-              icon: _buildSvgIcon('assets/icons/wallet.svg',
-                  'assets/icons/wallet_filled.svg', 2),
-              label: 'Orders',
-            ),
-            BottomNavigationBarItem(
-              icon: _buildSvgIcon('assets/icons/profile.svg',
-                  'assets/icons/profile_filled.svg', 3),
-              label: 'Profile',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: AppColors.inputfield, // Color when selected
-        ),
+          BottomNavigationBarItem(
+            icon: _buildSvgIcon(
+                'assets/icons/order.svg', 'assets/icons/order_filled.svg', 1),
+            label: 'Bottles',
+          ),
+          BottomNavigationBarItem(
+            icon: _buildSvgIcon(
+                'assets/icons/wallet.svg', 'assets/icons/wallet_filled.svg', 2),
+            label: 'Orders',
+          ),
+          BottomNavigationBarItem(
+            icon: _buildSvgIcon('assets/icons/profile.svg',
+                'assets/icons/profile_filled.svg', 3),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: AppColors.inputfield,
       ),
     );
   }
 
-  // Custom method to build the icon with zoom effect and SVG background
   Widget _buildSvgIcon(String unselectedPath, String selectedPath, int index) {
     bool isSelected = _selectedIndex == index;
 
     return SvgPicture.asset(
       isSelected ? selectedPath : unselectedPath,
-      width: isSelected ? 30 : 24, // Slightly larger when selected
+      width: isSelected ? 30 : 24,
       height: isSelected ? 30 : 24,
       colorFilter: ColorFilter.mode(
-        isSelected
-            ? AppColors.inputfield
-            : Colors.black, // Change color dynamically
+        isSelected ? AppColors.inputfield : Colors.black,
         BlendMode.srcIn,
       ),
     );
   }
 
-  // Show the popup with two buttons
-  // Show the popup with two buttons
-  // Show the popup with two buttons
-  // Show the popup with two buttons
-void _showPopup(BuildContext context) {
-  showDialog(
-    context: context,
-    barrierDismissible: false, // Prevent dismissing by tapping outside
-    builder: (BuildContext context) {
-      return SafeArea(
-        child: GestureDetector(
-          onTap: () {
-            // Prevent the dialog from closing when tapping inside
-          },
-          child: Container(
-            width: double.infinity,
-            height: double.infinity,
-            color: Colors.blueAccent, // Background color for the popup
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.delivery_dining,
-                  size: 100,
-                  color: Colors.white,
-                ),
-                SizedBox(height: 20),
-                Text(
-                  'New Order Incoming!',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  'Do you want to confirm or cancel?',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white70,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 30),
-                Row(
+  // Show popup with order details
+  void _showPopup(BuildContext context, Map<String, dynamic> orderData) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Scaffold(
+          body: SafeArea(
+            child: GestureDetector(
+              onTap: () {},
+              child: Container(
+                width: double.infinity,
+                height: double.infinity,
+                color: Colors.blueAccent,
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Cancel button
-                    TextButton(
-                      onPressed: () {
-                        _stopVibration();
-                        _stopSound();
-                        _updateOrderStatus('canceled');
-                        Navigator.of(context).pop();
-                      },
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                      ),
-                      child: Text(
-                        'Cancel',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                        ),
+                    Icon(Icons.delivery_dining, size: 100, color: Colors.white),
+                    SizedBox(height: 20),
+                    Text(
+                      'New Order Incoming!',
+                      style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Do you want to confirm or cancel?',
+                      style: TextStyle(fontSize: 18, color: Colors.white70),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 30),
+
+                    // Display order details
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        children: [
+                          Text(
+                            'Total Price: \$${orderData['totalPrice']}',
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                          ),
+                          Text(
+                            'Size: ${orderData['bulkOrderId']}',
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                          ),
+                          Text(
+                            'Quantity: ${orderData['quantity']}',
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                          ),
+                          Text(
+                            'Order Status: ${orderData['status']}',
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                          ),
+                          Text(
+                            'User ID: ${orderData['userId']}',
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                          ),
+                          Text(
+                            'Timestamp: ${orderData['timestamp']}',
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                          ),
+                        ],
                       ),
                     ),
-                    SizedBox(width: 20),
-                    // Confirm button
-                    TextButton(
-                      onPressed: () {
-                        _stopVibration();
-                        _stopSound();
-                        _updateOrderStatus('confirmed');
-                        Navigator.of(context).pop();
-                      },
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                      ),
-                      child: Text(
-                        'Confirm',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
+
+                    SizedBox(height: 30),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            _stopVibration();
+                            _stopSound();
+                            _updateOrderStatus('canceled');
+                            _paymentHistoryController.savePaymentHistory(
+                                orderData["totalPrice"],
+                                "Canceled",
+                                orderData["userId"],
+                                "payment id",
+                                "Cancel",
+                                orderData["bulkOrderId"]);
+
+                            Navigator.of(context).pop();
+                          },
+                          style: TextButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 30, vertical: 15),
+                          ),
+                          child: Text('Cancel',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18)),
                         ),
-                      ),
+                        SizedBox(width: 20),
+                        TextButton(
+                          onPressed: () async {
+                            _stopVibration();
+                            _stopSound();
+                            _updateOrderStatus('confirmed');
+                            _paymentHistoryController.savePaymentHistory(
+                                orderData["totalPrice"],
+                                "Credited",
+                                orderData["userId"],
+                                "payment id",
+                                "Done",
+                                orderData["bulkOrderId"]);
+
+                            UserModel? storedata =
+                                await _addStoreController.fetchStoreData();
+                            double previousEarnings =
+                                storedata?.earnings ?? 0.0;
+
+                            double addedmoney =
+                                orderData["totalPrice"] + previousEarnings;
+                            print("addedmoney");
+                            print("storedata.earnings");
+                            print("orderData");
+                            print(addedmoney);
+                            print(previousEarnings);
+                            print(orderData["totalPrice"]);
+                            await _addStoreController.updateStoreDetails({"earnings":addedmoney});
+                            Navigator.of(context).pop();
+                          },
+                          style: TextButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 30, vertical: 15),
+                          ),
+                          child: Text('Confirm',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18)),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-      );
-    },
-  );
-}
-
-
-
-
+        );
+      },
+    );
+  }
 }

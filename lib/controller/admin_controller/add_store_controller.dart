@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:difwa/controller/admin_controller/add_items_controller.dart';
 import 'package:difwa/models/stores_models/store_model.dart';
-// import 'package:difwa/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,6 +15,9 @@ class AddStoreController extends GetxController {
   final ownernameController = TextEditingController();
   final shopnameController = TextEditingController();
   final storeaddressController = TextEditingController();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   File? imageFile;
   final FirebaseController _authController = Get.put(FirebaseController());
   @override
@@ -37,7 +39,9 @@ class AddStoreController extends GetxController {
   }
 
   Future<bool> submitForm(File? image) async {
+    print("hello1");
     if (_formKey.currentState!.validate()) {
+      print("hello2");
       try {
         String userId = await _getCurrentUserId();
         String merchantId = await _generateMerchantId();
@@ -48,15 +52,17 @@ class AddStoreController extends GetxController {
         }
 
         UserModel newUser = _createUserModel(userId, merchantId, imageUrl);
-
-        await _updateUserRole(userId, merchantId);
+      print("hello4");
         await _saveUserStore(newUser);
+        await _updateUserRole(userId, merchantId);
 
         _showSuccessSnackbar(merchantId);
         // Get.offAllNamed(AppRoutes.storebottombar);
 
         return true;
       } catch (e) {
+        print("hello7");
+        print(e);
         _handleError(e);
         return false;
       }
@@ -128,7 +134,7 @@ class AddStoreController extends GetxController {
         uid: userId,
         storeaddress: storeaddressController.text,
         imageUrl: imageUrl,
-        earnings: "0.0");
+        earnings: 0.0);
   }
 
   void setImage(File image) {
@@ -167,9 +173,9 @@ class AddStoreController extends GetxController {
   Future<UserModel?> fetchStoreData() async {
     String? merchantId = await _authController.fetchMerchantId("");
     if (merchantId == null) {
-      print("Merchant ID is null");
       return null;
     }
+    print("fetch store data2");
 
     try {
       QuerySnapshot storeQuerySnapshot = await FirebaseFirestore.instance
@@ -179,8 +185,14 @@ class AddStoreController extends GetxController {
 
       if (storeQuerySnapshot.docs.isNotEmpty) {
         DocumentSnapshot storeDoc = storeQuerySnapshot.docs.first;
+
         UserModel storeData =
             UserModel.fromMap(storeDoc.data() as Map<String, dynamic>);
+
+        if (storeData.earnings == null || storeData.earnings == 0.0) {
+          print("Earnings are null or empty.");
+        }
+
         return storeData;
       } else {
         throw Exception('Store with Merchant ID $merchantId not found');
@@ -302,6 +314,23 @@ class AddStoreController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white);
+  }
+
+  Future<String?> fetchMerchantId() async {
+    final userIdd = _auth.currentUser?.uid;
+
+    try {
+      DocumentSnapshot storeDoc =
+          await _firestore.collection('difwa-stores').doc(userIdd).get();
+
+      if (!storeDoc.exists) {
+        throw Exception("Store document does not exist for this user.");
+      }
+
+      return storeDoc['merchantId'];
+    } catch (e) {
+      throw Exception("Failed to fetch merchantId: $e");
+    }
   }
 
   Future<void> deleteStore() async {
