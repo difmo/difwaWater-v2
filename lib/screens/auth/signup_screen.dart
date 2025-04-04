@@ -184,7 +184,7 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                           onChanged: (String) {
                             _formKeyName.currentState!.validate();
                           },
-                          label: 'Name',
+                          label: 'Full Name',
                           hint: 'Enter Name',
                           icon: Icons.person,
                           validator: Validators.validateName,
@@ -206,7 +206,7 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                         child: CommonTextField(
                           controller: emailController,
                           inputType: InputType.email,
-                          label: 'Email',
+                          label: 'Email Address',
                           hint: 'Enter Email',
                           icon: Icons.email,
                           onChanged: (String) {
@@ -234,7 +234,7 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                           onChanged: (String) {
                             _formKeyPassword.currentState!.validate();
                           },
-                          label: 'Password',
+                          label: 'Create Password',
                           hint: 'Enter Password',
                           icon: Icons.lock,
                           suffixIcon: Icons.visibility_off,
@@ -287,6 +287,7 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                             }
                           }
                         },
+                        height: 54,
                         width: double.infinity,
                         text: isLoading ? 'Loading...' : 'Sign Up',
                         baseTextColor: Colors.white,

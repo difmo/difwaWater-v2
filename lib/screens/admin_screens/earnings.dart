@@ -146,7 +146,7 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    "₹${total == null ? 0.0 : total}",
+                    "₹${total ?? 0.0}",
                     style: TextStyle(color: Colors.black, fontSize: 66),
                   ),
                   const SizedBox(height: 10),

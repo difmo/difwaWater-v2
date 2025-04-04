@@ -189,7 +189,7 @@ class AddStoreController extends GetxController {
         UserModel storeData =
             UserModel.fromMap(storeDoc.data() as Map<String, dynamic>);
 
-        if (storeData.earnings == null || storeData.earnings == 0.0) {
+        if (storeData.earnings == 0.0) {
           print("Earnings are null or empty.");
         }
 

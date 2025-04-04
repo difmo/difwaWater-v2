@@ -200,7 +200,7 @@ class _RequestForWithdrawState extends State<RequestForWithdraw> {
                           subtitle: Text("Status: ${request.paymentStatus}",style: AppTextStyle.Text16600.copyWith(color: Colors.white)),
                           trailing: Text(
                           style: AppTextStyle.Text16600.copyWith(color: Colors.white),
-                              "${request.timestamp.toLocal().toString().substring(0, 16)}"),
+                              request.timestamp.toLocal().toString().substring(0, 16)),
                         ),
                       );
                     },

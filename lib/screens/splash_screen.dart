@@ -18,61 +18,47 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _logoOpacity;
-  late Animation<double> _textOpacity;
-  String locationDetails = "Fetching location...";
+  late Animation<double> _logoScale;
+  late Animation<double> _fadeText;
 
   @override
   void initState() {
     super.initState();
-    fetchLocation();
+    _initializeAnimations();
+    _loadInitialData();
+  }
+
+  void _initializeAnimations() {
     _controller = AnimationController(
-      duration: Duration(seconds: 3),
+      duration: Duration(milliseconds: 1200),
       vsync: this,
     );
-    _logoOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+
+    _logoScale = Tween<double>(begin: 0.6, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
+    );
+
+    _fadeText = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeIn),
     );
-    _textOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
+
     _controller.forward();
-    Timer(const Duration(seconds: 3), _checkLoginStatus);
+  }
+
+  Future<void> _loadInitialData() async {
+    await Future.wait([fetchLocation(), _checkLoginStatus()]);
   }
 
   Future<void> fetchLocation() async {
-    Position? position = await LocationHelper.getCurrentLocation();
-    if (position != null) {
-      Map<String, dynamic>? locationData =
-          await LocationHelper.getAddressFromLatLng(position);
-      if (locationData != null) {
-        setState(() {
-          locationDetails =
-              "📍 Address: ${locationData['address']}\n📌 Pincode: ${locationData['pincode']}\n🌍 Lat: ${locationData['latitude']}, Lng: ${locationData['longitude']}";
-        });
-        print("locationDetails : $locationDetails");
-      }
-    } else {
-      setState(() {
-        locationDetails = "Location not available.";
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+    await LocationHelper.getCurrentLocation();
   }
 
   Future<void> _checkLoginStatus() async {
+    await Future.delayed(Duration(milliseconds: 1500));
     User? user = FirebaseAuth.instance.currentUser;
-
-    if (user != null) {
-      await _getUserRole(user.uid);
-    } else {
-      Get.offNamed(AppRoutes.signUp);
-    }
+    user != null
+        ? await _getUserRole(user.uid)
+        : Get.offNamed(AppRoutes.signUp);
   }
 
   Future<void> _getUserRole(String userId) async {
@@ -84,7 +70,6 @@ class _SplashScreenState extends State<SplashScreen>
 
       if (userDoc.exists) {
         String role = userDoc['role'] ?? 'isUser';
-        print("User role: $role");
         if (role == 'isUser') {
           Get.offNamed(AppRoutes.userbottom);
         } else if (role == 'isStoreKeeper') {
@@ -93,9 +78,6 @@ class _SplashScreenState extends State<SplashScreen>
           Get.offNamed(AppRoutes.signUp);
         }
       }
-      // else {
-      //   Get.offNamed(AppRoutes.login);
-      // }
     } catch (e) {
       Get.snackbar('Error', 'Failed to retrieve user role');
       Get.offNamed(AppRoutes.signUp);
@@ -103,77 +85,83 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF010614),
-      body: Center(
-        child: Column(
-          mainAxisAlignment:
-              MainAxisAlignment.spaceBetween, // Distributes widgets evenly
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: const [
+              Color(0xFF141E30),
+              Color(0xFF243B55)
+            ], // Dark blue gradient
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Stack(
           children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 300.0),
-                  child: FadeTransition(
-                    opacity: _logoOpacity,
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ScaleTransition(
+                    scale: _logoScale,
                     child: SvgPicture.asset(
                       "assets/images/difwalogo.svg",
-                      width: 100,
-                      height: 100,
+                      width: 120,
+                      height: 120,
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: 100,
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    FadeTransition(
-                      opacity: _textOpacity,
-                      child: Text(
-                        "Welcome to Difwa",
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                  SizedBox(height: 30),
+                  FadeTransition(
+                    opacity: _fadeText,
+                    child: Column(
+                      children: [
+                        Text(
+                          "Welcome to Difwa",
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                            letterSpacing: 1.2,
+                          ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    FadeTransition(
-                      opacity: _textOpacity,
-                      child: Text(
-                        'Hassle-Free Water Delivery \nat Your Fingertips!',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                        SizedBox(height: 12),
+                        Text(
+                          'Order Water with Ease!',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white.withOpacity(0.85),
+                            fontWeight: FontWeight.w500,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
-                      ),
+                      ],
                     ),
-                    const SizedBox(height: 20),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
-
-            // ),
-            // const SizedBox(height: 150),
-
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20.0),
+            Positioned(
+              bottom: 20, // Keep it slightly above the bottom for spacing
+              left: 0,
+              right: 0,
               child: FadeTransition(
-                opacity: _textOpacity,
-                child: const Text(
-                  'Powered by Difmo',
+                opacity: _fadeText,
+                child: Text(
+                  'V1.0.0',
                   style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
+                    fontSize: 14,
+                    color: Colors.white.withOpacity(0.6),
                   ),
+                  textAlign: TextAlign.center,
                 ),
               ),
             ),
