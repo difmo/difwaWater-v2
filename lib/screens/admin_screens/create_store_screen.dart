@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:difwa/config/app_textstyle.dart';
-import 'package:difwa/controller/admin_controller/add_store_controller.dart';
+import 'package:difwa/controller/admin_controller/vendors_controller.dart';
 import 'package:difwa/routes/store_bottom_bar.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/widgets/custom_button.dart';
@@ -16,7 +16,7 @@ class CreateStorePage extends StatefulWidget {
 }
 
 class _CreateStorePageState extends State<CreateStorePage> {
-  final AddStoreController controller = Get.put(AddStoreController());
+  final VendorsController controller = Get.put(VendorsController());
   File? _image;
 
   @override

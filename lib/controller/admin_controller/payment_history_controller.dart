@@ -4,11 +4,11 @@ import 'package:difwa/models/stores_models/vendor_payment_model.dart';
 import 'package:difwa/models/stores_models/withdraw_request_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:difwa/controller/admin_controller/add_store_controller.dart';
+import 'package:difwa/controller/admin_controller/vendors_controller.dart';
 
 class PaymentHistoryController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final AddStoreController _addStoreController = Get.put(AddStoreController());
+  final VendorsController _VendorsController = Get.put(VendorsController());
 
   Future<void> savePaymentHistory(
       double amount,
@@ -18,7 +18,7 @@ class PaymentHistoryController extends GetxController {
       String paymentStatus,
       String bulkOrderId) async {
     try {
-      String? merchantId = await _addStoreController.fetchMerchantId();
+      String? merchantId = await _VendorsController.fetchMerchantId();
       if (merchantId == null) {
         throw Exception("Merchant ID not found");
       }
@@ -47,8 +47,8 @@ class PaymentHistoryController extends GetxController {
   Future<void> requestForWithdraw(double amount) async {
     try {
       debugPrint("Amountt: $amount");
-      String? merchantId = await _addStoreController.fetchMerchantId();
-      UserModel? storedata = await _addStoreController.fetchStoreData();
+      String? merchantId = await _VendorsController.fetchMerchantId();
+      UserModel? storedata = await _VendorsController.fetchStoreData();
 
       debugPrint("storedata234");
       debugPrint("Store Data11: ${storedata?.earnings}");
@@ -88,7 +88,7 @@ class PaymentHistoryController extends GetxController {
         'paymentId': "",
       });
 
-      await _addStoreController.updateStoreDetails({"earnings": remainsAmount});
+      await _VendorsController.updateStoreDetails({"earnings": remainsAmount});
 
    
 
@@ -120,7 +120,7 @@ class PaymentHistoryController extends GetxController {
 Future<List<WithdrawalRequestModel>> fetchAllRequestForWithdraw() async {
   try {
     debugPrint("Starting to fetch withdrawal requests...");
-    String? merchantId = await _addStoreController.fetchMerchantId();
+    String? merchantId = await _VendorsController.fetchMerchantId();
     debugPrint("Fetched merchantId: $merchantId"); // Debugging merchantId
     if (merchantId == null) {
       throw Exception("Merchant ID not found");
@@ -148,7 +148,7 @@ Future<List<WithdrawalRequestModel>> fetchAllRequestForWithdraw() async {
 
   Future<List<PaymentHistoryModel>> fetchPaymentHistoryByMerchantId() async {
     try {
-      String? merchantId = await _addStoreController.fetchMerchantId();
+      String? merchantId = await _VendorsController.fetchMerchantId();
       if (merchantId == null) {
         throw Exception("Merchant ID not found");
       }

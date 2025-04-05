@@ -1,224 +1,142 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:difwa/models/stores_models/store_model.dart';
-import 'package:difwa/models/user_models/user_details_model.dart';
-import 'package:difwa/routes/app_routes.dart';
+import 'package:difwa/controller/admin_controller/vendors_controller.dart';
 import 'package:get/get.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
-class AuthController extends GetxController {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+class OrdersController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  VendorsController _vendorsController = Get.put(VendorsController());
   var verificationId = ''.obs;
   var userRole = ''.obs;
 
-///////////////////////////////////////////////////////////////////////// SIGN UP WITH EMAIL //////////////////////////////////////////////////////////////////////////
+  Future<Map<String, int>> fetchTotalTodayOrders() async {
+    String? merchantId = await _vendorsController.fetchMerchantId();
 
-  Future<bool> signwithemail(String email, String name, String password,
-      String number, bool isLoading) async {
-    try {
-      UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+    // Get today's date in proper format
+    DateTime today = DateTime.now();
+    String todayStr =
+        "${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
 
-      // Save additional user details in Firestore
-      await _saveUserDataemail(
-          userCredential.user!.uid, email, name, number, 'defaultFloor');
-      await _fetchUserRole();
-      _navigateToDashboard();
-      return true;
-    } on FirebaseAuthException catch (e) {
-      Get.snackbar('Error', e.message ?? 'An error occurred while signing up');
-      return false;
-    } catch (e) {
-      Get.snackbar('Error', 'An unexpected error occurred: $e');
-      return false;
-    }
-  }
+    QuerySnapshot userDoc = await _firestore
+        .collection('difwa-orders')
+        .where('merchantId', isEqualTo: merchantId)
+        .get();
 
-///////////////////////////////////////////////////////////////////////// LOGIN WITH EMAIL //////////////////////////////////////////////////////////////////////////
-  Future<bool> loginwithemail(
-      String email, String password, bool isLoading) async {
-    try {
-      await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      await _fetchUserRole();
-      _navigateToDashboard();
-      return true;
-    } on FirebaseAuthException catch (e) {
-      Get.snackbar('Error', e.message ?? 'An error occurred while logging in');
-      return false;
-    } catch (e) {
-      Get.snackbar('Error', 'An unexpected error occurred: $e');
-      return false;
-    }
-  }
+    print(userDoc.docs.length);
+    int todayPendingOrders = 0;
+    int todayTotalOrders = 0;
+    int todayTotalCompletedOrder = 0;
+    int todayPreparingOrders = 0;
+    int todayShippedOrders = 0;
+    int overallTotalOrders = 0;
+    int overallPendingOrders = 0;
+    int overallCompletedOrders = 0;
 
-///////////////////////////////////////////////////////////////////////// VERIFY USER //////////////////////////////////////////////////////////////////////////
-  Future<void> verifyUserExistenceAndLogin(
-      String email, String password) async {
-    try {
-      await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      await _fetchUserRole();
-      _navigateToHomePage();
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        _navigateToLoginPage();
-      } else if (e.code == 'wrong-password') {
-        Get.snackbar('Error', 'Incorrect password. Please try again.');
-      } else {
-        Get.snackbar(
-            'Error', e.message ?? 'An error occurred while logging in');
-      }
-    } catch (e) {
-      Get.snackbar('Error', 'An unexpected error occurred: $e');
-    }
-  }
+    for (var doc in userDoc.docs) {
+      var selectedDates = doc['selectedDates'];
 
-///////////////////////////////////////////////////////////////////////// NAVIGATION //////////////////////////////////////////////////////////////////////////
-  void _navigateToHomePage() {
-    Get.offNamed('/home');
-  }
+      if (selectedDates != null) {
+        for (var selectedDate in selectedDates) {
+          var statusHistory = selectedDate['statusHistory'];
+          if (statusHistory != null) {
+            String orderDate = selectedDate['date'].toString().split("T")[0];
 
-  void _navigateToLoginPage() {
-    Get.offNamed('/login');
-  }
+            overallTotalOrders++;
 
-  void _navigateToDashboard() {
-    if (userRole.value == 'isUser') {
-      Get.offAllNamed(AppRoutes.userbottom);
-    } else if (userRole.value == 'isStoreKeeper') {
-      Get.offAllNamed(AppRoutes.storebottombar);
-    } else {
-      Get.offAllNamed(AppRoutes.login);
-    }
-  }
+            if (statusHistory['status'] == 'pending') {
+              overallPendingOrders++;
+            }
+            if (statusHistory['status'] == 'Completed') {
+              overallCompletedOrders++;
+            }
+            if (statusHistory['status'] == 'Preparing') {
+            }
+            if (statusHistory['status'] == 'Shipped') {
+            }
+            if (orderDate == todayStr) {
+              todayTotalOrders++;
 
-  int generateRandomPin() {
-    Random random = Random();
-    // Generate a random number between 100000 and 999999 (inclusive)
-    int pin = 100000 + random.nextInt(900000);
-    return pin;
-  }
-
-///////////////////////////////////////////////////////////////////////// SAVE USER DETAILS ////////////////////////////////////////////////////////////////////
-  Future<void> _saveUserDataemail(String uid, String email, String name,
-      String number, String floor) async {
-    DocumentSnapshot userDoc =
-        await _firestore.collection('difwa-users').doc(uid).get();
-
-    if (!userDoc.exists) {
-      await _firestore.collection('difwa-users').doc(uid).set({
-        'uid': uid,
-        'name': name,
-        'number': number,
-        'email': email,
-        'floor': floor,
-        'role': 'isUser',
-        'orderpin': generateRandomPin(),
-        'walletBalance': 0.0,
-      }, SetOptions(merge: true));
-    } else {
-      await _firestore.collection('difwa-users').doc(uid).update({
-        'name': name,
-        'number': number,
-        'floor': floor,
-        'orderpin': generateRandomPin(),
-      });
-    }
-  }
-
-///////////////////////////////////////////////////////////////////////// SAVE USER DETAILS ////////////////////////////////////////////////////////////////////
-  Future<void> updateUserDetails(String uid, String email, String name,
-      String number, String floor) async {
-    DocumentSnapshot userDoc =
-        await _firestore.collection('difwa-users').doc(uid).get();
-
-    if (userDoc.exists) {
-      // If the user exists, update their details
-      await _firestore.collection('difwa-users').doc(uid).update({
-        'name': name,
-        'number': number,
-        'floor': floor,
-        'email': email,
-        'orderpin': generateRandomPin(),
-      });
-    } else {
-      // If the user does not exist, create a new record
-      await _firestore.collection('difwa-users').doc(uid).set({
-        'uid': uid,
-        'name': name,
-        'number': number,
-        'email': email,
-        'floor': floor,
-        'role': 'isUser',
-        'walletBalance': 0.0,
-        'orderpin': generateRandomPin(),
-      }, SetOptions(merge: true));
-    }
-  }
-
-///////////////////////////////////////////////////////////////////////// FETCH USER ROLE  //////////////////////////////////////////////////////////////////////
-  Future<void> _fetchUserRole() async {
-    final user = _auth.currentUser;
-    if (user != null) {
-      DocumentSnapshot userDoc =
-          await _firestore.collection('difwa-users').doc(user.uid).get();
-      if (userDoc.exists) {
-        userRole.value = userDoc['role'] ?? 'isUser';
-      } else {
-        userRole.value = 'isUser';
+              if (statusHistory['status'] != 'Completed') {
+                todayPendingOrders++;
+              }
+              if (statusHistory['status'] == 'Completed') {
+                todayTotalCompletedOrder++;
+              }
+              if (statusHistory['status'] == 'Preparing') {
+                todayPreparingOrders++;
+                // Handle cancelled orders if needed
+              }
+              if (statusHistory['status'] == 'Shipped') {
+                todayShippedOrders++;
+              }
+            }
+          }
+        }
       }
     }
+
+    print("Total Today's Orders: $todayTotalOrders");
+    print("Total Today's Pending Orders: $todayPendingOrders");
+    print("Total Today's Completed Orders: $todayTotalCompletedOrder");
+    print("Total Today's Preparing Orders: $todayPreparingOrders");
+    print("Total Today's Shipped Orders: $todayShippedOrders");
+    print("Total Overall Orders: $overallTotalOrders");
+    print("Total Overall Pending Orders: $overallPendingOrders");
+    print("Total Overall Completed Orders: $overallCompletedOrders");
+
+
+    
+
+  
+    return {
+      'totalOrders': todayTotalOrders,
+      'pendingOrders': todayPendingOrders,
+      'completedOrders': todayTotalCompletedOrder,
+      'preparingOrders': todayPreparingOrders,
+      'shippedOrders': todayShippedOrders,
+      'overallTotalOrders': overallTotalOrders,
+      'overallPendingOrders': overallPendingOrders,
+      'overallCompletedOrders': overallCompletedOrders,
+
+    };
   }
 
 
+  Future<int> fetchFullyCompletedOrders() async {
+    String? merchantId = await _vendorsController.fetchMerchantId();
 
-  Future<UserDetailsModel> fetchUserData() async {
-    final user = _auth.currentUser;
-    if (user != null) {
-      DocumentSnapshot userDoc =
-          await _firestore.collection('difwa-users').doc(user.uid).get();
-      if (userDoc.exists) {
-        print("User data: ${userDoc.data()}");
+    QuerySnapshot userDoc = await _firestore
+        .collection('difwa-orders')
+        .where('merchantId', isEqualTo: merchantId)
+        .get();
 
-        var userDetails =
-            UserDetailsModel.fromJson(userDoc.data() as Map<String, dynamic>);
-        print("UserDetailsModel: $userDetails");
+    int fullyCompletedOrders = 0;
 
-        return userDetails;
+    for (var doc in userDoc.docs) {
+      var selectedDates = doc['selectedDates'];
+
+      if (selectedDates != null) {
+        bool isFullyCompleted = true;
+
+        for (var selectedDate in selectedDates) {
+          var statusHistory = selectedDate['statusHistory'];
+          
+          if (statusHistory != null) {
+            if (statusHistory['status'] != 'Completed') {
+              isFullyCompleted = false;
+              break;
+            }
+          }
+        }
+
+        if (isFullyCompleted) {
+          fullyCompletedOrders++;
+        }
       }
     }
-    return UserDetailsModel(
-        docId: "",
-        uid: "",
-        name: "",
-        number: "",
-        email: "",
-        floor: "",
-        role: "",
-        walletBalance: 0.0,
-        orderpin: '');
-  }
 
-///////////////////////////////////////////////////////////////////////// HANDLE ROLE CHANGED //////////////////////////////////////////////////////////////////
-
-///////////////////////////////////////////////////////////////////////// HANDLE LOGOUT //////////////////////////////////////////////////////////////////////////
-  Future<void> logout() async {
-    try {
-      await _auth.signOut();
-      Get.snackbar('Success', 'Logged out successfully');
-      Get.offAllNamed(AppRoutes.login);
-    } catch (e) {
-      Get.snackbar('Error', 'Error logging out: $e');
-    }
+    print("Total Fully Completed Orders: $fullyCompletedOrders");
+    return fullyCompletedOrders;
   }
 }
+
+

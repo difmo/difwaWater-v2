@@ -10,7 +10,7 @@
 
 // class UserPaymentHistoryController  extends GetxController {
 //   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-//   final AddStoreController _addStoreController = Get.put(AddStoreController());
+//   final VendorsController _VendorsController = Get.put(VendorsController());
 
 //   Future<void> savePaymentHistory(
 //       double totalAmount,
@@ -45,8 +45,8 @@
 //   Future<void> requestForWithdraw(double amount) async {
 //     try {
 //       debugPrint("Amountt: $amount");
-//       String? merchantId = await _addStoreController.fetchMerchantId();
-//       UserModel? storedata = await _addStoreController.fetchStoreData();
+//       String? merchantId = await _VendorsController.fetchMerchantId();
+//       UserModel? storedata = await _VendorsController.fetchStoreData();
 
 //       debugPrint("storedata234");
 //       debugPrint("Store Data11: ${storedata?.earnings}");
@@ -86,7 +86,7 @@
 //         'paymentId': "",
 //       });
 
-//       // await _addStoreController.updateStoreDetails({"earnings": remainsAmount});
+//       // await _VendorsController.updateStoreDetails({"earnings": remainsAmount});
 
    
 
@@ -118,7 +118,7 @@
 // Future<List<WithdrawalRequestModel>> fetchAllRequestForWithdraw() async {
 //   try {
 //     debugPrint("Starting to fetch withdrawal requests...");
-//     String? merchantId = await _addStoreController.fetchMerchantId();
+//     String? merchantId = await _VendorsController.fetchMerchantId();
 //     debugPrint("Fetched merchantId: $merchantId"); // Debugging merchantId
 //     if (merchantId == null) {
 //       throw Exception("Merchant ID not found");
@@ -146,7 +146,7 @@
 
 //   Future<List<PaymentHistoryModel>> fetchPaymentHistoryByMerchantId() async {
 //     try {
-//       String? merchantId = await _addStoreController.fetchMerchantId();
+//       String? merchantId = await _VendorsController.fetchMerchantId();
 //       if (merchantId == null) {
 //         throw Exception("Merchant ID not found");
 //       }

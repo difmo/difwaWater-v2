@@ -7,7 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
-class AddStoreController extends GetxController {
+class VendorsController extends GetxController {
   final _formKey = GlobalKey<FormState>();
   final upiIdController = TextEditingController();
   final emailController = TextEditingController();

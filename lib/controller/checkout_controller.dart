@@ -141,7 +141,7 @@ class CheckoutController extends GetxController {
           'selectedDates': selectedDatesWithHistory,
           'orderData': orderData,
           'address':address,
-          'status': 'paid',
+          'status': 'pending',
           'timestamp': FieldValue.serverTimestamp(),
           'merchantId': orderData['bottle']['merchantId'],
         });

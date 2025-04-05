@@ -1,5 +1,5 @@
 
-import 'package:difwa/controller/admin_controller/add_store_controller.dart';
+import 'package:difwa/controller/admin_controller/vendors_controller.dart';
 import 'package:difwa/controller/earning_controller.dart';
 import 'package:difwa/controller/admin_controller/payment_history_controller.dart';
 import 'package:difwa/models/stores_models/store_model.dart';
@@ -22,7 +22,7 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
   final EarningController _earningController = Get.put(EarningController());
   final PaymentHistoryController _paymentHistoryController =
       Get.put(PaymentHistoryController());
-  final AddStoreController _addStoreController = Get.put(AddStoreController());
+  final VendorsController _VendorsController = Get.put(VendorsController());
 
   Map<String, int> earnings = {
     "today": 0,
@@ -57,7 +57,7 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
   }
 
   void _fetchStoreData() async {
-    UserModel? storedata = await _addStoreController.fetchStoreData();
+    UserModel? storedata = await _VendorsController.fetchStoreData();
 
     print("storedata234");
     print("Store Data11: ${storedata?.earnings}");

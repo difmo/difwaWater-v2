@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:difwa/config/app_color.dart';
+import 'package:difwa/screens/user_onboarding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -74,16 +75,6 @@ class _MobileNumberPageState extends State<MobileNumberPage>
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Positioned(
-          //   bottom: 0,
-          //   left: 0,
-          //   right: 0,
-          //   child: SvgPicture.asset(
-          //     'assets/bgimage/bottom.svg',
-          //     fit: BoxFit.cover,
-          //     width: MediaQuery.of(context).size.width,
-          //   ),
-          // ),
           Center(
             child: SingleChildScrollView(
               child: Padding(
@@ -104,7 +95,6 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 10),
-
                     Text(
                       "Order water with ease or register as a \nvendor to sell. Sign up now!",
                       style: AppStyle.greyText18.copyWith(
@@ -112,14 +102,6 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                       ),
                       textAlign: TextAlign.center, // Ensure it's center-aligned
                     ),
-
-                    // Text(
-                    //   "Order water with ease or register as a vendor to sell.\n Sign up now!",
-                    //   style: AppStyle.greyText18.copyWith(
-                    //     fontSize: isSmallScreen ? 14 : 18,
-                    //   ),
-                    //   textAlign: TextAlign.center,
-                    // ),
                     const SizedBox(height: 30),
                     AnimatedBuilder(
                       animation: _staggeredController,
@@ -134,19 +116,6 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                         key: _formKeyPhone,
                         child: Row(
                           children: [
-                            // CountryCodePicker(
-                            //   onChanged: (code) {
-                            //     setState(() {
-                            //       selectedCountryCode = code.dialCode!;
-                            //     });
-                            //   },
-                            //   initialSelection: 'IN',
-                            //   favorite: const ['+91', '+1'],
-                            //   showCountryOnly: false,
-                            //   showOnlyCountryWhenClosed: false,
-                            //   showFlag: false,
-                            //   alignLeft: false,
-                            // ),
                             Expanded(
                               child: CommonTextField(
                                 controller: phoneController,
@@ -269,7 +238,11 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                                   selectedCountryCode + phoneController.text,
                                   isLoading,
                                   context);
-
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const UserOnboardingScreen()));
                               if (!success) {
                                 // Handle failure (if needed)
                                 Get.snackbar(
@@ -340,17 +313,6 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                 ),
               ),
             ),
-          // Positioned.fill(
-          //   child: Container(
-          //     color: Colors.black
-          //         .withOpacity(0.5), // Semi-transparent background
-          //     child: Center(
-          //       child: CircularProgressIndicator(
-          //         color: AppColors.logosecondry, // Customize loading color
-          //       ),
-          //     ),
-          //   ),
-          // ),
         ],
       ),
     );

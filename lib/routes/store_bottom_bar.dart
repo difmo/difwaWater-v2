@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:difwa/config/app_color.dart';
 import 'package:difwa/controller/admin_controller/add_items_controller.dart';
-import 'package:difwa/controller/admin_controller/add_store_controller.dart';
+import 'package:difwa/controller/admin_controller/vendors_controller.dart';
 import 'package:difwa/controller/admin_controller/payment_history_controller.dart';
 import 'package:difwa/models/stores_models/store_model.dart';
 import 'package:difwa/screens/admin_screens/store_home.dart';
@@ -28,7 +28,7 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
   late final List<Widget> _screens;
   late StreamSubscription _orderSubscription;
   final FirebaseController _authController = Get.put(FirebaseController());
-  final AddStoreController _addStoreController = Get.put(AddStoreController());
+  final VendorsController _VendorsController = Get.put(VendorsController());
   final PaymentHistoryController _paymentHistoryController =
       Get.put(PaymentHistoryController());
 
@@ -323,7 +323,7 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
                                 orderData["bulkOrderId"]);
 
                             UserModel? storedata =
-                                await _addStoreController.fetchStoreData();
+                                await _VendorsController.fetchStoreData();
                             double previousEarnings =
                                 storedata?.earnings ?? 0.0;
 
@@ -335,7 +335,7 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
                             print(addedmoney);
                             print(previousEarnings);
                             print(orderData["totalPrice"]);
-                            await _addStoreController.updateStoreDetails({"earnings":addedmoney});
+                            await _VendorsController.updateStoreDetails({"earnings":addedmoney});
                             Navigator.of(context).pop();
                           },
                           style: TextButton.styleFrom(

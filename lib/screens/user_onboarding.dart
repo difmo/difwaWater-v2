@@ -1,24 +1,25 @@
 import 'package:difwa/config/app_color.dart';
 import 'package:difwa/config/app_styles.dart';
 import 'package:difwa/routes/app_routes.dart';
+import 'package:difwa/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
-class StoreOnboardingScreen extends StatefulWidget {
-  const StoreOnboardingScreen({super.key});
+class UserOnboardingScreen extends StatefulWidget {
+  const UserOnboardingScreen({super.key});
 
   @override
   _OnboardingScreenState createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<StoreOnboardingScreen> {
+class _OnboardingScreenState extends State<UserOnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentIndex = 0;
 
   List<Widget> _buildPageIndicator() {
     return List.generate(
-      3, 
+      3,
       (index) => AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         margin: const EdgeInsets.symmetric(horizontal: 4.0),
@@ -37,7 +38,7 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
       _pageController.nextPage(
           duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
     } else {
-      Get.toNamed(AppRoutes.createstore);
+      Get.toNamed(AppRoutes.home);
     }
   }
 
@@ -76,8 +77,8 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
                 newDescription:
                     'Connect with fellow food lovers and share recipes.',
                 titleColor: Colors.white,
-                showButton: true, 
-                onNextPressed: _onNext, 
+                showButton: true,
+                onNextPressed: _onNext,
               ),
             ],
           ),
@@ -104,19 +105,17 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
     required String newHeading,
     required String newDescription,
     required Color titleColor,
-    required bool showButton, 
-    VoidCallback? onNextPressed, 
+    required bool showButton,
+    VoidCallback? onNextPressed,
   }) {
     return Padding(
       padding: const EdgeInsets.all(0.0),
       child: Stack(
         children: [
-       
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-               
                 const SizedBox(height: 130),
                 SvgPicture.asset(
                   middleImage,
@@ -133,21 +132,10 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
                 ),
                 const SizedBox(height: 30),
                 if (showButton)
-                  ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(Colors.red),
-                      foregroundColor:
-                          WidgetStateProperty.all(Colors.white), 
-                    ),
-                    onPressed: onNextPressed,
-                    child: const Text(
-                      "Create Store",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold), 
-                    ),
+                  CustomButton(
+                    text: "Next",
+                    onPressed: () => onNextPressed,
                   ),
-
                 const SizedBox(height: 100),
               ],
             ),
