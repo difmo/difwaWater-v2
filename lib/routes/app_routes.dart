@@ -15,6 +15,7 @@ import 'package:difwa/screens/notification_page.dart';
 import 'package:difwa/screens/profile_screen.dart';
 import 'package:difwa/screens/splash_screen.dart';
 import 'package:difwa/screens/subscription_screen.dart';
+import 'package:difwa/screens/user_all_transaction_page.dart';
 import 'package:get/get.dart';
 
 class AppRoutes {
@@ -29,18 +30,19 @@ class AppRoutes {
   static const subscription = '/subscription';
   static const address_page = '/address_page';
   static const notification = '/notification_page';
-static const fullScreenPopup = '/fullScreenPopup';
+  static const fullScreenPopup = '/fullScreenPopup';
 
   static const addbalance_screen = '/addbalance_screen';
 
   //////// Admin stuff////////
   static const additem = '/additem';
   static const createstore = '/createstore';
-  static const requestforwithdraw= '/requestforwithdraw';
+  static const requestforwithdraw = '/requestforwithdraw';
   static const storebottombar = '/storebottombar';
   static const store_home = '/store_home';
   static const store_profile = '/store_profile';
-  static const  paymentmethods = '/paymentmethods';
+  static const paymentmethods = '/paymentmethods';
+  static const useralltransaction = '/useralltransaction';
 
   static final List<GetPage> pages = [
     GetPage(
@@ -140,6 +142,14 @@ static const fullScreenPopup = '/fullScreenPopup';
     GetPage(
       name: addbalance_screen,
       page: () => const AddBalanceScreen(),
+      transition: Transition
+          .leftToRight, // Slide transition from left for store dashboard
+      transitionDuration: Duration(milliseconds: 600),
+    ),
+
+    GetPage(
+      name: useralltransaction,
+      page: () => const UserAllTransactionPage(),
       transition: Transition
           .leftToRight, // Slide transition from left for store dashboard
       transitionDuration: Duration(milliseconds: 600),

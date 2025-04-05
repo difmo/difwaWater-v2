@@ -32,13 +32,6 @@ class PaymentHistoryController extends GetxController {
       });
 
       debugPrint("Payment history saved successfully.");
-      Get.snackbar(
-        "Success",
-        "Payment history saved successfully.",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Get.theme.snackBarTheme.backgroundColor,
-        colorText: Get.theme.snackBarTheme.actionTextColor,
-      );
     } catch (e) {
       debugPrint("Error saving payment history: $e");
     }
@@ -90,12 +83,10 @@ class PaymentHistoryController extends GetxController {
 
       await _addStoreController.updateStoreDetails({"earnings": remainsAmount});
 
-   
-
       await savePaymentHistory(amount, "completed", "Debited", "paymentId123",
           "success", "bulkOrderId123");
 
-      debugPrint("Payment history saved successfully.");
+      debugPrint("Payment request successfully.");
       Get.snackbar(
         "Success",
         "Payment request successfully.",
@@ -115,36 +106,35 @@ class PaymentHistoryController extends GetxController {
     }
   }
 
-
 ///////// fetchAllRequestForWithdraw //////////
-Future<List<WithdrawalRequestModel>> fetchAllRequestForWithdraw() async {
-  try {
-    debugPrint("Starting to fetch withdrawal requests...");
-    String? merchantId = await _addStoreController.fetchMerchantId();
-    debugPrint("Fetched merchantId: $merchantId"); // Debugging merchantId
-    if (merchantId == null) {
-      throw Exception("Merchant ID not found");
+  Future<List<WithdrawalRequestModel>> fetchAllRequestForWithdraw() async {
+    try {
+      debugPrint("Starting to fetch withdrawal requests...");
+      String? merchantId = await _addStoreController.fetchMerchantId();
+      debugPrint("Fetched merchantId: $merchantId"); // Debugging merchantId
+      if (merchantId == null) {
+        throw Exception("Merchant ID not found");
+      }
+      QuerySnapshot snapshot = await _firestore
+          .collection('difwa-payment-approved')
+          .where('merchantId', isEqualTo: merchantId)
+          .orderBy('timestamp', descending: true)
+          .get();
+
+      debugPrint("Fetched90 ${snapshot.docs.length} documents from Firestore.");
+
+      List<WithdrawalRequestModel> requests = snapshot.docs
+          .map((doc) => WithdrawalRequestModel.fromFirestore(doc))
+          .toList();
+
+      debugPrint("Mapped withdrawal requests: $requests");
+
+      return requests;
+    } catch (e) {
+      debugPrint("Error fetching withdrawal requests: $e");
+      return [];
     }
-    QuerySnapshot snapshot = await _firestore
-        .collection('difwa-payment-approved')
-        .where('merchantId', isEqualTo: merchantId)
-        .orderBy('timestamp', descending: true)
-        .get();
-
-    debugPrint("Fetched90 ${snapshot.docs.length} documents from Firestore."); 
-
-    List<WithdrawalRequestModel> requests = snapshot.docs
-        .map((doc) => WithdrawalRequestModel.fromFirestore(doc))
-        .toList();
-
-    debugPrint("Mapped withdrawal requests: $requests"); 
-
-    return requests;
-  } catch (e) {
-    debugPrint("Error fetching withdrawal requests: $e"); 
-    return [];
   }
-}
 
   Future<List<PaymentHistoryModel>> fetchPaymentHistoryByMerchantId() async {
     try {

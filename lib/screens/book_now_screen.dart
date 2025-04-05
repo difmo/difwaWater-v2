@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:difwa/controller/auth_controller.dart';
+import 'package:difwa/models/user_models/user_details_model.dart';
 import 'package:difwa/routes/app_routes.dart';
 import 'package:difwa/screens/checkout_screen.dart';
 import 'package:difwa/utils/location_helper.dart';
@@ -34,11 +36,35 @@ class _BookNowScreenState extends State<BookNowScreen> {
   bool _isLoading = true;
   List<Map<String, dynamic>> _bottleItems = [];
   String locationDetails = "Fetching location...";
+
+  final AuthController _userData = Get.put(AuthController());
+  UserDetailsModel? usersData;
   @override
   void initState() {
     super.initState();
+    _fetchUserData();
     fetchBottleItems();
     fetchLocation();
+  }
+
+  void _fetchUserData() async {
+    try {
+      UserDetailsModel user = await _userData.fetchUserData();
+
+      // if (mounted) {
+      setState(() {
+        _isLoading = false;
+        usersData = user;
+      });
+      // }
+    } catch (e) {
+      // if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+      // }
+      print("Error fetching user data: $e");
+    }
   }
 
   Future<void> fetchLocation() async {
@@ -233,9 +259,8 @@ class _BookNowScreenState extends State<BookNowScreen> {
                   },
                   onMenuPressed: widget.onMenuPressed,
                   hasNotifications: true,
-                  badgeCount: 5, // Example badge count
-                  profileImageUrl:
-                      'https://i.ibb.co/CpvLnmGf/cheerful-indian-businessman-smiling-closeup-portrait-jobs-career-campaign.jpg', // Profile picture URL
+                  badgeCount: 0, // Example badge count
+                  usersData: usersData, // Profile picture URL
                 )),
             body: SingleChildScrollView(
               child: Padding(

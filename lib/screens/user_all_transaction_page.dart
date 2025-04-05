@@ -1,56 +1,31 @@
 import 'dart:async';
 import 'package:app_links/app_links.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:difwa/controller/auth_controller.dart';
 import 'package:difwa/controller/wallet_controller.dart';
-import 'package:difwa/models/user_models/user_details_model.dart';
 import 'package:difwa/models/user_models/wallet_history_model.dart';
-import 'package:difwa/routes/app_routes.dart';
-import 'package:difwa/widgets/custom_appbar.dart';
+import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
-class WalletScreen extends StatefulWidget {
-  final VoidCallback onProfilePressed;
-  final VoidCallback onMenuPressed;
-
-  const WalletScreen({
+class UserAllTransactionPage extends StatefulWidget {
+  const UserAllTransactionPage({
     super.key,
-    required this.onProfilePressed,
-    required this.onMenuPressed,
   });
 
   @override
   _WalletScreenState createState() => _WalletScreenState();
 }
 
-class _WalletScreenState extends State<WalletScreen> {
+class _WalletScreenState extends State<UserAllTransactionPage> {
   TextEditingController amountController = TextEditingController();
   WalletController? walletController;
   late StreamSubscription _sub;
   final AppLinks _appLinks = AppLinks();
 
-  final AuthController _userData = Get.put(AuthController());
-  UserDetailsModel? usersData;
-
   @override
   void initState() {
     super.initState();
-    _fetchUserData();
     walletController = WalletController();
     _initAppLinks();
-  }
-
-  void _fetchUserData() async {
-    try {
-      UserDetailsModel user = await _userData.fetchUserData();
-
-      setState(() {
-        usersData = user;
-      });
-    } catch (e) {
-      print("Error fetching user data: $e");
-    }
   }
 
   Future<void> _initAppLinks() async {
@@ -109,156 +84,26 @@ class _WalletScreenState extends State<WalletScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60),
-        child: CustomAppbar(
-          onProfilePressed: widget.onProfilePressed,
-          onNotificationPressed: () => Get.toNamed(AppRoutes.notification),
-          onMenuPressed: widget.onMenuPressed,
-          hasNotifications: true,
-          badgeCount: 5,
-          usersData: usersData,
+      backgroundColor: ThemeConstants.whiteColor,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
         ),
+        title: const Text('All Tranactions',
+            style: TextStyle(color: Colors.black)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildBalanceCard(),
-            const SizedBox(height: 24),
-            _buildRecentTransactionsHeader(),
-            const SizedBox(height: 10),
             _buildTransactionsList(),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildBalanceCard() {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.shade300,
-              blurRadius: 10,
-              spreadRadius: 1,
-              offset: const Offset(0, 3),
-            )
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Total Balance",
-              style: TextStyle(color: Colors.grey, fontSize: 16),
-            ),
-            const SizedBox(height: 5),
-            StreamBuilder(
-              stream: FirebaseFirestore.instance
-                  .collection('difwa-users')
-                  .doc(walletController?.currentUserIdd)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
-                }
-
-                if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                }
-
-                if (!snapshot.hasData || !snapshot.data!.exists) {
-                  return const Text(
-                    "₹ 0.0",
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  );
-                }
-                // Extract document data
-                var userDoc = snapshot.data!;
-                double walletBalance = 0.0;
-
-                if (userDoc.data() != null &&
-                    userDoc['walletBalance'] != null) {
-                  walletBalance = (userDoc['walletBalance'] as num).toDouble();
-                }
-
-                return Text(
-                  "₹ ${walletBalance.toStringAsFixed(2)}",
-                  style: const TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
-                );
-              },
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 5),
-                Expanded(
-                  child: Container(
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: Colors.blueAccent,
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: TextButton(
-                onPressed: () {
-                  Get.toNamed(AppRoutes.addbalance_screen);
-                },
-                child: const Text(
-                  "Add Balance",
-                  style: TextStyle(color: Colors.blue),
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    ]);
-  }
-
-  Widget _buildRecentTransactionsHeader() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          "Recent Transactions",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        GestureDetector(
-            onTap: () {
-              Get.toNamed(AppRoutes.useralltransaction);
-            },
-            child: Text("See All", style: TextStyle(color: Colors.blue))),
-      ],
     );
   }
 
