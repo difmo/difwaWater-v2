@@ -59,13 +59,13 @@ class _StoreHomeState extends State<StoreHome> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: ThemeConstants.whiteColor,
+        backgroundColor: ThemeConstants.softgrey,
         appBar: AppBar(
-          title: const Text(
+          title:  Text(
             'Hello, Pritam',
-            style: TextStyle(color: ThemeConstants.whiteColor),
+            style: AppTextStyle.Text20600.copyWith(color: Colors.black),
           ),
-          backgroundColor: ThemeConstants.blackColor,
+          backgroundColor: ThemeConstants.whiteColor,
           actions: [
             IconButton(
               icon: const Icon(
@@ -117,8 +117,7 @@ class _StoreHomeState extends State<StoreHome> {
                   ),
                 ),
 
-                // Here, you can add a widget that shows recent orders
-                // For now, I'm adding an example list
+
                 SizedBox(
                   height: 200,
                   child: ListView.builder(

@@ -70,7 +70,7 @@ class _LoginScreenState extends State<StoreProfileScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       CircleAvatar(
-                        radius: 40,
+                        radius: 30,
                         backgroundColor: AppColors.inputfield,
                         backgroundImage: usersData?.profileImage != null &&
                                 usersData!.profileImage!.isNotEmpty

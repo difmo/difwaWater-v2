@@ -40,13 +40,8 @@ class _AdminPanelScreenState extends State<AdminPanelScreen>
     return Scaffold(
       backgroundColor: ThemeConstants.whiteColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        title: const Text(
-          'Admin Panel',
-          style: TextStyle(color: Colors.blue),
-        ),
+        toolbarHeight: 0,
+       backgroundColor: Colors.white,
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.blue,

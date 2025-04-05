@@ -4,9 +4,12 @@ import 'package:difwa/controller/admin_controller/add_items_controller.dart';
 import 'package:difwa/controller/admin_controller/vendors_controller.dart';
 import 'package:difwa/controller/admin_controller/payment_history_controller.dart';
 import 'package:difwa/models/stores_models/store_model.dart';
+import 'package:difwa/screens/admin_screens/order_new_screen.dart';
+import 'package:difwa/screens/admin_screens/store_dashboard_new.dart';
 import 'package:difwa/screens/admin_screens/store_home.dart';
 import 'package:difwa/screens/admin_screens/admin_orders_page.dart';
 import 'package:difwa/screens/admin_screens/store_items.dart';
+import 'package:difwa/screens/admin_screens/store_profile_new.dart';
 import 'package:difwa/screens/admin_screens/store_profile_screen.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
@@ -42,10 +45,13 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
   void initState() {
     super.initState();
     _screens = [
-      const StoreHome(),
+      const DashboardScreen(),
+      // const StoreHome(),
       const StoreItems(),
-      AdminPanelScreen(),
-      const StoreProfileScreen(),
+      OrdersScreen(),
+      // AdminPanelScreen(),
+      // const StoreProfileScreen(),
+      SupplierProfileScreen()
     ];
     _authController.fetchMerchantId("").then((merchantId) {
       setState(() {

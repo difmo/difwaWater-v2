@@ -126,7 +126,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               decoration: BoxDecoration(
                 color: ThemeConstants.whiteColor,
                 border:
-                    Border.all(color: ThemeConstants.secondaryLight, width: 1),
+                    Border.all(color: ThemeConstants.primaryColor, width: 1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Column(
