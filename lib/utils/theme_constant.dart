@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ThemeConstants {
-  static const Color primaryColor = Color.fromARGB(255, 17, 191, 245);
+  static const Color primaryColor = Color(0xFF4BBEFF);
   static const Color primaryColorNew =    Color(0xFF02739C);
 
   static const Color borderColor = Color(0xFFD9D9D9);

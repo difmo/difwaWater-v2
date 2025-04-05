@@ -1,16 +1,17 @@
 import 'dart:io';
 import 'package:difwa/controller/admin_controller/add_items_controller.dart';
 import 'package:difwa/models/stores_models/store_model.dart';
+import 'package:difwa/models/stores_models/store_new_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
 
 class VendorsController extends GetxController {
   final _formKey = GlobalKey<FormState>();
   final upiIdController = TextEditingController();
-  final emailController = TextEditingController();
   final mobileController = TextEditingController();
   final ownernameController = TextEditingController();
   final shopnameController = TextEditingController();
@@ -18,6 +19,31 @@ class VendorsController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  ////////////////
+  final emailController = TextEditingController();
+  final TextEditingController vendorNameController = TextEditingController();
+  final TextEditingController bussinessNameController = TextEditingController();
+  final TextEditingController contactPersonController = TextEditingController();
+  final TextEditingController phoneNumberController = TextEditingController();
+  final TextEditingController businessAddressController =
+      TextEditingController();
+  final TextEditingController areaCityController = TextEditingController();
+  final TextEditingController postalCodeController = TextEditingController();
+  final TextEditingController stateController = TextEditingController();
+  final TextEditingController waterTypeController = TextEditingController();
+  final TextEditingController capacityOptionsController =
+      TextEditingController();
+  final TextEditingController dailySupplyController = TextEditingController();
+  final TextEditingController deliveryAreaController = TextEditingController();
+  final TextEditingController deliveryTimingsController =
+      TextEditingController();
+  final TextEditingController bankNameController = TextEditingController();
+  final TextEditingController accountNumberController = TextEditingController();
+  final TextEditingController ifscCodeController = TextEditingController();
+  final TextEditingController gstNumberController = TextEditingController();
+  final TextEditingController remarksController = TextEditingController();
+  final TextEditingController statusController = TextEditingController();
+  final FirebaseStorage _storage = FirebaseStorage.instance;
   File? imageFile;
   final FirebaseController _authController = Get.put(FirebaseController());
   @override
@@ -38,6 +64,95 @@ class VendorsController extends GetxController {
     return;
   }
 
+  Future<String> uploadImage(File imageFile, String fileName) async {
+    try {
+      Reference ref = _storage.ref().child('vendor_images/$fileName');
+
+      await ref.putFile(imageFile);
+
+      String imageUrl = await ref.getDownloadURL();
+      return imageUrl;
+    } catch (e) {
+      print("Error uploading image: $e");
+      rethrow;
+    }
+  }
+
+  Future<bool> submitForm2(List<XFile?> images) async {
+    print("hello1");
+    if (_formKey.currentState!.validate()) {
+      print("hello2");
+
+      try {
+        String aadhaarUrl = await uploadImage(
+            File(images[0]!.path), 'aadhaar_${vendorNameController.text}');
+        String panCardUrl = await uploadImage(
+            File(images[1]!.path), 'panCard_${vendorNameController.text}');
+        String passportPhotoUrl = await uploadImage(
+            File(images[2]!.path), 'passportPhoto_${vendorNameController.text}');
+        String businessLicenseUrl = await uploadImage(File(images[3]!.path),
+            'businessLicense_${vendorNameController.text}');
+        String waterQualityCertUrl = await uploadImage(File(images[4]!.path),
+            'waterQualityCertificate_${vendorNameController.text}');
+        String identityProofUrl = await uploadImage(
+            File(images[5]!.path), 'identityProof_${vendorNameController.text}');
+        String bankDocumentUrl = await uploadImage(
+            File(images[6]!.path), 'bankDocument_${vendorNameController.text}');
+        String userId = await _getCurrentUserId();
+        String merchantId = await _generateMerchantId();
+
+      
+        VendorModal newUser = VendorModal(
+          userId: userId,
+          upiId: upiIdController.text,
+          merchantId: merchantId,
+          phoneNumber: mobileController.text,
+          email: emailController.text,
+          bussinessName: shopnameController.text,
+          vendorName: ownernameController.text,
+          businessAddress: storeaddressController.text,
+          aadhaarCardImage: aadhaarUrl,
+          panCardImage: panCardUrl,
+          passportPhotoImage: passportPhotoUrl,
+          businessLicenseImage: businessLicenseUrl,
+          waterQualityCertificateImage: waterQualityCertUrl,
+          identityProofImage: identityProofUrl,
+          bankDocumentImage: bankDocumentUrl,
+          contactPerson: contactPersonController.text,
+          areaCity: areaCityController.text,
+          postalCode: postalCodeController.text,
+          state: stateController.text,
+          waterType: waterTypeController.text,
+          capacityOptions: capacityOptionsController.text,
+          dailySupply: dailySupplyController.text,
+          deliveryArea: deliveryAreaController.text,
+          deliveryTimings: deliveryTimingsController.text,
+          bankName: bankNameController.text,
+          accountNumber: accountNumberController.text,
+          ifscCode: ifscCodeController.text,
+          gstNumber: gstNumberController.text,
+          remarks: remarksController.text,
+          status: statusController.text, vendorType: 'isVendor',
+          
+        );
+        print("hello4");
+        await _saveUserStore(newUser);
+        await _updateUserRole(userId, merchantId);
+
+        _showSuccessSnackbar(merchantId);
+
+        return true;
+      } catch (e) {
+        print("hello7");
+        print(e);
+        _handleError(e);
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
   Future<bool> submitForm(File? image) async {
     print("hello1");
     if (_formKey.currentState!.validate()) {
@@ -51,9 +166,9 @@ class VendorsController extends GetxController {
           imageUrl = await _uploadImage(imageFile!, userId);
         }
 
-        UserModel newUser = _createUserModel(userId, merchantId, imageUrl);
-      print("hello4");
-        await _saveUserStore(newUser);
+        // UserModel newUser = _createUserModel(userId, merchantId, imageUrl);
+        print("hello4");
+        // await _saveUserStore(newUser);
         await _updateUserRole(userId, merchantId);
 
         _showSuccessSnackbar(merchantId);
@@ -121,21 +236,21 @@ class VendorsController extends GetxController {
     }
   }
 
-  UserModel _createUserModel(
-      String userId, String merchantId, String? imageUrl) {
-    return UserModel(
-        userId: userId,
-        upiId: upiIdController.text,
-        mobile: mobileController.text,
-        email: emailController.text,
-        shopName: shopnameController.text,
-        ownerName: ownernameController.text,
-        merchantId: merchantId,
-        uid: userId,
-        storeaddress: storeaddressController.text,
-        imageUrl: imageUrl,
-        earnings: 0.0);
-  }
+  // UserModel _createUserModel(
+  //     String userId, String merchantId, String? imageUrl) {
+  //   return UserModel(
+  //       userId: userId,
+  //       upiId: upiIdController.text,
+  //       mobile: mobileController.text,
+  //       email: emailController.text,
+  //       shopName: shopnameController.text,
+  //       ownerName: ownernameController.text,
+  //       merchantId: merchantId,
+  //       uid: userId,
+  //       storeaddress: storeaddressController.text,
+  //       imageUrl: imageUrl,
+  //       earnings: 0.0);
+  // }
 
   void setImage(File image) {
     imageFile = image;
@@ -193,7 +308,7 @@ class VendorsController extends GetxController {
           print("Earnings are null or empty.");
         }
 
-        return storeData; 
+        return storeData;
       } else {
         throw Exception('Store with Merchant ID $merchantId not found');
       }
@@ -289,10 +404,10 @@ class VendorsController extends GetxController {
     }
   }
 
-  Future<void> _saveUserStore(UserModel newUser) async {
+  Future<void> _saveUserStore(VendorModal newUser) async {
     await FirebaseFirestore.instance
         .collection('difwa-stores')
-        .doc(newUser.uid)
+        .doc(newUser.userId)
         .set(newUser.toMap());
   }
 

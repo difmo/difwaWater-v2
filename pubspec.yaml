@@ -53,6 +53,7 @@ dependencies:
   confetti: ^0.8.0
   shimmer: ^3.0.0
   fl_chart: ^0.70.2
+  shared_preferences: ^2.5.3
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -129,4 +130,9 @@ flutter:
     - assets/imagebg.png
     - assets/images/onboard1.svg
     - assets/success.json
+    - assets/images/stonb22.svg
+    - assets/onboardingimg/onboarding1.svg
+    - assets/onboardingimg/onboarding2.svg
+    - assets/onboardingimg/onboarding3.svg
+    - assets/onboardingimg/onboarding0.svg
 

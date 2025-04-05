@@ -3,7 +3,11 @@ import 'package:difwa/controller/auth_controller.dart';
 import 'package:difwa/models/user_models/user_details_model.dart';
 import 'package:difwa/screens/admin_screens/earnings.dart';
 import 'package:difwa/utils/theme_constant.dart';
+import 'package:difwa/widgets/custom_button.dart';
+import 'package:difwa/widgets/logout_popup.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
@@ -14,9 +18,8 @@ class SupplierProfileScreen extends StatefulWidget {
   _SupplierProfileScreenState createState() => _SupplierProfileScreenState();
 }
 
-
 class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
-final AuthController _userData = Get.put(AuthController());
+  final AuthController _userData = Get.put(AuthController());
   final VendorsController controller = Get.put(VendorsController());
   UserDetailsModel? usersData;
   bool notificationsEnabled = true;
@@ -46,6 +49,7 @@ final AuthController _userData = Get.put(AuthController());
       print("Error fetching user data: $e");
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,7 +58,8 @@ final AuthController _userData = Get.put(AuthController());
         children: [
           // Header
           Container(
-            padding: const EdgeInsets.only(top: 40,bottom: 20, left: 16, right: 16),
+            padding:
+                const EdgeInsets.only(top: 40, bottom: 20, left: 16, right: 16),
             decoration: const BoxDecoration(
               color: Color(0xFF2196F3),
               borderRadius: BorderRadius.only(
@@ -70,10 +75,11 @@ final AuthController _userData = Get.put(AuthController());
                     const CircleAvatar(
                       backgroundColor: Colors.white,
                       radius: 30,
-                      backgroundImage: AssetImage('assets/avatar.png'), // Replace with actual image
+                      backgroundImage: AssetImage(
+                          'assets/avatar.png'), // Replace with actual image
                     ),
                     const SizedBox(width: 12),
-                  Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -87,11 +93,13 @@ final AuthController _userData = Get.put(AuthController());
                           ),
                           Text(
                             "Premium Water Supplier",
-                            style: TextStyle(color: Colors.white70, fontSize: 14),
+                            style:
+                                TextStyle(color: Colors.white70, fontSize: 14),
                           ),
                           Text(
                             "Serving fresh water since 2018",
-                            style: TextStyle(color: Colors.white60, fontSize: 12),
+                            style:
+                                TextStyle(color: Colors.white60, fontSize: 12),
                           ),
                         ],
                       ),
@@ -102,7 +110,8 @@ final AuthController _userData = Get.put(AuthController());
                         shape: BoxShape.circle,
                       ),
                       padding: const EdgeInsets.all(6),
-                      child: const Icon(Icons.edit, color: Colors.white, size: 18),
+                      child:
+                          const Icon(Icons.edit, color: Colors.white, size: 18),
                     ),
                   ],
                 ),
@@ -255,17 +264,56 @@ final AuthController _userData = Get.put(AuthController());
                   ),
 
                   GestureDetector(
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => EarningsDashboard())),
-              child: buildProfileOption('Earnings', 'all data ', Icons.person),
-            ),
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => EarningsDashboard())),
+                    child: buildProfileOption(
+                        'Earnings', 'all data ', Icons.person),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: SizedBox(
+                      child: CustomButton(
+                        icon: Icon(
+                          Icons.logout,
+                          color: Colors.white,
+                        ),
+                        height: 50,
+                        width: double.infinity,
+                        text: 'Logout',
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return YesNoPopup(
+                                  title: "Logout from app!",
+                                  description:
+                                      "Are you sure want to exit from application?",
+                                  noButtonText: "No",
+                                  yesButtonText: "Yes",
+                                  onNoButtonPressed: () async {
+                                    Navigator.pop(context); // Cancel action
+                                  },
+                                  onYesButtonPressed: () async {
+                                    await FirebaseAuth.instance.signOut();
+                                    Navigator.pushReplacementNamed(
+                                        context, '/login');
+                                  },
+                                );
+                              });
+                        },
+                      ),
+                    ),
+                  ),
+
+              
                 ],
               ),
             ),
           ),
 
           // Bottom NavBar Placeholder
-   
         ],
       ),
     );
@@ -277,8 +325,7 @@ final AuthController _userData = Get.put(AuthController());
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label,
-              style: const TextStyle(fontSize: 12, color: Colors.grey)),
+          Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
           const SizedBox(height: 4),
           Text(value, style: const TextStyle(fontSize: 14)),
         ],
@@ -318,7 +365,6 @@ class PerformanceMetric extends StatelessWidget {
     );
   }
 }
-
 
 Widget buildProfileOption(String title, String subtitle, IconData icon) {
   return Padding(

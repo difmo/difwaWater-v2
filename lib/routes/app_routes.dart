@@ -6,6 +6,7 @@ import 'package:difwa/screens/admin_screens/payment_methods.dart';
 import 'package:difwa/screens/admin_screens/request_for_withdraw.dart';
 import 'package:difwa/screens/admin_screens/create_store_screen.dart';
 import 'package:difwa/screens/admin_screens/global_popup.dart';
+import 'package:difwa/screens/admin_screens/water_vendor_form.dart';
 import 'package:difwa/screens/auth/adddress_form_page.dart';
 import 'package:difwa/screens/auth/login_screen.dart';
 import 'package:difwa/screens/auth/signup_screen.dart';
@@ -32,6 +33,7 @@ class AppRoutes {
   static const notification = '/notification_page';
   static const fullScreenPopup = '/fullScreenPopup';
   static const useronboarding = '/useronboarding';
+  static const vendoform = '/vendorform';
 
   static const addbalance_screen = '/addbalance_screen';
 
@@ -134,6 +136,12 @@ class AppRoutes {
     GetPage(
       name: requestforwithdraw,
       page: () => const RequestForWithdraw(),
+      transition: Transition.fadeIn, // Smooth fade-in for create store page
+      transitionDuration: Duration(milliseconds: 500),
+    ),
+    GetPage(
+      name: vendoform,
+      page: () => const VendorMultiStepForm(),
       transition: Transition.fadeIn, // Smooth fade-in for create store page
       transitionDuration: Duration(milliseconds: 500),
     ),
