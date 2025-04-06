@@ -1,13 +1,15 @@
 import 'dart:io';
 
 import 'package:difwa/controller/admin_controller/vendors_controller.dart';
-import 'package:difwa/routes/app_routes.dart';
+import 'package:difwa/routes/store_bottom_bar.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/widgets/custom_button.dart';
 import 'package:difwa/widgets/custom_input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:video_player/video_player.dart';
+
 import 'package:image_picker/image_picker.dart';
 
 class VendorMultiStepForm extends StatefulWidget {
@@ -20,22 +22,30 @@ class VendorMultiStepForm extends StatefulWidget {
 class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
   final PageController _controller = PageController();
   final VendorsController controller = Get.put(VendorsController());
-  List<XFile?> imageFiles = [
-    null, // Aadhaar card image
-    null, // PAN card image
-    null, // Passport photo image
-    null, // Business license image
-    null, // Water quality certificate image
-    null, // Identity proof image
-    null, // Bank document image
+  VideoPlayerController? _videoPlayerController;
+
+  List<String> imageUrl = [
+    "", // Aadhaar card image
+    "", // PAN card image
+    "", // Passport photo image
+    "", // Business license image
+    "", // Water quality certificate image
+    "", // Identity proof image
+    "", // Bank document image
   ];
 
   int _currentStep = 0;
-  List<XFile> selectedImages = [];
+  bool isLoading = false;
+  List<XFile?> selectedImages = [];
+  List<XFile?> businessImages = [];
+  List<XFile?> concatenatedList = [];
+  XFile? businessVideo;
+
   final _formKey = GlobalKey<FormState>();
 
   // Form Data
   String vendorName = '';
+  String bussinessName = '';
   String contactPerson = '';
   String phoneNumber = '';
   String email = '';
@@ -51,6 +61,7 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
   String deliveryTimings = '';
   String bankName = '';
   String accountNumber = '';
+  String upiId = '';
   String ifscCode = '';
   String gstNumber = '';
   String remarks = '';
@@ -96,19 +107,25 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
             const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
       );
 
-  Widget textInput(String label, String hint, IconData icon,
-      Function(String) onChanged, TextEditingController controller) {
+  Widget textInput(
+    String label,
+    String hint,
+    IconData icon,
+    Function(String) onChanged,
+    TextEditingController controller,
+    InputType type,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
         const SizedBox(height: 6),
         CommonTextField(
-          inputType: InputType.name,
           controller: controller,
           hint: hint,
           icon: icon,
           onChanged: onChanged,
+          inputType: type,
         ),
       ]),
     );
@@ -199,20 +216,33 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
             "Water Quality Certificate", waterQualityCertificateImage),
         _imagePreviewItem("Identity Proof", identityProofImage),
         _imagePreviewItem("Bank Document", bankDocumentImage),
-        _imagePreviewItem("Bank Document6666", imageFiles[6]),
+        displayBusinessImages(),
+        videoPreview(),
+
         const SizedBox(height: 20),
         CustomButton(
-          text: "Submit",
-          onPressed: () {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(const SnackBar(content: Text("Form submitted")));
-                // File  ff=File(imageFiles[0]!.path);
-            controller.submitForm2(imageFiles);
-            // Get.toNamed(
-            //   AppRoutes.home,
-            // );
+          text: isLoading ? "Loading..." : "Submit",
+          onPressed: () async {
+            // concatenatedList.addAll(imageUrl);
+            // concatenatedList.addAll(businessImages);
+            // concatenatedList.add(businessVideo);
+            setState(() {
+              isLoading = true;
+            });
+
+            bool isSuccess = await controller.submitForm2(concatenatedList);
+            if (isSuccess) {
+              Get.offAll(() => BottomStoreHomePage());
+              setState(() {
+                isLoading = false;
+              });
+            } else {
+              Get.snackbar(
+                  'Error', 'Failed to create the store. Please try again.',
+                  snackPosition: SnackPosition.BOTTOM);
+            }
           },
-        ),
+        )
       ],
     );
   }
@@ -241,6 +271,121 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
     );
   }
 
+  Widget videoPreview() {
+    if (businessVideo == null) {
+      return Center(child: Text("No video selected"));
+    }
+
+    return Column(
+      children: [
+        Container(
+          height: 200,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: Colors.black,
+          ),
+          child: _videoPlayerController != null &&
+                  _videoPlayerController!.value.isInitialized
+              ? AspectRatio(
+                  aspectRatio: _videoPlayerController!.value.aspectRatio,
+                  child: VideoPlayer(_videoPlayerController!),
+                )
+              : Center(child: CircularProgressIndicator()),
+        ),
+        SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(
+              icon: Icon(
+                _videoPlayerController != null &&
+                        _videoPlayerController!.value.isPlaying
+                    ? Icons.pause
+                    : Icons.play_arrow,
+                color: Colors.blue,
+              ),
+              onPressed: () {
+                setState(() {
+                  if (_videoPlayerController != null) {
+                    if (_videoPlayerController!.value.isPlaying) {
+                      _videoPlayerController!.pause();
+                    } else {
+                      _videoPlayerController!.play();
+                    }
+                  }
+                });
+              },
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Future<void> pickBusinessVideo() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedVideo =
+        await picker.pickVideo(source: ImageSource.gallery);
+
+    if (pickedVideo != null) {
+      setState(() {
+        businessVideo = pickedVideo; // Store the video file
+      });
+    }
+  }
+
+  Widget uploadVideoCard(String label, Function() onTap, XFile? video) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        height: 100,
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Center(
+          child: video == null
+              ? Text("Upload $label",
+                  style: const TextStyle(color: Colors.grey))
+              : Icon(Icons.video_library,
+                  size: 40, color: Colors.blue), // Show a video icon
+        ),
+      ),
+    );
+  }
+
+  Future<void> pickBusinessImages() async {
+    final ImagePicker picker = ImagePicker();
+    final List<XFile>? pickedFiles = await picker.pickMultiImage();
+
+    if (pickedFiles != null && pickedFiles.isNotEmpty) {
+      setState(() {
+        businessImages = pickedFiles; // Store the selected images
+      });
+    }
+  }
+
+  Widget displayBusinessImages() {
+    return GridView.builder(
+      shrinkWrap: true,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+      ),
+      itemCount: businessImages.length,
+      itemBuilder: (context, index) {
+        return Image.file(
+          File(businessImages[index]!.path),
+          fit: BoxFit.cover,
+        );
+      },
+    );
+  }
+
   Widget imagePreview() {
     return GridView.builder(
       shrinkWrap: true,
@@ -252,40 +397,49 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
       itemCount: selectedImages.length,
       itemBuilder: (context, index) {
         return Image.file(
-          File(selectedImages[index].path),
+          File(selectedImages[index]!.path),
           fit: BoxFit.cover,
         );
       },
     );
   }
 
+
+
   Future<void> pickFile(String documentType) async {
     final ImagePicker picker = ImagePicker();
     final XFile? pickedFile =
         await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      setState(() {
+      setState(() async {
         if (documentType == "Aadhaar Card") {
           aadhaarCardImage = pickedFile;
-          imageFiles[0] = pickedFile;
+          String url =  await uploadImage(File(pickedFile.path), documentType);
+          imageUrl[0] = url;
         } else if (documentType == "PAN Card") {
           panCardImage = pickedFile;
-          imageFiles[1] = pickedFile;
+          String url =  await uploadImage(File(pickedFile.path), documentType);
+          imageUrl[1] = url;
         } else if (documentType == "Passport Photo") {
+          String url =  await uploadImage(File(pickedFile.path), documentType);
+          imageUrl[2] = url;
           passportPhotoImage = pickedFile;
-          imageFiles[2] = pickedFile;
         } else if (documentType == "Business License") {
+          String url =  await uploadImage(File(pickedFile.path), documentType);
+          imageUrl[3] = url;
           businessLicenseImage = pickedFile;
-          imageFiles[3] = pickedFile;
         } else if (documentType == "Water Quality Certificate") {
+          String url =  await uploadImage(File(pickedFile.path), documentType);
+          imageUrl[4] = url;
           waterQualityCertificateImage = pickedFile;
-          imageFiles[4] = pickedFile;
         } else if (documentType == "Identity Proof") {
+          String url =  await uploadImage(File(pickedFile.path), documentType);
+          imageUrl[5] = url;
           identityProofImage = pickedFile;
-          imageFiles[5] = pickedFile;
         } else if (documentType == "Bank Document") {
+          String url =  await uploadImage(File(pickedFile.path), documentType);
+          imageUrl[6] = url;
           bankDocumentImage = pickedFile;
-          imageFiles[6] = pickedFile;
         }
       });
     }
@@ -310,30 +464,52 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
     );
   }
 
+  Future<String> uploadImage(File image, String documentType) async {
+    String url = await controller.uploadImage(image, documentType);
+    return url;
+  }
+
   List<Widget> get steps => [
         // Step 1 - Basic Info
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             stepHeader("Basic Vendor Info"),
-            textInput("Vendor Name", "Enter vendor name", Icons.business,
-                (value) => vendorName = value, controller.vendorNameController),
-            textInput("Bussiness Name", "Enter vendor name", Icons.business,
-                (value) => vendorName = value, controller.bussinessNameController),
+            textInput(
+                "Vendor Name",
+                "Enter vendor name",
+                Icons.business,
+                (value) => vendorName = value,
+                controller.vendorNameController,
+                InputType.text),
+            textInput(
+                "Bussiness Name",
+                "Enter vendor name",
+                Icons.business,
+                (value) => bussinessName = value,
+                controller.bussinessNameController,
+                InputType.text),
             textInput(
                 "Contact Person Name",
                 "Enter name",
                 Icons.person,
                 (value) => contactPerson = value,
-                controller.contactPersonController),
+                controller.contactPersonController,
+                InputType.text),
             textInput(
                 "Phone Number",
                 "Enter phone number",
                 Icons.phone,
                 (value) => phoneNumber = value,
-                controller.phoneNumberController),
-            textInput("Email", "Enter email", Icons.email,
-                (value) => email = value, controller.emailController),
+                controller.phoneNumberController,
+                InputType.phone),
+            textInput(
+                "Email",
+                "Enter email",
+                Icons.email,
+                (value) => email = value,
+                controller.emailController,
+                InputType.email),
             dropdownInput("Vendor Type", ["Bottled", "Tanker", "RO", "Mineral"],
                 (value) => vendorType = value ?? ''),
           ],
@@ -349,13 +525,29 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                 "Enter address",
                 Icons.location_on,
                 (value) => businessAddress = value,
-                controller.businessAddressController),
-            textInput("Area/City", "Enter area or city", Icons.location_city,
-                (value) => areaCity = value, controller.areaCityController),
-            textInput("PIN/ZIP Code", "Enter postal code", Icons.pin,
-                (value) => postalCode = value, controller.postalCodeController),
-            textInput("State/Province", "Enter state", Icons.location_on,
-                (value) => state = value, controller.stateController),
+                controller.businessAddressController,
+                InputType.address),
+            textInput(
+                "Area/City",
+                "Enter area or city",
+                Icons.location_city,
+                (value) => areaCity = value,
+                controller.areaCityController,
+                InputType.text),
+            textInput(
+                "PIN/ZIP Code",
+                "Enter postal code",
+                Icons.pin,
+                (value) => postalCode = value,
+                controller.postalCodeController,
+                InputType.pin),
+            textInput(
+                "State/Province",
+                "Enter state",
+                Icons.location_on,
+                (value) => state = value,
+                controller.stateController,
+                InputType.text),
           ],
         ),
 
@@ -373,30 +565,33 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                 "e.g. 20L, 500L, 1000L",
                 Icons.filter_1,
                 (value) => capacityOptions = value,
-                controller.capacityOptionsController),
+                controller.capacityOptionsController,
+                InputType.text),
             textInput(
                 "Daily Supply Capacity (in Litres)",
                 "e.g. 2000",
                 Icons.local_drink,
                 (value) => dailySupply = value,
-                controller.dailySupplyController),
+                controller.dailySupplyController,
+                InputType.text),
             textInput(
                 "Delivery Area Covered",
                 "Enter area",
                 Icons.map,
                 (value) => deliveryArea = value,
-                controller.deliveryAreaController),
+                controller.deliveryAreaController,
+                InputType.text),
             textInput(
                 "Delivery Timings",
                 "e.g. 6 AM - 8 PM",
                 Icons.access_time,
                 (value) => deliveryTimings = value,
-                controller.deliveryTimingsController),
+                controller.deliveryTimingsController,
+                InputType.text),
           ],
         ),
 
-        // Step 4 - KYC Documents
-// Step 4 - KYC Documents
+
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -415,7 +610,11 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
             uploadCard("Identity Proof", () => pickFile("Identity Proof"),
                 identityProofImage),
             uploadCard("Bank Passbook or Cancelled Cheque",
-                () => pickFile("Bank Document"), imageFiles[6]),
+                () => pickFile("Bank Document"), bankDocumentImage),
+            uploadCard("Business Images", () => pickBusinessImages(),
+                businessImages.isEmpty ? null : businessImages[0]),
+            uploadVideoCard(
+                "Business Video", () => pickBusinessVideo(), businessVideo),
           ],
         ),
 
@@ -424,16 +623,34 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             stepHeader("Financial / Payment Info"),
-            textInput("Bank Name", "Enter bank name", Icons.account_balance,
-                (value) => bankName = value, controller.bankNameController),
+            textInput(
+                "Bank Name",
+                "Enter bank name",
+                Icons.account_balance,
+                (value) => bankName = value,
+                controller.bankNameController,
+                InputType.text),
             textInput(
                 "Account Number",
                 "Enter account number",
                 Icons.account_box,
                 (value) => accountNumber = value,
-                controller.accountNumberController),
-            textInput("IFSC/SWIFT Code", "Enter IFSC/SWIFT", Icons.code,
-                (value) => ifscCode = value, controller.ifscCodeController),
+                controller.accountNumberController,
+                InputType.text),
+            textInput(
+                "UPI ID",
+                "Enter UPI ID",
+                Icons.account_box,
+                (value) => upiId = value,
+                controller.upiIdController,
+                InputType.text),
+            textInput(
+                "IFSC/SWIFT Code",
+                "Enter IFSC/SWIFT",
+                Icons.code,
+                (value) => ifscCode = value,
+                controller.ifscCodeController,
+                InputType.text),
             dropdownInput("Payment Terms", ["Prepaid", "Postpaid", "Weekly"],
                 (value) => status = value ?? ''),
             textInput(
@@ -441,7 +658,8 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                 "Enter GST/Tax ID",
                 Icons.business_center,
                 (value) => gstNumber = value,
-                controller.gstNumberController),
+                controller.gstNumberController,
+                InputType.text),
           ],
         ),
 

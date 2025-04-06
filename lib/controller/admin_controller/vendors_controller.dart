@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:difwa/controller/admin_controller/add_items_controller.dart';
-import 'package:difwa/models/stores_models/store_model.dart';
 import 'package:difwa/models/stores_models/store_new_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,11 +10,7 @@ import 'package:image_picker/image_picker.dart';
 
 class VendorsController extends GetxController {
   final _formKey = GlobalKey<FormState>();
-  final upiIdController = TextEditingController();
-  final mobileController = TextEditingController();
-  final ownernameController = TextEditingController();
-  final shopnameController = TextEditingController();
-  final storeaddressController = TextEditingController();
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -39,6 +34,7 @@ class VendorsController extends GetxController {
       TextEditingController();
   final TextEditingController bankNameController = TextEditingController();
   final TextEditingController accountNumberController = TextEditingController();
+  final TextEditingController upiIdController = TextEditingController();
   final TextEditingController ifscCodeController = TextEditingController();
   final TextEditingController gstNumberController = TextEditingController();
   final TextEditingController remarksController = TextEditingController();
@@ -48,12 +44,27 @@ class VendorsController extends GetxController {
   final FirebaseController _authController = Get.put(FirebaseController());
   @override
   void onClose() {
-    upiIdController.dispose();
     emailController.dispose();
-    mobileController.dispose();
-    ownernameController.dispose();
-    shopnameController.dispose();
-    storeaddressController.dispose();
+    contactPersonController.dispose();
+    areaCityController.dispose();
+    postalCodeController.dispose();
+    stateController.dispose();
+    waterTypeController.dispose();
+    capacityOptionsController.dispose();
+    dailySupplyController.dispose();
+    deliveryAreaController.dispose();
+    deliveryTimingsController.dispose();
+    bankNameController.dispose();
+    accountNumberController.dispose();
+    upiIdController.dispose();
+    ifscCodeController.dispose();
+    gstNumberController.dispose();
+    remarksController.dispose();
+    statusController.dispose();
+    vendorNameController.dispose();
+    bussinessNameController.dispose();
+    phoneNumberController.dispose();
+    businessAddressController.dispose();
     super.onClose();
   }
 
@@ -80,109 +91,160 @@ class VendorsController extends GetxController {
 
   Future<bool> submitForm2(List<XFile?> images) async {
     print("hello1");
-    if (_formKey.currentState!.validate()) {
-      print("hello2");
 
-      try {
-        String aadhaarUrl = await uploadImage(
-            File(images[0]!.path), 'aadhaar_${vendorNameController.text}');
-        String panCardUrl = await uploadImage(
-            File(images[1]!.path), 'panCard_${vendorNameController.text}');
-        String passportPhotoUrl = await uploadImage(
-            File(images[2]!.path), 'passportPhoto_${vendorNameController.text}');
-        String businessLicenseUrl = await uploadImage(File(images[3]!.path),
-            'businessLicense_${vendorNameController.text}');
-        String waterQualityCertUrl = await uploadImage(File(images[4]!.path),
-            'waterQualityCertificate_${vendorNameController.text}');
-        String identityProofUrl = await uploadImage(
-            File(images[5]!.path), 'identityProof_${vendorNameController.text}');
-        String bankDocumentUrl = await uploadImage(
-            File(images[6]!.path), 'bankDocument_${vendorNameController.text}');
-        String userId = await _getCurrentUserId();
-        String merchantId = await _generateMerchantId();
+    print("hello2");
 
-      
-        VendorModal newUser = VendorModal(
-          userId: userId,
-          upiId: upiIdController.text,
-          merchantId: merchantId,
-          phoneNumber: mobileController.text,
-          email: emailController.text,
-          bussinessName: shopnameController.text,
-          vendorName: ownernameController.text,
-          businessAddress: storeaddressController.text,
-          aadhaarCardImage: aadhaarUrl,
-          panCardImage: panCardUrl,
-          passportPhotoImage: passportPhotoUrl,
-          businessLicenseImage: businessLicenseUrl,
-          waterQualityCertificateImage: waterQualityCertUrl,
-          identityProofImage: identityProofUrl,
-          bankDocumentImage: bankDocumentUrl,
-          contactPerson: contactPersonController.text,
-          areaCity: areaCityController.text,
-          postalCode: postalCodeController.text,
-          state: stateController.text,
-          waterType: waterTypeController.text,
-          capacityOptions: capacityOptionsController.text,
-          dailySupply: dailySupplyController.text,
-          deliveryArea: deliveryAreaController.text,
-          deliveryTimings: deliveryTimingsController.text,
-          bankName: bankNameController.text,
-          accountNumber: accountNumberController.text,
-          ifscCode: ifscCodeController.text,
-          gstNumber: gstNumberController.text,
-          remarks: remarksController.text,
-          status: statusController.text, vendorType: 'isVendor',
-          
-        );
-        print("hello4");
-        await _saveUserStore(newUser);
-        await _updateUserRole(userId, merchantId);
+    try {
+      String aadhaarUrl = images[0] != null
+          ? await uploadImage(
+              File(images[0]!.path), 'aadhaar_${vendorNameController.text}')
+          : 'defaultAadhaarUrl'; // Or handle the null case as required
 
-        _showSuccessSnackbar(merchantId);
+      String panCardUrl = images[1] != null
+          ? await uploadImage(
+              File(images[1]!.path), 'panCard_${vendorNameController.text}')
+          : 'defaultPanCardUrl';
 
-        return true;
-      } catch (e) {
-        print("hello7");
-        print(e);
-        _handleError(e);
-        return false;
-      }
-    } else {
+      String passportPhotoUrl = images[2] != null
+          ? await uploadImage(File(images[2]!.path),
+              'passportPhoto_${vendorNameController.text}')
+          : 'defaultPassportPhotoUrl';
+
+      String businessLicenseUrl = images[3] != null
+          ? await uploadImage(File(images[3]!.path),
+              'businessLicense_${vendorNameController.text}')
+          : 'defaultBusinessLicenseUrl';
+
+      String waterQualityCertUrl = images[4] != null
+          ? await uploadImage(File(images[4]!.path),
+              'waterQualityCertificate_${vendorNameController.text}')
+          : 'defaultWaterQualityCertUrl';
+
+      String identityProofUrl = images[5] != null
+          ? await uploadImage(File(images[5]!.path),
+              'identityProof_${vendorNameController.text}')
+          : 'defaultIdentityProofUrl';
+
+      String bankDocumentUrl = images[6] != null
+          ? await uploadImage(File(images[6]!.path),
+              'bankDocument_${vendorNameController.text}')
+          : 'defaultBankDocumentUrl';
+
+      String bussinesImage1 = images[7] != null
+          ? await uploadImage(File(images[7]!.path),
+              'bussinesImage1_${vendorNameController.text}')
+          : 'defaultBussinesImage1Url';
+
+      String bussinesImage2 = images[8] != null
+          ? await uploadImage(File(images[8]!.path),
+              'bussinesImage2_${vendorNameController.text}')
+          : 'defaultBussinesImage2Url';
+      String bussinesImage3 = images[9] != null
+          ? await uploadImage(File(images[9]!.path),
+              'bussinesImage3_${vendorNameController.text}')
+          : 'defaultBussinesImage3Url';
+      String bussinesImage4 = images[10] != null
+          ? await uploadImage(File(images[10]!.path),
+              'bussinesImage3_${vendorNameController.text}')
+          : 'defaultBussinesImage3Url';
+      String bussinesImage5 = images[11] != null
+          ? await uploadImage(File(images[11]!.path),
+              'bussinesImage3_${vendorNameController.text}')
+          : 'defaultBussinesImage3Url';
+
+      String userId = await _getCurrentUserId();
+      String merchantId = await _generateMerchantId();
+
+      print("all data uploaded");
+
+      Map<String, String> imagesMap = {
+        'aadhaarCardImage': aadhaarUrl,
+        'panCardImage': panCardUrl,
+        'passportPhotoImage': passportPhotoUrl,
+        'businessLicenseImage': businessLicenseUrl,
+        'waterQualityCertificateImage': waterQualityCertUrl,
+        'identityProofImage': identityProofUrl,
+        'bankDocumentImage': bankDocumentUrl,
+        'bussinesImage1': bussinesImage1,
+        'bussinesImage2': bussinesImage2,
+        'bussinesImage3': bussinesImage3,
+        'bussinesImage4': bussinesImage4,
+        'bussinesImage5': bussinesImage5,
+      };
+
+      VendorModal newUser = VendorModal(
+        userId: userId,
+        upiId: upiIdController.text,
+        merchantId: merchantId,
+        earnings: 0.0,
+        email: emailController.text,
+        vendorName: vendorNameController.text,
+        bussinessName: bussinessNameController.text,
+        phoneNumber: phoneNumberController.text,
+        businessAddress: businessAddressController.text,
+        images: imagesMap,
+        contactPerson: contactPersonController.text,
+        areaCity: areaCityController.text,
+        postalCode: postalCodeController.text,
+        state: stateController.text,
+        waterType: waterTypeController.text,
+        capacityOptions: capacityOptionsController.text,
+        dailySupply: dailySupplyController.text,
+        deliveryArea: deliveryAreaController.text,
+        deliveryTimings: deliveryTimingsController.text,
+        bankName: bankNameController.text,
+        accountNumber: accountNumberController.text,
+        ifscCode: ifscCodeController.text,
+        gstNumber: gstNumberController.text,
+        remarks: remarksController.text,
+        status: statusController.text,
+        vendorType: 'isVendor',
+      );
+      print("new user created");
+      print(newUser.toString());
+      await _saveUserStore(newUser);
+      await _updateUserRole(userId, merchantId);
+      _showSuccessSnackbar(merchantId);
+      return true;
+    } catch (e) {
+      print(e);
+      _handleError(e);
       return false;
     }
   }
 
-  Future<bool> submitForm(File? image) async {
-    print("hello1");
-    if (_formKey.currentState!.validate()) {
-      print("hello2");
-      try {
-        String userId = await _getCurrentUserId();
-        String merchantId = await _generateMerchantId();
+  Future<VendorModal?> fetchStoreData() async {
+    String? merchantId = await _authController.fetchMerchantId("");
+    if (merchantId == null) {
+      return null;
+    }
+    print("fetch store data2");
 
-        String? imageUrl;
-        if (imageFile != null) {
-          imageUrl = await _uploadImage(imageFile!, userId);
-        }
+    try {
+      QuerySnapshot storeQuerySnapshot = await FirebaseFirestore.instance
+          .collection('difwa-stores')
+          .where('merchantId', isEqualTo: merchantId)
+          .get();
 
-        // UserModel newUser = _createUserModel(userId, merchantId, imageUrl);
-        print("hello4");
-        // await _saveUserStore(newUser);
-        await _updateUserRole(userId, merchantId);
+      if (storeQuerySnapshot.docs.isNotEmpty) {
+        DocumentSnapshot storeDoc = storeQuerySnapshot.docs.first;
 
-        _showSuccessSnackbar(merchantId);
-        // Get.offAllNamed(AppRoutes.storebottombar);
+        VendorModal storeData =
+            VendorModal.fromMap(storeDoc.data() as Map<String, dynamic>);
 
-        return true;
-      } catch (e) {
-        print("hello7");
-        print(e);
-        _handleError(e);
-        return false;
+        return storeData;
+      } else {
+        throw Exception('Store with Merchant ID $merchantId not found');
       }
-    } else {
-      return false;
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to fetch store data: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return null;
     }
   }
 
@@ -225,33 +287,6 @@ class VendorsController extends GetxController {
     }
   }
 
-  Future<String> _uploadImage(File imageFile, String userId) async {
-    try {
-      final storageRef = FirebaseStorage.instance.ref().child(
-          'user_images/$userId/${DateTime.now().millisecondsSinceEpoch}');
-      await storageRef.putFile(imageFile);
-      return await storageRef.getDownloadURL();
-    } catch (e) {
-      throw Exception('Failed to upload image: ${e.toString()}');
-    }
-  }
-
-  // UserModel _createUserModel(
-  //     String userId, String merchantId, String? imageUrl) {
-  //   return UserModel(
-  //       userId: userId,
-  //       upiId: upiIdController.text,
-  //       mobile: mobileController.text,
-  //       email: emailController.text,
-  //       shopName: shopnameController.text,
-  //       ownerName: ownernameController.text,
-  //       merchantId: merchantId,
-  //       uid: userId,
-  //       storeaddress: storeaddressController.text,
-  //       imageUrl: imageUrl,
-  //       earnings: 0.0);
-  // }
-
   void setImage(File image) {
     imageFile = image;
   }
@@ -266,8 +301,7 @@ class VendorsController extends GetxController {
       if (storeQuerySnapshot.docs.isNotEmpty) {
         DocumentSnapshot storeDoc = storeQuerySnapshot.docs.first;
 
-        bool isActive =
-            storeDoc['isActive'] ?? false; // Default to false if not found
+        bool isActive = storeDoc['isActive'] ?? false;
         return isActive;
       } else {
         throw Exception('Store with Merchant ID $merchantId not found');
@@ -285,48 +319,8 @@ class VendorsController extends GetxController {
     }
   }
 
-  Future<UserModel?> fetchStoreData() async {
-    String? merchantId = await _authController.fetchMerchantId("");
-    if (merchantId == null) {
-      return null;
-    }
-    print("fetch store data2");
-
-    try {
-      QuerySnapshot storeQuerySnapshot = await FirebaseFirestore.instance
-          .collection('difwa-stores')
-          .where('merchantId', isEqualTo: merchantId)
-          .get();
-
-      if (storeQuerySnapshot.docs.isNotEmpty) {
-        DocumentSnapshot storeDoc = storeQuerySnapshot.docs.first;
-
-        UserModel storeData =
-            UserModel.fromMap(storeDoc.data() as Map<String, dynamic>);
-
-        if (storeData.earnings == null || storeData.earnings == 0.0) {
-          print("Earnings are null or empty.");
-        }
-
-        return storeData;
-      } else {
-        throw Exception('Store with Merchant ID $merchantId not found');
-      }
-    } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to fetch store data: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return null;
-    }
-  }
-
   Future<void> toggleStoreActiveStatusByCurrentUser() async {
     try {
-      // Step 1: Get the current user's ID
       User? currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser == null) {
         throw Exception('User not authenticated');

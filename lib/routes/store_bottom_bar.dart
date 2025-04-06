@@ -4,6 +4,7 @@ import 'package:difwa/controller/admin_controller/add_items_controller.dart';
 import 'package:difwa/controller/admin_controller/vendors_controller.dart';
 import 'package:difwa/controller/admin_controller/payment_history_controller.dart';
 import 'package:difwa/models/stores_models/store_model.dart';
+import 'package:difwa/models/stores_models/store_new_modal.dart';
 import 'package:difwa/screens/admin_screens/order_new_screen.dart';
 import 'package:difwa/screens/admin_screens/store_dashboard_new.dart';
 import 'package:difwa/screens/admin_screens/store_home.dart';
@@ -328,7 +329,7 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
                                 "Done",
                                 orderData["bulkOrderId"]);
 
-                            UserModel? storedata =
+                            VendorModal? storedata =
                                 await _VendorsController.fetchStoreData();
                             double previousEarnings =
                                 storedata?.earnings ?? 0.0;

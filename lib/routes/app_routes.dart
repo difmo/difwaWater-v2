@@ -121,12 +121,12 @@ class AppRoutes {
     ),
 
     /////////////////////////Admin Routes/////////////////
-    GetPage(
-      name: createstore,
-      page: () => const CreateStorePage(),
-      transition: Transition.fadeIn, // Smooth fade-in for create store page
-      transitionDuration: Duration(milliseconds: 500),
-    ),
+    // GetPage(
+    //   name: createstore,
+    //   page: () => const CreateStorePage(),
+    //   transition: Transition.fadeIn, // Smooth fade-in for create store page
+    //   transitionDuration: Duration(milliseconds: 500),
+    // ),
     GetPage(
       name: paymentmethods,
       page: () => const PaymentMethods(),

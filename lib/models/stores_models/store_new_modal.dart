@@ -1,8 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class VendorModal {
   String userId;
   String merchantId;
+  final double earnings;
   String vendorName;
   String bussinessName;
   String contactPerson;
@@ -25,17 +24,17 @@ class VendorModal {
   String gstNumber;
   String remarks;
   String status;
-  String aadhaarCardImage;
-  String panCardImage;
-  String passportPhotoImage;
-  String businessLicenseImage;
-  String waterQualityCertificateImage;
-  String identityProofImage;
-  String bankDocumentImage;
+  Map<String, String> images;
+  bool isVerified = false;
+  String createdAt;
+  String updatedAt;
+  bool isActive = false;
+    String videoUrl;
 
   VendorModal({
     required this.userId,
     required this.merchantId,
+    required this.earnings,
     required this.vendorName,
     required this.bussinessName,
     required this.contactPerson,
@@ -58,13 +57,12 @@ class VendorModal {
     required this.gstNumber,
     required this.remarks,
     required this.status,
-    required this.aadhaarCardImage,
-    required this.panCardImage,
-    required this.passportPhotoImage,
-    required this.businessLicenseImage,
-    required this.waterQualityCertificateImage,
-    required this.identityProofImage,
-    required this.bankDocumentImage,
+    required this.images, // Image map is passed as argument
+    this.isVerified = false,
+    this.createdAt = '',
+    this.updatedAt = '',
+    this.isActive = false,
+    this.videoUrl = '',
   });
 
   // To convert the model into a Map for Firestore
@@ -73,6 +71,7 @@ class VendorModal {
       'vendorName': vendorName,
       'userId': userId,
       'merchantId': merchantId,
+      'earnings': earnings,
       'bussinessName': bussinessName,
       'contactPerson': contactPerson,
       'phoneNumber': phoneNumber,
@@ -94,13 +93,12 @@ class VendorModal {
       'gstNumber': gstNumber,
       'remarks': remarks,
       'status': status,
-      'aadhaarCardImage': aadhaarCardImage,
-      'panCardImage': panCardImage,
-      'passportPhotoImage': passportPhotoImage,
-      'businessLicenseImage': businessLicenseImage,
-      'waterQualityCertificateImage': waterQualityCertificateImage,
-      'identityProofImage': identityProofImage,
-      'bankDocumentImage': bankDocumentImage,
+      'images': images,  // Store the images map
+      'isVerified': isVerified,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
+      'isActive': isActive,
+      'videoUrl': videoUrl,
     };
   }
 
@@ -108,9 +106,9 @@ class VendorModal {
   factory VendorModal.fromJson(Map<String, dynamic> json) {
     return VendorModal(
       merchantId: json['merchantId'] ?? '',
-
       userId: json['userId'] ?? '',
       vendorName: json['vendorName'] ?? '',
+      earnings: json['earnings'] != null ? json['earnings'].toDouble() : 0.0,
       bussinessName: json['bussinessName'] ?? '',
       contactPerson: json['contactPerson'] ?? '',
       phoneNumber: json['phoneNumber'] ?? '',
@@ -132,23 +130,23 @@ class VendorModal {
       gstNumber: json['gstNumber'] ?? '',
       remarks: json['remarks'] ?? '',
       status: json['status'] ?? '',
-      aadhaarCardImage: json['aadhaarCardImage'] 
-          ??'',
-      panCardImage: json['panCardImage']  ??'',
-      passportPhotoImage: json['passportPhotoImage']  ??'',
-      businessLicenseImage: json['businessLicenseImage'] ??'',
-      waterQualityCertificateImage: json['waterQualityCertificateImage']  ??'',
-      identityProofImage: json['identityProofImage'] ??'',
-      bankDocumentImage: json['bankDocumentImage'] ??'',
+      images: Map<String, String>.from(json['images'] ?? {}), // Parsing the images map
+      isVerified: json['isVerified'] ?? false,
+      createdAt: json['createdAt'] ?? '',
+      updatedAt: json['updatedAt'] ?? '',
+      isActive: json['isActive'] ?? false,
+      videoUrl: json['videoUrl'] ?? '',
     );
   }
 
+  // Convert to JSON
   Map<String, dynamic> toJson() {
     return {
       'merchantId': merchantId,
       'vendorId': userId,
       'vendorName': vendorName,
       'userId': userId,
+      'earnings': earnings,
       'bussinessName': bussinessName,
       'contactPerson': contactPerson,
       'phoneNumber': phoneNumber,
@@ -170,18 +168,48 @@ class VendorModal {
       'gstNumber': gstNumber,
       'remarks': remarks,
       'status': status,
-      'aadhaarCardImage': aadhaarCardImage,
-      'panCardImage': panCardImage,
-      'passportPhotoImage': passportPhotoImage,
-      'businessLicenseImage': businessLicenseImage,
-      'waterQualityCertificateImage': waterQualityCertificateImage,
-      'identityProofImage': identityProofImage,
-      'bankDocumentImage': bankDocumentImage,
+      'images': images, // Store the images map
+      'isVerified': isVerified,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
+      'isActive': isActive,
+      'videoUrl': videoUrl,
     };
   }
 
-  factory VendorModal.fromFirestore(DocumentSnapshot doc) {
-    var data = doc.data() as Map<String, dynamic>;
-    return VendorModal.fromJson(data);
+  factory VendorModal.fromMap(Map<String, dynamic> map) {
+    return VendorModal(
+      merchantId: map['merchantId'] ?? '',
+      userId: map['userId'] ?? '',
+      vendorName: map['vendorName'] ?? '',
+      earnings: map['earnings'] != null ? map['earnings'].toDouble() : 0.0,
+      bussinessName: map['bussinessName'] ?? '',
+      contactPerson: map['contactPerson'] ?? '',
+      phoneNumber: map['phoneNumber'] ?? '',
+      email: map['email'] ?? '',
+      vendorType: map['vendorType'] ?? '',
+      businessAddress: map['businessAddress'] ?? '',
+      areaCity: map['areaCity'] ?? '',
+      postalCode: map['postalCode'] ?? '',
+      state: map['state'] ?? '',
+      waterType: map['waterType'] ?? '',
+      capacityOptions: map['capacityOptions'] ?? '',
+      dailySupply: map['dailySupply'] ?? '',
+      deliveryArea: map['deliveryArea'] ?? '',
+      deliveryTimings: map['deliveryTimings'] ?? '',
+      bankName: map['bankName'] ?? '',
+      accountNumber: map['accountNumber'] ?? '',
+      upiId: map['upiId'] ?? '',
+      ifscCode: map['ifscCode'] ?? '',
+      gstNumber: map['gstNumber'] ?? '',
+      remarks: map['remarks'] ?? '',
+      status: map['status'] ?? '',
+      images: Map<String, String>.from(map['images'] ?? {}), // Extracting images map
+      isVerified: map['isVerified'] ?? false,
+      createdAt: map['createdAt'] ?? '',
+      updatedAt: map['updatedAt'] ?? '',
+      isActive: map['isActive'] ?? false,
+      videoUrl: map['videoUrl'] ?? '',
+    );
   }
 }

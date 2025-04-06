@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:difwa/models/stores_models/store_model.dart';
+import 'package:difwa/models/stores_models/store_new_modal.dart';
 import 'package:difwa/models/stores_models/vendor_payment_model.dart';
 import 'package:difwa/models/stores_models/withdraw_request_model.dart';
 import 'package:flutter/foundation.dart';
@@ -48,7 +49,7 @@ class PaymentHistoryController extends GetxController {
     try {
       debugPrint("Amountt: $amount");
       String? merchantId = await _VendorsController.fetchMerchantId();
-      UserModel? storedata = await _VendorsController.fetchStoreData();
+       VendorModal? storedata = await _VendorsController.fetchStoreData();
 
       debugPrint("storedata234");
       debugPrint("Store Data11: ${storedata?.earnings}");

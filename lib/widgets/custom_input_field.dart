@@ -4,7 +4,7 @@ import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-enum InputType { phone, email, name, address, visiblePassword, pin }
+enum InputType { phone, email, name,text, address, visiblePassword, pin }
 
 class CommonTextField extends StatefulWidget {
   final InputType inputType;
@@ -84,6 +84,10 @@ class _CommonTextFieldState extends State<CommonTextField> {
         _inputFormatters = [
           FilteringTextInputFormatter.allow(RegExp(r"[a-zA-Z\s]")),
         ];
+        break;
+      case InputType.text:
+        _keyboardType = TextInputType.text;
+       
         break;
       case InputType.address:
         _keyboardType = TextInputType.streetAddress;

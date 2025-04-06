@@ -1,5 +1,6 @@
 import 'package:difwa/controller/admin_controller/vendors_controller.dart';
 import 'package:difwa/controller/auth_controller.dart';
+import 'package:difwa/models/stores_models/store_new_modal.dart';
 import 'package:difwa/models/user_models/user_details_model.dart';
 import 'package:difwa/screens/admin_screens/earnings.dart';
 import 'package:difwa/utils/theme_constant.dart';
@@ -7,7 +8,6 @@ import 'package:difwa/widgets/custom_button.dart';
 import 'package:difwa/widgets/logout_popup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
@@ -22,20 +22,16 @@ class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
   final AuthController _userData = Get.put(AuthController());
   final VendorsController controller = Get.put(VendorsController());
   UserDetailsModel? usersData;
+  VendorModal? vendorData;
   bool notificationsEnabled = true;
-  bool _isToggled = false;
 
-  void _toggleSwitch(bool value) {
-    controller.toggleStoreActiveStatusByCurrentUser();
-    setState(() {
-      _isToggled = value;
-    });
-  }
+
 
   @override
   void initState() {
     super.initState();
     _fetchUserData();
+    _fetchVendorData();
   }
 
   void _fetchUserData() async {
@@ -44,6 +40,17 @@ class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
       print(user.name);
       setState(() {
         usersData = user;
+      });
+    } catch (e) {
+      print("Error fetching user data: $e");
+    }
+  }
+  void _fetchVendorData() async {
+    try {
+      VendorModal? vendor = await controller.fetchStoreData();
+      print(vendor!.merchantId);
+      setState(() {
+        vendorData = vendor;
       });
     } catch (e) {
       print("Error fetching user data: $e");
@@ -84,7 +91,10 @@ class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            usersData?.name ?? "User Name",
+                            vendorData != null 
+                                ?vendorData!.bussinessName
+                                : "Loading...",
+              
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 18,
@@ -115,7 +125,7 @@ class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 12), 
                 const Row(
                   children: [
                     Icon(Icons.verified, color: Colors.green, size: 16),
