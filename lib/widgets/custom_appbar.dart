@@ -33,6 +33,7 @@ class _CustomAppbarState extends State<CustomAppbar> {
   @override
   Widget build(BuildContext context) {
     double topPadding = MediaQuery.of(context).padding.top + 8;
+    final user = widget.usersData;
 
     return Container(
       decoration: const BoxDecoration(
@@ -126,7 +127,7 @@ class _CustomAppbarState extends State<CustomAppbar> {
 
               const SizedBox(width: 8),
 
-              Container(
+              SizedBox(
                 width: 40,
                 height: 40,
                 child: Align(
@@ -136,15 +137,17 @@ class _CustomAppbarState extends State<CustomAppbar> {
                     child: CircleAvatar(
                       radius: 40,
                       backgroundColor: Colors.blue.shade700,
-                      backgroundImage: usersData!.profileImage != null &&
-                              usersData!.profileImage!.isNotEmpty
-                          ? NetworkImage(usersData!.profileImage!)
+                      backgroundImage: user != null &&
+                              user.profileImage != null &&
+                              user.profileImage!.isNotEmpty
+                          ? NetworkImage(user.profileImage!)
                           : null,
-                      child: (usersData!.profileImage == null ||
-                              usersData!.profileImage!.isEmpty)
+                      child: (user == null ||
+                              user.profileImage == null ||
+                              user.profileImage!.isEmpty)
                           ? Text(
-                              usersData!.name.isNotEmpty
-                                  ? usersData!.name[0].toUpperCase()
+                              user?.name.isNotEmpty == true
+                                  ? user!.name[0].toUpperCase()
                                   : 'G',
                               style: const TextStyle(
                                 fontSize: 18,

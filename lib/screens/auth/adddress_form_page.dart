@@ -4,11 +4,13 @@ import 'package:country_picker/country_picker.dart';
 import 'package:difwa/config/app_color.dart';
 import 'package:difwa/controller/address_controller.dart';
 import 'package:difwa/models/address_model.dart';
+import 'package:difwa/utils/app__text_style.dart';
 import 'package:difwa/utils/loader.dart'; // Assuming this is where your custom Loader is defined
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/utils/validators.dart';
 import 'package:difwa/widgets/custom_button.dart';
 import 'package:difwa/widgets/custom_input_field.dart';
+import 'package:difwa/widgets/subscribe_button_component.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -27,21 +29,18 @@ class AddressForm extends StatefulWidget {
 
 class _AddressFormState extends State<AddressForm> {
   // Controllers for text fields
-  final TextEditingController _streetController = TextEditingController();
-  final TextEditingController _cityController = TextEditingController();
-  final TextEditingController _stateController = TextEditingController();
-  final TextEditingController _zipController = TextEditingController();
-  final TextEditingController _countryController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _floorController = TextEditingController();
+  final TextEditingController _zipController = TextEditingController();
+  final TextEditingController _stateController = TextEditingController();
+  final TextEditingController _cityController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _streetController = TextEditingController();
+  final AddressController address = AddressController();
   bool _isChecked = false;
   bool _isdeleted = false;
   final bool _isSelected = false; // Checkbox state
 
-  final AddressController _addressController = Get.put(AddressController());
-
-  String selectedCountryCode = "+91"; // Default country code
   Country? selectedCountry; // To store the selected country
 
   // Form keys for each section (if you want separate validation for each)
@@ -59,15 +58,15 @@ class _AddressFormState extends State<AddressForm> {
   void initState() {
     super.initState();
     _nameController.text = widget.address.name;
-    _streetController.text = widget.address.street;
-    _cityController.text = widget.address.city;
-    _stateController.text = widget.address.state;
-    _zipController.text = widget.address.zip;
-    _countryController.text = widget.address.country;
     _phoneController.text = widget.address.phone;
+    _zipController.text = widget.address.zip;
+    _stateController.text = widget.address.state;
+    _cityController.text = widget.address.city;
+    _addressController.text = widget.address.street;
+    _streetController.text = widget.address.street;
+
     _isChecked = widget.address.saveAddress;
     _isdeleted = widget.address.isDeleted;
-    _floorController.text = widget.address.floor;
   }
 
 // Function to save a new address
@@ -75,21 +74,21 @@ class _AddressFormState extends State<AddressForm> {
     try {
       // Assuming _addressController.saveAddress() is returning void,
       // you need to change it to return a boolean indicating success or failure.
-      await _addressController.saveAddress(
+      await address.saveAddress(
         Address(
           name: _nameController.text,
-          street: _streetController.text,
-          city: _cityController.text,
-          state: _stateController.text,
-          zip: _zipController.text,
-          country: _countryController.text,
           phone: _phoneController.text,
+          zip: _zipController.text,
+          state: _stateController.text,
+          city: _cityController.text,
+          street: _streetController.text,
+          floor: _addressController.text,
           saveAddress: _isChecked,
           userId: "", // Dynamically get the userId if necessary
           isDeleted: _isdeleted,
           isSelected: _isSelected,
-          docId: "", // Empty for a new address
-          floor: _floorController.text,
+          docId: "",
+          country: '', // Empty for a new address
         ),
       );
       return true; // Indicate success
@@ -105,21 +104,21 @@ class _AddressFormState extends State<AddressForm> {
     try {
       // Assuming _addressController.updateAddress() is returning void,
       // you need to change it to return a boolean indicating success or failure.
-      await _addressController.updateAddress(
+      await address.updateAddress(
         Address(
           name: _nameController.text,
-          street: _streetController.text,
-          city: _cityController.text,
-          state: _stateController.text,
-          zip: _zipController.text,
-          country: _countryController.text,
           phone: _phoneController.text,
+          zip: _zipController.text,
+          state: _stateController.text,
+          city: _cityController.text,
+          street: _streetController.text,
+          floor: _addressController.text,
           saveAddress: _isChecked,
           userId: "", // Dynamically get the userId if necessary
           isDeleted: _isdeleted,
           isSelected: _isSelected,
-          docId: widget.address.docId, // Pass the existing docId for update
-          floor: _floorController.text,
+          docId: "",
+          country: '', // Empty for a new addr
         ),
       );
       return true; // Indicate success
@@ -136,10 +135,7 @@ class _AddressFormState extends State<AddressForm> {
       backgroundColor: ThemeConstants.whiteColor,
       appBar: AppBar(
         backgroundColor: ThemeConstants.whiteColor,
-        title: Text(
-          'Checkout',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        title: Text('Save Address', style: AppTextStyle.Text18700),
       ),
       body: Stack(
         children: [
@@ -155,8 +151,8 @@ class _AddressFormState extends State<AddressForm> {
                     onChanged: (String) {
                       _formKeyName.currentState!.validate();
                     },
-                    label: 'Name',
-                    hint: 'Enter Your Name',
+                    label: 'Full Name',
+                    hint: 'Full Name',
                     icon: Icons.person,
                     validator: Validators.validateName,
                   ),
@@ -165,83 +161,19 @@ class _AddressFormState extends State<AddressForm> {
                 // Phone Number with country code
                 Form(
                   key: _formKeyPhone,
-                  child: Row(
-                    children: [
-                      CountryCodePicker(
-                        onChanged: (code) {
-                          setState(() {
-                            selectedCountryCode = code.dialCode!;
-                          });
-                        },
-                        initialSelection: 'IN',
-                        favorite: const ['+91', '+1'],
-                        showCountryOnly: false,
-                        showOnlyCountryWhenClosed: false,
-                        alignLeft: false,
-                      ),
-                      Expanded(
-                        child: CommonTextField(
-                          controller: _phoneController,
-                          inputType: InputType.phone,
-                          label: 'Phone Number',
-                          hint: 'Enter Your Phone Number',
-                          icon: Icons.phone,
-                          onChanged: (String) {
-                            _formKeyPhone.currentState!.validate();
-                          },
-                          validator: Validators.validatePhone,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 20),
-
-                // Street Address
-                Form(
-                  key: _formKeyAddress,
                   child: CommonTextField(
-                    inputType: InputType.address,
-                    controller: _streetController,
-                    onChanged: (value) {
-                      _formKeyAddress.currentState!.validate();
-                    },
-                    label: 'Street Address',
-                    hint: 'Flat/Housse No./Building/Apartment',
-                    validator: Validators.validatestreet,
-                  ),
-                ),
-                SizedBox(height: 20),
-                // Floor Address
-                Form(
-                  key: _formfloor,
-                  child: CommonTextField(
+                    controller: _phoneController,
                     inputType: InputType.phone,
-                    controller: _floorController,
+                    label: 'Phone Number',
+                    hint: 'Phone Number',
+                    icon: Icons.phone,
                     onChanged: (value) {
-                      _formfloor.currentState!.validate();
+                      _formKeyPhone.currentState!.validate();
                     },
-                    label: 'Floor',
-                    hint: 'Enter Floor No.',
-                    validator: Validators().validateFloor,
+                    validator: Validators.validatePhone,
                   ),
                 ),
-                SizedBox(height: 20),
 
-                // State
-                Form(
-                  key: _formState,
-                  child: CommonTextField(
-                    inputType: InputType.name,
-                    controller: _stateController,
-                    onChanged: (value) {
-                      _formPin.currentState!.validate();
-                    },
-                    label: 'State',
-                    hint: 'Enter your state',
-                    validator: Validators.validatestreet,
-                  ),
-                ),
                 SizedBox(height: 20),
 
                 // ZIP Code
@@ -256,13 +188,46 @@ class _AddressFormState extends State<AddressForm> {
                           onChanged: (value) {
                             _formPin.currentState!.validate();
                           },
-                          label: 'ZIP Code',
-                          hint: 'Enter your ZIP code',
+                          label: 'Pincode',
+                          hint: 'Pincode',
                           validator: Validators.validatePin,
                         ),
                       ),
                     ),
                     // City
+                    SizedBox(width: 10),
+                    Expanded(
+                        child: Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: AppColors.inputfield),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text("Use my location"),
+                    )),
+                  ],
+                ),
+                SizedBox(height: 20),
+
+                // City
+                Row(
+                  children: [
+                    Expanded(
+                      child: // State
+                          Form(
+                        key: _formState,
+                        child: CommonTextField(
+                          inputType: InputType.name,
+                          controller: _stateController,
+                          onChanged: (value) {
+                            _formPin.currentState!.validate();
+                          },
+                          label: 'State',
+                          hint: 'State',
+                          validator: Validators.validatestreet,
+                        ),
+                      ),
+                    ),
                     SizedBox(width: 10),
                     Expanded(
                       child: Form(
@@ -274,7 +239,7 @@ class _AddressFormState extends State<AddressForm> {
                             _formCity.currentState!.validate();
                           },
                           label: 'City',
-                          hint: 'Enter your city',
+                          hint: 'City',
                           validator: Validators.validatestreet,
                         ),
                       ),
@@ -283,39 +248,41 @@ class _AddressFormState extends State<AddressForm> {
                 ),
                 SizedBox(height: 20),
 
-                // Country
-                // Country Dropdown (using country_picker package)
-                FormField<String>(
-                  builder: (state) {
-                    return GestureDetector(
-                      onTap: () {
-                        showCountryPicker(
-                          context: context,
-                          onSelect: (Country country) {
-                            setState(() {
-                              selectedCountry = country;
-                              _countryController.text = country.name;
-                            });
-                          },
-                        );
-                      },
-                      child: AbsorbPointer(
-                        child: CommonTextField(
-                          controller: _countryController,
-                          inputType: InputType.name,
-                          label: 'Country',
-                          hint: 'Enter your country',
-                          icon: Icons.arrow_drop_down,
-                          validator: Validators.validatestreet,
-                          onChanged: (String value) {
-                            // Handle the onChanged callback if needed
-                          },
-                        ),
-                      ),
-                    );
-                  },
+                // Street Address
+                Form(
+                  key: _formKeyAddress,
+                  child: CommonTextField(
+                    inputType: InputType.address,
+                    controller: _streetController,
+                    onChanged: (value) {
+                      _formKeyAddress.currentState!.validate();
+                    },
+                    label: 'Housse No.,/Building Name',
+                    hint: 'Housse No.,/Building Name',
+                    validator: Validators.validatestreet,
+                  ),
                 ),
+                SizedBox(height: 20),
+                // Floor Address
+                Form(
+                  key: _formfloor,
+                  child: CommonTextField(
+                    inputType: InputType.phone,
+                    controller: _streetController,
+                    onChanged: (value) {
+                      _formfloor.currentState!.validate();
+                    },
+                    label: 'Road name, Area, Land Mark',
+                    hint: 'Road name, Area, Land Mark',
+                    validator: Validators().validateFloor,
+                  ),
+                ),
+                SizedBox(height: 20),
+
+                SizedBox(height: 20),
+
                 const SizedBox(height: 24),
+
                 Container(
                   padding: EdgeInsets.all(8),
                   child: Row(
@@ -336,59 +303,57 @@ class _AddressFormState extends State<AddressForm> {
                 ),
                 SizedBox(height: 20),
 
-                SizedBox(
-                  width: double.infinity,
-                  child: _isSubmitting
-                      ? null // Provide a widget when _isSubmitting is true
-                      : CustomButton(
-                          baseTextColor: ThemeConstants.whiteColor,
-                          onPressed: () async {
-                            setState(() {
-                              _isSubmitting = true;
-                            });
+                Padding(
+                  padding: const EdgeInsets.only(left: 16, right: 16, top: 20),
+                  child: SubscribeButtonComponent(
+                    text: widget.flag != "isEdit"
+                        ? 'SAVE ADDRESS'
+                        : 'UPDATE ADDRESS',
+                    onPressed: () async {
+                      setState(() {
+                        _isSubmitting = true;
+                      });
 
-                            // Validate all form fields
-                            _formKeyName.currentState!.validate();
-                            _formKeyPhone.currentState!.validate();
-                            _formKeyAddress.currentState!.validate();
-                            _formState.currentState!.validate();
-                            _formPin.currentState!.validate();
-                            _formCity.currentState!.validate();
-                            _formfloor.currentState!.validate();
+                      // Validate all form fields
+                      _formKeyName.currentState!.validate();
+                      _formKeyPhone.currentState!.validate();
+                      _formKeyAddress.currentState!.validate();
+                      _formState.currentState!.validate();
+                      _formPin.currentState!.validate();
+                      _formCity.currentState!.validate();
+                      _formfloor.currentState!.validate();
 
-                            // Check if all form fields are valid
-                            if (_formKeyName.currentState!.validate() &&
-                                _formfloor.currentState!.validate() &&
-                                _formKeyPhone.currentState!.validate() &&
-                                _formKeyAddress.currentState!.validate() &&
-                                _formState.currentState!.validate() &&
-                                _formPin.currentState!.validate() &&
-                                _formCity.currentState!.validate()) {
-                              // Call saveAddress or updateAddress based on flag
-                              bool success;
-                              if (widget.flag == 'isEdit') {
-                                success = await updateAddress();
-                              } else {
-                                success = await saveAddress();
-                              }
-                              // Check if save/update was successful
-                              if (success) {
-                                Navigator.of(context).pop(true);
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                        content: Text(
-                                            "Failed to save/update address")));
-                              }
+                      // Check if all form fields are valid
+                      if (_formKeyName.currentState!.validate() &&
+                          _formfloor.currentState!.validate() &&
+                          _formKeyPhone.currentState!.validate() &&
+                          _formKeyAddress.currentState!.validate() &&
+                          _formState.currentState!.validate() &&
+                          _formPin.currentState!.validate() &&
+                          _formCity.currentState!.validate()) {
+                        // Call saveAddress or updateAddress based on flag
+                        bool success;
+                        if (widget.flag == 'isEdit') {
+                          success = await updateAddress();
+                        } else {
+                          success = await saveAddress();
+                        }
+                        // Check if save/update was successful
+                        if (success) {
+                          Navigator.of(context).pop(true);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text("Failed to save/update address")));
+                        }
 
-                              setState(() {
-                                _isSubmitting = false;
-                              });
-                            }
-                          },
-                          text: widget.flag != "isEdit" ? 'SAVE' : 'UPDATE',
-                        ),
+                        setState(() {
+                          _isSubmitting = false;
+                        });
+                      }
+                    },
+                  ),
                 ),
+
                 SizedBox(height: 20),
               ],
             ),

@@ -54,6 +54,7 @@ dependencies:
   shimmer: ^3.0.0
   fl_chart: ^0.70.2
   flutter_native_splash: ^2.4.4
+  font_awesome_flutter: ^10.8.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

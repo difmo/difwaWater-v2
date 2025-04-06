@@ -1,9 +1,13 @@
 import 'dart:io';
 import 'package:difwa/config/app_color.dart';
 import 'package:difwa/controller/auth_controller.dart';
+import 'package:difwa/models/user_models/user_details_model.dart';
 import 'package:difwa/screens/personal_details.dart';
+import 'package:difwa/utils/app__text_style.dart';
+import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/widgets/custom_button.dart';
 import 'package:difwa/widgets/custom_input_field.dart';
+import 'package:difwa/widgets/subscribe_button_component.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -29,19 +33,47 @@ class EditPersonaldetails extends StatefulWidget {
 
 class _EditPersonaldetailsState extends State<EditPersonaldetails> {
   File? _selectedImage;
-  String selectedCountryCode = "+91 "; 
+  String selectedCountryCode = "+91 ";
   final AuthController auth = Get.put(AuthController());
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController mobileController = TextEditingController();
 
+  UserDetailsModel? usersData;
+  bool _isLoading = true;
+
   @override
   void initState() {
     super.initState();
-    nameController.text = widget.name ?? '';
-    emailController.text = widget.email ?? '';
-    mobileController.text = widget.phone ?? '';
+    _fetchUserData();
+  }
+
+  void _fetchUserData() async {
+    try {
+      UserDetailsModel user = await auth.fetchUserData();
+      setState(() {
+        _isLoading = false;
+        usersData = user;
+
+        nameController.text =
+            usersData!.name != null && usersData!.name.isNotEmpty
+                ? usersData!.name.toString()
+                : 'Guest';
+        emailController.text =
+            usersData!.email != null && usersData!.email.isNotEmpty
+                ? usersData!.email.toString()
+                : 'guest@gmail.com';
+        mobileController.text =
+            usersData!.number != null && usersData!.number.isNotEmpty
+                ? usersData!.number.toString()
+                : '9999999999';
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   Future<void> _pickImage(ImageSource source) async {
@@ -103,7 +135,10 @@ class _EditPersonaldetailsState extends State<EditPersonaldetails> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text("Edit Profile "),
+        title: const Text(
+          "Edit Profile ",
+          style: AppTextStyle.Text18700,
+        ),
       ),
       body: Column(
         children: [
@@ -124,10 +159,11 @@ class _EditPersonaldetailsState extends State<EditPersonaldetails> {
                                 height: 130,
                                 fit: BoxFit.cover,
                               )
-                            : (widget.profileImage != null &&
-                                    widget.profileImage!.isNotEmpty)
+                            : usersData != null &&
+                                    usersData!.profileImage != null &&
+                                    usersData!.profileImage!.isNotEmpty
                                 ? Image.network(
-                                    widget.profileImage!,
+                                    usersData!.profileImage!,
                                     width: 130,
                                     height: 130,
                                     fit: BoxFit.cover,
@@ -136,7 +172,13 @@ class _EditPersonaldetailsState extends State<EditPersonaldetails> {
                                           widget.name ?? '');
                                     },
                                   )
-                                : _buildInitialsAvatar(widget.name ?? ''),
+                                : _buildInitialsAvatar(
+                                    usersData != null &&
+                                            usersData!.name != null &&
+                                            usersData!.name.isNotEmpty
+                                        ? usersData!.name[0].toUpperCase()
+                                        : 'G',
+                                  ),
                       ),
                     ),
                     Positioned(
@@ -159,14 +201,6 @@ class _EditPersonaldetailsState extends State<EditPersonaldetails> {
                   ],
                 ),
                 const SizedBox(height: 25),
-                // Text(
-                //   nameController.text,
-                //   style: const TextStyle(
-                //     fontSize: 20,
-                //     fontWeight: FontWeight.bold,
-                //     color: Colors.black,
-                //   ),
-                // ),
               ],
             ),
           ),
@@ -203,50 +237,47 @@ class _EditPersonaldetailsState extends State<EditPersonaldetails> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SizedBox(
-              child: CustomButton(
-                width: double.infinity,
-                text: 'Save Changes',
-                onPressed: () async {
-                  try {
-                    User? user = FirebaseAuth.instance.currentUser;
-                    if (user != null) {
-                      await auth.updateUserDetails(
-                        user.uid,
-                        emailController.text,
-                        nameController.text,
-                        selectedCountryCode + mobileController.text,
-                        "some_floor_value",
-                      );
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 20),
+            child: SubscribeButtonComponent(
+              text: "Save Changes",
+              onPressed: () async {
+                try {
+                  User? user = FirebaseAuth.instance.currentUser;
+                  if (user != null) {
+                    await auth.updateUserDetails(
+                      user.uid,
+                      emailController.text,
+                      nameController.text,
+                      selectedCountryCode + mobileController.text,
+                      "some_floor_value",
+                    );
 
-                      Get.snackbar(
-                        "Success",
-                        "Details updated successfully",
-                        backgroundColor: Colors.green,
-                        colorText: Colors.white,
-                      );
+                    Get.snackbar(
+                      "Success",
+                      "Details updated successfully",
+                      backgroundColor: Colors.green,
+                      colorText: Colors.white,
+                    );
 
-                      await Future.delayed(Duration(seconds: 2));
-                      Get.off(() => PersonalDetails());
-                    } else {
-                      Get.snackbar(
-                        "Error",
-                        "User not logged in",
-                        backgroundColor: Colors.red,
-                        colorText: Colors.white,
-                      );
-                    }
-                  } catch (e) {
+                    await Future.delayed(Duration(seconds: 2));
+                    Get.off(() => PersonalDetails());
+                  } else {
                     Get.snackbar(
                       "Error",
-                      "Failed to update details: $e",
+                      "User not logged in",
                       backgroundColor: Colors.red,
                       colorText: Colors.white,
                     );
                   }
-                },
-              ),
+                } catch (e) {
+                  Get.snackbar(
+                    "Error",
+                    "Failed to update details: $e",
+                    backgroundColor: Colors.red,
+                    colorText: Colors.white,
+                  );
+                }
+              },
             ),
           ),
         ],
@@ -259,11 +290,10 @@ class _EditPersonaldetailsState extends State<EditPersonaldetails> {
 
     return CircleAvatar(
       radius: 65,
-      backgroundColor: Colors.blueGrey,
+      backgroundColor: ThemeConstants.primaryColor,
       child: Text(
         initials,
-        style: TextStyle(
-            fontSize: 50, fontWeight: FontWeight.bold, color: Colors.white),
+        style: AppTextStyle.TextWhite24700,
       ),
     );
   }
