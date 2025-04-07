@@ -3,6 +3,7 @@ import 'package:difwa/controller/auth_controller.dart';
 import 'package:difwa/models/user_models/user_details_model.dart';
 import 'package:difwa/screens/admin_screens/store_onboarding_screen.dart';
 import 'package:difwa/screens/auth/saved_address.dart';
+import 'package:difwa/screens/contact_info_page.dart';
 import 'package:difwa/screens/edit_personaldetails.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/widgets/logout_popup.dart';
@@ -158,8 +159,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   horizontal: 16,
                                   vertical: 6), // Spacing between options
                               decoration: BoxDecoration(
-                                color: Colors
-                                    .grey[200], // Background color grey[200]
+                                color: ThemeConstants.primaryColor.withOpacity(
+                                    0.1), // Background color grey[200]
                                 borderRadius: BorderRadius.circular(
                                     15.0), // Rounded corners
                               ),
@@ -178,8 +179,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   horizontal: 16,
                                   vertical: 6), // Spacing between options
                               decoration: BoxDecoration(
-                                color: Colors
-                                    .grey[200], // Background color grey[200]
+                                color: ThemeConstants.primaryColor.withOpacity(
+                                    0.1), // Background color grey[200]
                                 borderRadius: BorderRadius.circular(
                                     15.0), // Rounded corners
                               ),
@@ -208,7 +209,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               margin: const EdgeInsets.symmetric(
                                   horizontal: 16, vertical: 6),
                               decoration: BoxDecoration(
-                                color: Colors.grey[200],
+                                color: ThemeConstants.primaryColor.withOpacity(
+                                    0.1),
                                 borderRadius: BorderRadius.circular(
                                     15.0), // Rounded corners
                               ),
@@ -217,7 +219,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     .start, // Align text to the left
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.only(top: 10,left: 15,bottom: 8,), // Padding around the text
+                                    padding: const EdgeInsets.only(
+                                      top: 10,
+                                      left: 15,
+                                      bottom: 8,
+                                    ), // Padding around the text
                                     child: Text(
                                       "Orders", // Title text at the top
                                       style: TextStyle(
@@ -268,11 +274,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ),
 
-                             Container(
+                            Container(
                               margin: const EdgeInsets.symmetric(
                                   horizontal: 16, vertical: 6),
                               decoration: BoxDecoration(
-                                color: Colors.grey[200],
+                                color: ThemeConstants.primaryColor.withOpacity(
+                                    0.1),
                                 borderRadius: BorderRadius.circular(
                                     15.0), // Rounded corners
                               ),
@@ -281,7 +288,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     .start, // Align text to the left
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.only(top: 10,left: 15,bottom: 8,), // Padding around the text
+                                    padding: const EdgeInsets.only(
+                                      top: 10,
+                                      left: 15,
+                                      bottom: 8,
+                                    ), // Padding around the text
                                     child: Text(
                                       "Customer Support", // Title text at the top
                                       style: TextStyle(
@@ -297,7 +308,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     subtitle: "Contact us for any queries",
                                     icon: Icons.contact_phone_outlined,
                                     onTap: () {
-                                      Get.to(() => SavveAddressPage());
+                                      Get.to(() => ContactPage());
                                     },
                                   ),
                                   buildProfileOption(
@@ -337,8 +348,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   horizontal: 16,
                                   vertical: 6), // Spacing between options
                               decoration: BoxDecoration(
-                                color: Colors
-                                    .grey[200], // Background color grey[200]
+                                color: ThemeConstants.primaryColor.withOpacity(
+                                    0.1), // Background color grey[200]
                                 borderRadius: BorderRadius.circular(
                                     15.0), // Rounded corners
                               ),
@@ -401,7 +412,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         padding: const EdgeInsets.all(8),
         child: Row(
           children: [
-            Icon(icon, color: Colors.blue),
+            Icon(icon, color: AppColors.textBlack),
             const SizedBox(width: 16),
             Expanded(
               child: Column(

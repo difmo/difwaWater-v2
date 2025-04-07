@@ -11,6 +11,7 @@ import 'package:difwa/screens/auth/login_screen.dart';
 import 'package:difwa/screens/auth/signup_screen.dart';
 import 'package:difwa/screens/available_service_select.dart';
 import 'package:difwa/screens/book_now_screen.dart';
+import 'package:difwa/screens/contact_info_page.dart';
 import 'package:difwa/screens/notification_page.dart';
 import 'package:difwa/screens/profile_screen.dart';
 import 'package:difwa/screens/splash_screen.dart';
@@ -27,6 +28,7 @@ class AppRoutes {
   static const otp = '/otp';
   static const userbottom = '/userbottom';
   static const subscription = '/subscription';
+  static const contactus = '/contactus';
   static const address_page = '/address_page';
   static const notification = '/notification_page';
 static const fullScreenPopup = '/fullScreenPopup';
@@ -109,6 +111,9 @@ static const fullScreenPopup = '/fullScreenPopup';
       transition: Transition.zoom, // Zoom transition for subscription screen
       transitionDuration: Duration(milliseconds: 800),
     ),
+    GetPage(name: contactus, page: ()=> ContactPage(),
+    transition: Transition.zoom, // Zoom transition for subscription screen
+      transitionDuration: Duration(milliseconds: 800),),
 
     /////////////////////////Admin Routes/////////////////
     GetPage(
