@@ -25,13 +25,13 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
   VideoPlayerController? _videoPlayerController;
 
   List<String> imageUrl = [
-    "", // Aadhaar card image
-    "", // PAN card image
-    "", // Passport photo image
-    "", // Business license image
-    "", // Water quality certificate image
-    "", // Identity proof image
-    "", // Bank document image
+    "", 
+    "", 
+    "", 
+    "", 
+    "", 
+    "", 
+    "",
   ];
 
   int _currentStep = 0;
@@ -330,7 +330,7 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
 
     if (pickedVideo != null) {
       setState(() {
-        businessVideo = pickedVideo; // Store the video file
+        businessVideo = pickedVideo; 
       });
     }
   }
