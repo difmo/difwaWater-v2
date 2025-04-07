@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:difwa/controller/wallet_controller.dart';
 import 'package:difwa/screens/payment_webview_screen.dart';
+import 'package:difwa/utils/showAwesomeSnackBar.dart';
+import 'package:difwa/widgets/PaymentOptionList.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 class AddBalanceScreen extends StatefulWidget {
   const AddBalanceScreen({super.key});
@@ -33,17 +33,35 @@ class _AddBalanceScreenState extends State<AddBalanceScreen> {
 
   double currentBalance = 2458.65;
   double enteredAmount = 0.0;
-  String selectedPaymentMethod = "Visa ending in 4242";
   String paymentId = "";
 
-  final List<Map<String, String>> paymentMethods = [
-    {"type": "visa", "card": "Visa ending in 4242", "expiry": "Expires 12/24"},
+  String selectedPaymentMethod = "Visa ending in 4242";
+  final List<Map<String, dynamic>> paymentOptions = [
     {
-      "type": "mastercard",
-      "card": "Mastercard ending in 8790",
-      "expiry": "Expires 09/25"
+      "title": "UPI",
+      "icon": "upi.svg",
+      "methods": ["gpay.png", "ppay.png", "paytm.png"],
     },
-    {"type": "add", "card": "Add New Payment Method", "expiry": ""}
+    {
+      "title": "Cards",
+      "icon": "card.svg",
+      "methods": ["visa.png", "mastercard.png", "rupay.png"],
+    },
+    {
+      "title": "Netbanking",
+      "icon": "netbanking.svg",
+      "methods": ["bob.png", "sbi.png", "pnb.png"],
+    },
+    {
+      "title": "Wallet",
+      "icon": "paywallet.svg",
+      "methods": ["mobikwik.png", "paytm.png", "amazon.png"],
+    },
+    {
+      "title": "Pay Later",
+      "icon": "paylater.svg",
+      "methods": ["lazypay.png", "icici.png", "simpl.png"],
+    },
   ];
 
   // Function to handle amount button taps
@@ -85,8 +103,8 @@ class _AddBalanceScreenState extends State<AddBalanceScreen> {
         String paymentId = result['payment_id'] ?? 'No payment_id';
         print("Payment Status from add balance: $status");
         print("Payment ID: $paymentId");
-        await _walletController2.saveWalletHistory(amount, "Credited",
-            paymentId, status, userUid);
+        await _walletController2.saveWalletHistory(
+            amount, "Credited", paymentId, status, userUid);
         // Now you can use the correct paymentId here
       } else {
         print("No result returned from PaymentWebViewScreen.");
@@ -94,28 +112,17 @@ class _AddBalanceScreenState extends State<AddBalanceScreen> {
 
       _addMoneySuccess(result);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: const Text("Please enter an amount greater than ₹30"),
-      ));
+      showAwesomeSnackBar(context, "Please enter an amount greater than ₹30");
     }
   }
 
   // Function to handle the "Add Money" button
   void _addMoney() {
     if (enteredAmount <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Enter a valid amount!")),
-      );
+      showAwesomeSnackBar(context, "Enter a valid amount!");
+
       return;
     }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          "Adding ₹ ${enteredAmount.toStringAsFixed(2)} to your balance",
-        ),
-      ),
-    );
 
     var currentUserId = FirebaseAuth.instance.currentUser?.uid;
     redirectToPaymentWebsite(enteredAmount, currentUserId);
@@ -124,20 +131,23 @@ class _AddBalanceScreenState extends State<AddBalanceScreen> {
   // Function to handle the "Add Money" button
   void _addMoneySuccess(result) {
     if (enteredAmount <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Enter a valid amount!")),
-      );
+      showAwesomeSnackBar(context, "Enter a valid amount!");
+
       return;
     }
     print("result");
     print(result);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          "₹ \$${enteredAmount.toStringAsFixed(2)} Added To Your Wallet",
-        ),
-      ),
-    );
+    if (result == null) {
+      showAwesomeSnackBar(context, "Payment failed. Please try again.");
+      return;
+    }
+    if (result['status'] == 'success') {
+      // Payment was successful
+      showAwesomeSnackBar(context, "Payment successful!");
+    } else {
+      // Payment failed
+      showAwesomeSnackBar(context, "Payment failed. Please try again.");
+    }
     // Simulate balance update
     setState(() {
       currentBalance += enteredAmount;
@@ -265,7 +275,7 @@ class _AddBalanceScreenState extends State<AddBalanceScreen> {
 
             // Payment Method Section
             const Text(
-              "Payment Method",
+              "Available Payment Options",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -273,23 +283,16 @@ class _AddBalanceScreenState extends State<AddBalanceScreen> {
               ),
             ),
             const SizedBox(height: 10),
-
-            // Payment Methods List
-            ...paymentMethods.map((method) {
-              return _buildPaymentMethodTile(
-                iconPath: "assets/icons/${method['type']}.svg",
-                cardEnding: method['card']!,
-                expiry: method['expiry']!,
-                isSelected: selectedPaymentMethod == method['card'],
-                onSelect: () => _selectPaymentMethod(method['card']!),
-              );
-            }),
-
+// In your widget tree
+            PaymentOptionList(
+              paymentOptions: paymentOptions,
+              onMethodTap: _selectPaymentMethod,
+            ),
             const SizedBox(height: 10),
 
             // Fee Notice
             const Text(
-              "A 1.5% processing fee may apply. Funds typically arrive within 24 hours.",
+              "Click 'Add Money' to proceed to the payment page and complete your transaction.",
               style: TextStyle(color: Colors.grey, fontSize: 12),
             ),
 
@@ -317,47 +320,6 @@ class _AddBalanceScreenState extends State<AddBalanceScreen> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  // Payment Method Tile Widget
-  Widget _buildPaymentMethodTile({
-    required String iconPath,
-    required String cardEnding,
-    String? expiry,
-    bool isSelected = false,
-    required VoidCallback onSelect,
-  }) {
-    return GestureDetector(
-      onTap: onSelect,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected ? Colors.black : Colors.grey[300]!,
-            width: isSelected ? 2 : 1,
-          ),
-        ),
-        child: ListTile(
-          leading: iconPath.isNotEmpty
-              ? SvgPicture.asset(iconPath, height: 28)
-              : const Icon(Icons.add_circle_outline, color: Colors.grey),
-          title: Text(
-            cardEnding,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: isSelected ? Colors.black : Colors.grey[700],
-            ),
-          ),
-          subtitle: expiry != null ? Text(expiry) : null,
-          trailing: isSelected
-              ? const Icon(Icons.check_circle, color: Colors.black)
-              : null,
         ),
       ),
     );

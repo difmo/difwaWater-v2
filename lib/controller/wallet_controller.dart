@@ -50,7 +50,7 @@ class WalletController extends GetxController {
     double amount,
     String amountStatus,
     String paymentId,
-    String paymentStatus, 
+    String paymentStatus,
     String? uuid,
   ) async {
     try {
@@ -64,13 +64,6 @@ class WalletController extends GetxController {
       });
 
       debugPrint("Payment history saved successfully.");
-      Get.snackbar(
-        "Success",
-        "Payment history saved successfully.",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Get.theme.snackBarTheme.backgroundColor,
-        colorText: Get.theme.snackBarTheme.actionTextColor,
-      );
     } catch (e) {
       debugPrint("Error saving payment history: $e");
     }

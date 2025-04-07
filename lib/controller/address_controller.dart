@@ -104,7 +104,7 @@ class AddressController extends GetxController {
           .snapshots()
           .map((querySnapshot) {
         List<Address> addresses = querySnapshot.docs.map((doc) {
-          return Address.fromJson(doc.data() as Map<String, dynamic>);
+          return Address.fromJson(doc.data());
         }).toList();
 
         // Check if there is exactly one address and make it selected

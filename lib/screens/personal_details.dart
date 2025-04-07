@@ -36,6 +36,7 @@ class _PersonalDetailsState extends State<PersonalDetails> {
   Future<void> _fetchUserDetails() async {
     try {
       UserDetailsModel user = await _userData.fetchUserData();
+      print(user.toJson());
       setState(() {
         usersData = user;
         isLoading = false;
@@ -68,7 +69,7 @@ class _PersonalDetailsState extends State<PersonalDetails> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Column(   
+        child: Column(
           children: [
             Column(
               children: [

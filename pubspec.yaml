@@ -53,6 +53,8 @@ dependencies:
   confetti: ^0.8.0
   shimmer: ^3.0.0
   fl_chart: ^0.70.2
+  flutter_native_splash: ^2.4.4
+  font_awesome_flutter: ^10.8.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -124,6 +126,7 @@ flutter:
     - assets/button/trbg.png
     - assets/icons/iconbg.svg
     - assets/icons/iconbg.png
+    - assets/icons/upi.svg
     - assets/icons/
     - assets/bgimage.png
     - assets/imagebg.png

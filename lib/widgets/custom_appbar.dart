@@ -1,3 +1,5 @@
+import 'package:difwa/models/user_models/user_details_model.dart';
+import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -7,7 +9,7 @@ class CustomAppbar extends StatefulWidget {
   final VoidCallback onMenuPressed;
   final bool hasNotifications;
   final int badgeCount; // Badge count for notifications
-  final String? profileImageUrl;
+  final UserDetailsModel? usersData;
 
   const CustomAppbar({
     super.key,
@@ -16,7 +18,7 @@ class CustomAppbar extends StatefulWidget {
     required this.onMenuPressed,
     required this.hasNotifications,
     required this.badgeCount,
-    this.profileImageUrl,
+    this.usersData,
   });
 
   @override
@@ -26,11 +28,12 @@ class CustomAppbar extends StatefulWidget {
 class _CustomAppbarState extends State<CustomAppbar> {
   bool get hasNotifications => widget.hasNotifications;
   int get badgeCount => widget.badgeCount;
-  String? get profileImageUrl => widget.profileImageUrl;
+  UserDetailsModel? get usersData => widget.usersData;
 
   @override
   Widget build(BuildContext context) {
     double topPadding = MediaQuery.of(context).padding.top + 8;
+    final user = widget.usersData;
 
     return Container(
       decoration: const BoxDecoration(
@@ -124,24 +127,40 @@ class _CustomAppbarState extends State<CustomAppbar> {
 
               const SizedBox(width: 8),
 
-              // Profile Avatar Icon
-              GestureDetector(
-                onTap: widget.onProfilePressed,
-                child: CircleAvatar(
-                  radius: 18,
-                  backgroundColor: const Color(0xFFE0E0E0),
-                  backgroundImage: profileImageUrl != null
-                      ? NetworkImage(profileImageUrl!)
-                      : null,
-                  child: profileImageUrl == null
-                      ? const Icon(
-                          Icons.person_outline,
-                          color: Color(0xFF4A4A4A),
-                          size: 24,
-                        )
-                      : null,
+              SizedBox(
+                width: 40,
+                height: 40,
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: GestureDetector(
+                    onTap: widget.onProfilePressed,
+                    child: CircleAvatar(
+                      radius: 40,
+                      backgroundColor: Colors.blue.shade700,
+                      backgroundImage: user != null &&
+                              user.profileImage != null &&
+                              user.profileImage!.isNotEmpty
+                          ? NetworkImage(user.profileImage!)
+                          : null,
+                      child: (user == null ||
+                              user.profileImage == null ||
+                              user.profileImage!.isEmpty)
+                          ? Text(
+                              user?.name.isNotEmpty == true
+                                  ? user!.name[0].toUpperCase()
+                                  : 'G',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            )
+                          : null,
+                    ),
+                  ),
                 ),
               ),
+              // Profile Avatar Icon
             ],
           ),
         ],
