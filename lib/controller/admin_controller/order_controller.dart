@@ -13,6 +13,7 @@ class OrdersController extends GetxController {
 
     // Get today's date in proper format
     DateTime today = DateTime.now();
+  // DateTime today = DateTime(2025, 4, 8);
     String todayStr =
         "${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
 
@@ -100,43 +101,6 @@ class OrdersController extends GetxController {
     };
   }
 
-
-  Future<int> fetchFullyCompletedOrders() async {
-    String? merchantId = await _vendorsController.fetchMerchantId();
-
-    QuerySnapshot userDoc = await _firestore
-        .collection('difwa-orders')
-        .where('merchantId', isEqualTo: merchantId)
-        .get();
-
-    int fullyCompletedOrders = 0;
-
-    for (var doc in userDoc.docs) {
-      var selectedDates = doc['selectedDates'];
-
-      if (selectedDates != null) {
-        bool isFullyCompleted = true;
-
-        for (var selectedDate in selectedDates) {
-          var statusHistory = selectedDate['statusHistory'];
-          
-          if (statusHistory != null) {
-            if (statusHistory['status'] != 'Completed') {
-              isFullyCompleted = false;
-              break;
-            }
-          }
-        }
-
-        if (isFullyCompleted) {
-          fullyCompletedOrders++;
-        }
-      }
-    }
-
-    print("Total Fully Completed Orders: $fullyCompletedOrders");
-    return fullyCompletedOrders;
-  }
 }
 
 

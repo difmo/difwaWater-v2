@@ -1,3 +1,4 @@
+import 'package:difwa/controller/admin_controller/order_controller.dart';
 import 'package:difwa/controller/admin_controller/vendors_controller.dart';
 import 'package:difwa/controller/auth_controller.dart';
 import 'package:difwa/models/stores_models/store_new_modal.dart';
@@ -9,7 +10,6 @@ import 'package:difwa/widgets/logout_popup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 class SupplierProfileScreen extends StatefulWidget {
   const SupplierProfileScreen({super.key});
@@ -21,10 +21,18 @@ class SupplierProfileScreen extends StatefulWidget {
 class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
   final AuthController _userData = Get.put(AuthController());
   final VendorsController controller = Get.put(VendorsController());
+  final OrdersController _ordersController = Get.put(OrdersController());
   UserDetailsModel? usersData;
   VendorModal? vendorData;
   bool notificationsEnabled = true;
-
+  int totalOrders = 0;
+  int pendingOrders = 0;
+  int completedOrders = 0;
+  int preparingOrders = 0;
+  int shippedOrders = 0;
+  int overallTotalOrders = 0;
+  int overallPendingOrders = 0;
+  int overallCompletedOrders = 0;
 
 
   @override
@@ -32,6 +40,18 @@ class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
     super.initState();
     _fetchUserData();
     _fetchVendorData();
+     _ordersController.fetchTotalTodayOrders().then((ordersCounts) {
+      setState(() {
+        totalOrders = ordersCounts['totalOrders']!;
+        pendingOrders = ordersCounts['pendingOrders']!;
+        completedOrders = ordersCounts['completedOrders']!;
+        preparingOrders = ordersCounts['preparingOrders']!;
+        shippedOrders = ordersCounts['shippedOrders']!;
+        overallTotalOrders = ordersCounts['overallTotalOrders']!;
+        overallPendingOrders = ordersCounts['overallPendingOrders']!;
+        overallCompletedOrders = ordersCounts['overallCompletedOrders']!;
+      });
+    });
   }
 
   void _fetchUserData() async {
@@ -102,12 +122,18 @@ class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
                             ),
                           ),
                           Text(
-                            "Premium Water Supplier",
+                            // "Premium Water Supplier",
+                            vendorData != null 
+                                ?vendorData!.merchantId
+                                : "Loading...",
                             style:
                                 TextStyle(color: Colors.white70, fontSize: 14),
                           ),
                           Text(
-                            "Serving fresh water since 2018",
+                            // "Serving fresh water since 2018",
+                            vendorData != null 
+                                ?vendorData!.businessAddress
+                                : "Loading...",
                             style:
                                 TextStyle(color: Colors.white60, fontSize: 12),
                           ),
@@ -198,7 +224,7 @@ class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
                         ),
                       ],
                     ),
-                    child: const Column(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
@@ -224,7 +250,7 @@ class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             PerformanceMetric(
-                                label: "Deliveries", value: "847"),
+                                label: "Deliveries", value: totalOrders.toString()),
                             PerformanceMetric(label: "Rating", value: "4.9"),
                             PerformanceMetric(label: "Response", value: "98%"),
                           ],

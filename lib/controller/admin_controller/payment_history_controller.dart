@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:difwa/models/stores_models/store_model.dart';
 import 'package:difwa/models/stores_models/store_new_modal.dart';
 import 'package:difwa/models/stores_models/vendor_payment_model.dart';
 import 'package:difwa/models/stores_models/withdraw_request_model.dart';

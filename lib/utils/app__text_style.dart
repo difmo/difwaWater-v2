@@ -40,6 +40,11 @@ class AppTextStyle {
     fontWeight: FontWeight.w500,
     color: ThemeConstants.blackColor,
   );
+  static const TextStyle Text14700 = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w700,
+    color: ThemeConstants.blackColor,
+  );
   static const TextStyle TextRed14700 = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w700,
