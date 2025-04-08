@@ -57,15 +57,15 @@ class _EditPersonaldetailsState extends State<EditPersonaldetails> {
         usersData = user;
 
         nameController.text =
-            usersData!.name != null && usersData!.name.isNotEmpty
+            usersData!.name.isNotEmpty
                 ? usersData!.name.toString()
                 : 'Guest';
         emailController.text =
-            usersData!.email != null && usersData!.email.isNotEmpty
+            usersData!.email.isNotEmpty
                 ? usersData!.email.toString()
                 : 'guest@gmail.com';
         mobileController.text =
-            usersData!.number != null && usersData!.number.isNotEmpty
+            usersData!.number.isNotEmpty
                 ? usersData!.number.toString()
                 : '9999999999';
       });
@@ -174,7 +174,6 @@ class _EditPersonaldetailsState extends State<EditPersonaldetails> {
                                   )
                                 : _buildInitialsAvatar(
                                     usersData != null &&
-                                            usersData!.name != null &&
                                             usersData!.name.isNotEmpty
                                         ? usersData!.name[0].toUpperCase()
                                         : 'G',

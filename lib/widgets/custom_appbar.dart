@@ -1,5 +1,4 @@
 import 'package:difwa/models/user_models/user_details_model.dart';
-import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
