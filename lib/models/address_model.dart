@@ -12,10 +12,11 @@ class Address {
   bool isSelected;
   String userId;
   final String floor;
+  String locationType;
 
   Address({
     required this.docId,
-    required String name,  
+    required String name,
     required this.street,
     required this.city,
     required this.state,
@@ -27,7 +28,8 @@ class Address {
     required this.isSelected,
     required this.userId,
     required this.floor,
-  }) : name = _capitalize(name); 
+    required this.locationType,
+  }) : name = _capitalize(name);
 
   static String _capitalize(String name) {
     if (name.isEmpty) return "";
@@ -49,6 +51,7 @@ class Address {
       'isSelected': isSelected,
       'docId': docId,
       'floor': floor,
+      'locationType': locationType,
     };
   }
 
@@ -67,6 +70,7 @@ class Address {
       isSelected: false,
       isDeleted: false,
       floor: '1st',
+      locationType: 'home',
     );
   }
 
@@ -85,6 +89,7 @@ class Address {
       isSelected: json['isSelected'] ?? false,
       userId: json['userId'] ?? '',
       floor: json['floor'] ?? '',
+      locationType: json['locationType'] ?? '',
     );
   }
 }

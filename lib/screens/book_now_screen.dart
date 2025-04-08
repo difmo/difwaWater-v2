@@ -35,7 +35,6 @@ class _BookNowScreenState extends State<BookNowScreen> {
   double _totalPrice = 0;
   bool _isLoading = true;
   List<Map<String, dynamic>> _bottleItems = [];
-  String locationDetails = "Fetching location...";
 
   final AuthController _userData = Get.put(AuthController());
   UserDetailsModel? usersData;
@@ -44,7 +43,6 @@ class _BookNowScreenState extends State<BookNowScreen> {
     super.initState();
     _fetchUserData();
     fetchBottleItems();
-    fetchLocation();
   }
 
   void _fetchUserData() async {
@@ -64,25 +62,6 @@ class _BookNowScreenState extends State<BookNowScreen> {
       });
       // }
       print("Error fetching user data: $e");
-    }
-  }
-
-  Future<void> fetchLocation() async {
-    Position? position = await LocationHelper.getCurrentLocation();
-    if (position != null) {
-      Map<String, dynamic>? locationData =
-          await LocationHelper.getAddressFromLatLng(position);
-      if (locationData != null) {
-        setState(() {
-          locationDetails =
-              "Address: ${locationData['address']}\n Pincode: ${locationData['pincode']}\n Lat: ${locationData['latitude']}, Lng: ${locationData['longitude']}";
-        });
-        print("locationDetails : $locationDetails");
-      }
-    } else {
-      setState(() {
-        locationDetails = "Location not available.";
-      });
     }
   }
 

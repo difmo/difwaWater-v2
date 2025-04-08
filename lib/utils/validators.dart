@@ -43,14 +43,25 @@ class Validators {
     return null;
   }
 
-  static String? validatestreet(String? value) {
+  static String? validateState(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Required';
+      return 'State is required';
     }
 
-    // Updated regex to allow only letters (a-z, A-Z), numbers (0-9), and spaces
-    if (!RegExp(r'^[A-Za-z0-9\s]+$').hasMatch(value)) {
-      return 'It should contain only letters, numbers, and spaces';
+    return null; // Return null if the value passes validation
+  }
+
+  static String? validateCity(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'City is required';
+    }
+
+    return null; // Return null if the value passes validation
+  }
+
+  static String? validateHouseNumberBuilding(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'House No./Building Name is required';
     }
 
     return null; // Return null if the value passes validation
@@ -70,14 +81,11 @@ class Validators {
     return null;
   }
 
-  String? validateFloor(String? value) {
+  String? validateLandMark(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Floor must be a number';
+      return 'Road name, Area, Landmark is required';
     }
-    final number = int.tryParse(value);
-    if (number == null) {
-      return 'Floor must be a number';
-    }
+
     return null;
   }
 }

@@ -4,12 +4,16 @@ import 'package:difwa/config/app_color.dart';
 import 'package:difwa/controller/address_controller.dart';
 import 'package:difwa/models/address_model.dart';
 import 'package:difwa/utils/app__text_style.dart';
-import 'package:difwa/utils/loader.dart'; // Assuming this is where your custom Loader is defined
+import 'package:difwa/utils/loader.dart';
+import 'package:difwa/utils/location_helper.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/utils/validators.dart';
+import 'package:difwa/widgets/RoleSelector.dart';
 import 'package:difwa/widgets/custom_input_field.dart';
 import 'package:difwa/widgets/subscribe_button_component.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 
 class AddressForm extends StatefulWidget {
   final Address address;
@@ -25,31 +29,27 @@ class AddressForm extends StatefulWidget {
 }
 
 class _AddressFormState extends State<AddressForm> {
-  // Controllers for text fields
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _zipController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
   final TextEditingController _streetController = TextEditingController();
-  final AddressController address = AddressController();
+  final TextEditingController _floorController = TextEditingController();
+
+  final AddressController addressController = AddressController();
+
   bool _isChecked = false;
   bool _isdeleted = false;
-  final bool _isSelected = false; // Checkbox state
+  bool _isSubmitting = false;
+  String selectedLocationType = "home";
+  final bool _isSelected = false;
 
-  Country? selectedCountry; // To store the selected country
+  Country? selectedCountry;
 
-  // Form keys for each section (if you want separate validation for each)
-  final _formKeyName = GlobalKey<FormState>();
-  final _formKeyPhone = GlobalKey<FormState>();
-  final _formKeyAddress = GlobalKey<FormState>();
-  final _formPin = GlobalKey<FormState>();
-  final _formState = GlobalKey<FormState>();
-  final _formCity = GlobalKey<FormState>();
-  final _formfloor = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
-  bool _isSubmitting = false; // State to handle submission progress
+  String locationDetails = "Fetching location...";
 
   @override
   void initState() {
@@ -59,19 +59,16 @@ class _AddressFormState extends State<AddressForm> {
     _zipController.text = widget.address.zip;
     _stateController.text = widget.address.state;
     _cityController.text = widget.address.city;
-    _addressController.text = widget.address.street;
     _streetController.text = widget.address.street;
-
+    _floorController.text = widget.address.floor;
     _isChecked = widget.address.saveAddress;
     _isdeleted = widget.address.isDeleted;
+    selectedLocationType = widget.address.locationType;
   }
 
-// Function to save a new address
   Future<bool> saveAddress() async {
     try {
-      // Assuming _addressController.saveAddress() is returning void,
-      // you need to change it to return a boolean indicating success or failure.
-      await address.saveAddress(
+      await addressController.saveAddress(
         Address(
           name: _nameController.text,
           phone: _phoneController.text,
@@ -79,29 +76,26 @@ class _AddressFormState extends State<AddressForm> {
           state: _stateController.text,
           city: _cityController.text,
           street: _streetController.text,
-          floor: _addressController.text,
+          floor: _floorController.text,
           saveAddress: _isChecked,
-          userId: "", // Dynamically get the userId if necessary
+          userId: "", // Provide actual userId
           isDeleted: _isdeleted,
           isSelected: _isSelected,
           docId: "",
-          country: '', // Empty for a new address
+          locationType: selectedLocationType,
+          country: selectedCountry?.name ?? '',
         ),
       );
-      return true; // Indicate success
+      return true;
     } catch (e) {
-      // If there's an error, log it and return false
       print("Error saving address: $e");
       return false;
     }
   }
 
-// Function to update an existing address
   Future<bool> updateAddress() async {
     try {
-      // Assuming _addressController.updateAddress() is returning void,
-      // you need to change it to return a boolean indicating success or failure.
-      await address.updateAddress(
+      await addressController.updateAddress(
         Address(
           name: _nameController.text,
           phone: _phoneController.text,
@@ -109,20 +103,66 @@ class _AddressFormState extends State<AddressForm> {
           state: _stateController.text,
           city: _cityController.text,
           street: _streetController.text,
-          floor: _addressController.text,
+          floor: _floorController.text,
           saveAddress: _isChecked,
-          userId: "", // Dynamically get the userId if necessary
+          userId: "", // Provide actual userId
           isDeleted: _isdeleted,
           isSelected: _isSelected,
-          docId: "",
-          country: '', // Empty for a new addr
+          docId: widget.address.docId,
+          country: selectedCountry?.name ?? '',
+          locationType: selectedLocationType,
         ),
       );
-      return true; // Indicate success
+      return true;
     } catch (e) {
-      // If there's an error, log it and return false
       print("Error updating address: $e");
       return false;
+    }
+  }
+
+  Future<void> fetchLocation() async {
+    Position? position = await LocationHelper.getCurrentLocation();
+
+    if (position != null) {
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+
+      if (placemarks.isNotEmpty) {
+        final Placemark placemark = placemarks.first;
+
+        setState(() {
+          locationDetails =
+              "Address: ${placemark.street}, ${placemark.subLocality}, ${placemark.locality}, ${placemark.administrativeArea}, ${placemark.postalCode}, ${placemark.country}\n"
+              "Lat: ${position.latitude}, Lng: ${position.longitude}";
+
+          // Now assign to respective controllers
+          _streetController.text = [
+            placemark.subThoroughfare, // House no
+            placemark.thoroughfare, // Street/road name
+            placemark.subLocality, // Area/colony
+            placemark.locality // City
+          ].where((e) => e != null && e.trim().isNotEmpty).join(', ');
+
+          // Put optional/extra info like landmark, floor, etc. into floor controller
+          _floorController.text = [
+            placemark.name, // Landmark
+            placemark.administrativeArea, // State
+            placemark.postalCode, // Zip
+            placemark.country // Country
+          ].where((e) => e != null && e.trim().isNotEmpty).join(', ');
+          _cityController.text = placemark.locality ?? '';
+          _stateController.text = placemark.administrativeArea ?? '';
+          _zipController.text = placemark.postalCode ?? '';
+          _floorController.text =
+              ''; // If you want user input for floor manually
+        });
+      }
+    } else {
+      setState(() {
+        locationDetails = "Location not available.";
+      });
     }
   }
 
@@ -136,153 +176,128 @@ class _AddressFormState extends State<AddressForm> {
       ),
       body: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16, top: 50),
-            child: ListView(
-              children: [
-                Form(
-                  key: _formKeyName,
-                  child: CommonTextField(
+          SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  CommonTextField(
                     controller: _nameController,
                     inputType: InputType.name,
-                    onChanged: (String) {
-                      _formKeyName.currentState!.validate();
-                    },
                     label: 'Full Name',
                     hint: 'Full Name',
                     icon: Icons.person,
                     validator: Validators.validateName,
                   ),
-                ),
-                SizedBox(height: 20),
-                // Phone Number with country code
-                Form(
-                  key: _formKeyPhone,
-                  child: CommonTextField(
+                  SizedBox(height: 20),
+                  CommonTextField(
                     controller: _phoneController,
                     inputType: InputType.phone,
                     label: 'Phone Number',
                     hint: 'Phone Number',
                     icon: Icons.phone,
-                    onChanged: (value) {
-                      _formKeyPhone.currentState!.validate();
-                    },
                     validator: Validators.validatePhone,
                   ),
-                ),
-
-                SizedBox(height: 20),
-
-                // ZIP Code
-                Row(
-                  children: [
-                    Expanded(
-                      child: Form(
-                        key: _formPin,
+                  SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
                         child: CommonTextField(
                           inputType: InputType.pin,
                           controller: _zipController,
-                          onChanged: (value) {
-                            _formPin.currentState!.validate();
-                          },
                           label: 'Pincode',
                           hint: 'Pincode',
                           validator: Validators.validatePin,
                         ),
                       ),
-                    ),
-                    // City
-                    SizedBox(width: 10),
-                    Expanded(
-                        child: Container(
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: AppColors.inputfield),
-                        borderRadius: BorderRadius.circular(8),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: fetchLocation,
+                          child: Container(
+                            padding: EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: AppColors.inputfield),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.location_on,
+                                    color: AppColors.inputfield),
+                                SizedBox(width: 10),
+                                Text("Use my location"),
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
-                      child: Text("Use my location"),
-                    )),
-                  ],
-                ),
-                SizedBox(height: 20),
-
-                // City
-                Row(
-                  children: [
-                    Expanded(
-                      child: // State
-                          Form(
-                        key: _formState,
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
                         child: CommonTextField(
                           inputType: InputType.name,
                           controller: _stateController,
-                          onChanged: (value) {
-                            _formPin.currentState!.validate();
-                          },
                           label: 'State',
                           hint: 'State',
-                          validator: Validators.validatestreet,
+                          validator: Validators.validateState,
                         ),
                       ),
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: Form(
-                        key: _formCity,
+                      SizedBox(width: 10),
+                      Expanded(
                         child: CommonTextField(
                           inputType: InputType.name,
                           controller: _cityController,
-                          onChanged: (value) {
-                            _formCity.currentState!.validate();
-                          },
                           label: 'City',
                           hint: 'City',
-                          validator: Validators.validatestreet,
+                          validator: Validators.validateCity,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20),
-
-                // Street Address
-                Form(
-                  key: _formKeyAddress,
-                  child: CommonTextField(
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  CommonTextField(
                     inputType: InputType.address,
                     controller: _streetController,
-                    onChanged: (value) {
-                      _formKeyAddress.currentState!.validate();
-                    },
-                    label: 'Housse No.,/Building Name',
-                    hint: 'Housse No.,/Building Name',
-                    validator: Validators.validatestreet,
+                    label: 'House No./Building Name',
+                    hint: 'House No./Building Name',
+                    validator: Validators.validateHouseNumberBuilding,
                   ),
-                ),
-                SizedBox(height: 20),
-                // Floor Address
-                Form(
-                  key: _formfloor,
-                  child: CommonTextField(
-                    inputType: InputType.phone,
-                    controller: _streetController,
-                    onChanged: (value) {
-                      _formfloor.currentState!.validate();
-                    },
-                    label: 'Road name, Area, Land Mark',
-                    hint: 'Road name, Area, Land Mark',
-                    validator: Validators().validateFloor,
+                  SizedBox(height: 20),
+                  CommonTextField(
+                    inputType: InputType.address,
+                    controller: _floorController,
+                    label: 'Road name, Area, Landmark',
+                    hint: 'Road name, Area, Landmark',
+                    validator: Validators().validateLandMark,
                   ),
-                ),
-                SizedBox(height: 20),
-
-                SizedBox(height: 20),
-
-                const SizedBox(height: 24),
-
-                Container(
-                  padding: EdgeInsets.all(8),
-                  child: Row(
+                  SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Text(
+                        'Type of Address',
+                        style: AppTextStyle.Text16700.copyWith(
+                          color: AppColors.textBlack.withOpacity(0.5),
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  LocationTypeSelector(
+                    selected: selectedLocationType,
+                    options: ["home", "work"],
+                    onChanged: (val) {
+                      setState(() {
+                        selectedLocationType = val;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 20),
+                  Row(
                     children: [
                       Checkbox(
                         value: _isChecked,
@@ -291,80 +306,52 @@ class _AddressFormState extends State<AddressForm> {
                             _isChecked = value!;
                           });
                         },
-                        activeColor: AppColors.inputfield, // Color when checked
-                        checkColor: AppColors.mywhite, // Color of the checkmark
+                        activeColor: AppColors.inputfield,
+                        checkColor: AppColors.mywhite,
                       ),
-                      Text('Save shipping address'),
+                      Text(
+                        'Save shipping address',
+                        style: AppTextStyle.Text16700.copyWith(
+                          color: AppColors.textBlack.withOpacity(0.5),
+                          fontSize: 14,
+                        ),
+                      ),
                     ],
                   ),
-                ),
-                SizedBox(height: 20),
-
-                Padding(
-                  padding: const EdgeInsets.only(left: 16, right: 16, top: 20),
-                  child: SubscribeButtonComponent(
+                  SizedBox(height: 20),
+                  SubscribeButtonComponent(
                     text: widget.flag != "isEdit"
                         ? 'SAVE ADDRESS'
                         : 'UPDATE ADDRESS',
                     onPressed: () async {
-                      setState(() {
-                        _isSubmitting = true;
-                      });
+                      if (_formKey.currentState!.validate()) {
+                        setState(() {
+                          _isSubmitting = true;
+                        });
 
-                      // Validate all form fields
-                      _formKeyName.currentState!.validate();
-                      _formKeyPhone.currentState!.validate();
-                      _formKeyAddress.currentState!.validate();
-                      _formState.currentState!.validate();
-                      _formPin.currentState!.validate();
-                      _formCity.currentState!.validate();
-                      _formfloor.currentState!.validate();
-
-                      // Check if all form fields are valid
-                      if (_formKeyName.currentState!.validate() &&
-                          _formfloor.currentState!.validate() &&
-                          _formKeyPhone.currentState!.validate() &&
-                          _formKeyAddress.currentState!.validate() &&
-                          _formState.currentState!.validate() &&
-                          _formPin.currentState!.validate() &&
-                          _formCity.currentState!.validate()) {
-                        // Call saveAddress or updateAddress based on flag
-                        bool success;
-                        if (widget.flag == 'isEdit') {
-                          success = await updateAddress();
-                        } else {
-                          success = await saveAddress();
-                        }
-                        // Check if save/update was successful
-                        if (success) {
-                          Navigator.of(context).pop(true);
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text("Failed to save/update address")));
-                        }
+                        bool success = widget.flag != "isEdit"
+                            ? await saveAddress()
+                            : await updateAddress();
 
                         setState(() {
                           _isSubmitting = false;
                         });
+
+                        if (success) {
+                          Navigator.pop(context);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Something went wrong")),
+                          );
+                        }
                       }
                     },
+                    // isLoading: _isSubmitting,
                   ),
-                ),
-
-                SizedBox(height: 20),
-              ],
-            ),
-          ),
-
-          // Full-screen loader
-          if (_isSubmitting)
-            Positioned.fill(
-              child: Container(
-                // ignore: deprecated_member_use
-                color: Colors.black.withOpacity(0), // Semi-transparent overlay
-                child: Center(child: Loader()), // Your custom loader widget
+                ],
               ),
             ),
+          ),
         ],
       ),
     );

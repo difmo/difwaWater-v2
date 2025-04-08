@@ -186,7 +186,8 @@ class AppRoutes {
             phone: "",
             saveAddress: false,
             userId: "",
-            floor: ""),
+            floor: "",
+            locationType: ''),
         flag: "",
       ),
       transition: Transition.fadeIn, // Smooth fade-in for store home screen
