@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:difwa/controller/admin_controller/add_items_controller.dart';
-import 'package:difwa/controller/admin_controller/add_store_controller.dart';
+import 'package:difwa/controller/admin_controller/vendors_controller.dart';
 import 'package:get/get.dart';
 
 class EarningController extends GetxController {
-  final FirebaseController _authController = Get.put(FirebaseController());
-  final AddStoreController _addstoreController = Get.put(AddStoreController());
+  FirebaseController _authController = Get.put(FirebaseController());
+  VendorsController _VendorsController = Get.put(VendorsController());
 
 
   // Future<void> setEarningsStore(double orderPrice)
@@ -69,7 +69,7 @@ class EarningController extends GetxController {
         }
       }
 
-      // await _addstoreController
+      // await _VendorsController
       //     .updateStoreDetails({"earnings": totalEarnings});
 
       return {

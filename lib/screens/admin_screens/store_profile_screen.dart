@@ -1,5 +1,5 @@
 import 'package:difwa/config/app_color.dart';
-import 'package:difwa/controller/admin_controller/add_store_controller.dart';
+import 'package:difwa/controller/admin_controller/vendors_controller.dart';
 import 'package:difwa/controller/auth_controller.dart';
 import 'package:difwa/models/user_models/user_details_model.dart';
 import 'package:difwa/screens/admin_screens/earnings.dart';
@@ -23,7 +23,7 @@ class StoreProfileScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<StoreProfileScreen> {
   final AuthController _userData = Get.put(AuthController());
-  final AddStoreController controller = Get.put(AddStoreController());
+  final VendorsController controller = Get.put(VendorsController());
   UserDetailsModel? usersData;
   bool notificationsEnabled = true;
   bool _isToggled = false;
@@ -70,7 +70,7 @@ class _LoginScreenState extends State<StoreProfileScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       CircleAvatar(
-                        radius: 40,
+                        radius: 30,
                         backgroundColor: AppColors.inputfield,
                         backgroundImage: usersData?.profileImage != null &&
                                 usersData!.profileImage!.isNotEmpty

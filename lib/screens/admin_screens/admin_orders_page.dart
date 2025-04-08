@@ -17,15 +17,14 @@ class _AdminPanelScreenState extends State<AdminPanelScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final FirebaseController _authController = Get.put(FirebaseController());
-  final AuthController _userData = Get.put(AuthController());
   String merchantIdd = "";
+  String userId = "";
   UserDetailsModel? usersData;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _fetchUserData();
     print("hello");
     _authController.fetchMerchantId("").then((merchantId) {
       print(merchantId);
@@ -36,32 +35,13 @@ class _AdminPanelScreenState extends State<AdminPanelScreen>
     });
   }
 
-  void _fetchUserData() async {
-    try {
-      UserDetailsModel user = await _userData.fetchUserData();
-      print(user.name);
-      print("order pin = ");
-      print(user.orderpin);
-      setState(() {
-        usersData = user;
-      });
-    } catch (e) {
-      print("Error fetching user data: $e");
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ThemeConstants.whiteColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        title: const Text(
-          'Admin Panel',
-          style: TextStyle(color: Colors.blue),
-        ),
+        toolbarHeight: 0,
+       backgroundColor: Colors.white,
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.blue,
@@ -80,73 +60,48 @@ class _AdminPanelScreenState extends State<AdminPanelScreen>
           OrderListPage(
             status: 'pending',
             merchantId: merchantIdd,
-            userDetails: usersData ??
-                UserDetailsModel(
-                    docId: '',
-                    uid: '',
-                    name: '',
-                    number: '',
-                    email: '',
-                    floor: '',
-                    role: '',
-                    walletBalance: 0.0,
-                    orderpin: ''), // Provide a default value or handle null
           ),
           OrderListPage(
             status: 'completed',
             merchantId: merchantIdd,
-            userDetails: usersData ??
-                UserDetailsModel(
-                    docId: '',
-                    uid: '',
-                    name: '',
-                    number: '',
-                    email: '',
-                    floor: '',
-                    role: '',
-                    walletBalance: 0.0,
-                    orderpin: ''), // Provide a default value or handle null
+            // Provide a default value or handle null
           ),
           OrderListPage(
             status: 'cancelled',
             merchantId: merchantIdd,
-            userDetails: usersData ??
-                UserDetailsModel(
-                    docId: '',
-                    uid: '',
-                    name: '',
-                    number: '',
-                    email: '',
-                    floor: '',
-                    role: '',
-                    walletBalance: 0.0,
-                    orderpin: ''), // Provide a default value or handle null
-          ),
+          )
         ],
       ),
     );
   }
 }
 
-class OrderListPage extends StatelessWidget {
+class OrderListPage extends StatefulWidget {
   final String status;
   final String merchantId;
-  final UserDetailsModel userDetails;
 
-  const OrderListPage(
-      {super.key,
-      required this.status,
-      required this.merchantId,
-      required this.userDetails});
+  const OrderListPage({
+    super.key,
+    required this.status,
+    required this.merchantId,
+  });
+
+  @override
+  _OrderListPageState createState() => _OrderListPageState();
+}
+
+class _OrderListPageState extends State<OrderListPage> {
+  late UserDetailsModel userDetails;
+  DateTime currentDate = DateTime.now();
+  Map<String, UserDetailsModel> userCache = {};  // Cache for fetched user details
 
   @override
   Widget build(BuildContext context) {
-    // DateTime currentDate = DateTime.now();
-    DateTime currentDate = DateTime(2025, 4, 18);
+    DateTime currentDate = DateTime.now();
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('difwa-orders')
-          .where('merchantId', isEqualTo: merchantId)
+          .where('merchantId', isEqualTo: widget.merchantId)
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -158,12 +113,11 @@ class OrderListPage extends StatelessWidget {
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return Center(
             child: Text(
-              'No $status orders found.',
+              'No ${widget.status} orders found.',
               style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
           );
         }
-
         final orders = snapshot.data!.docs;
 
         return ListView.builder(
@@ -172,6 +126,13 @@ class OrderListPage extends StatelessWidget {
           itemBuilder: (context, index) {
             final order = orders[index].data() as Map<String, dynamic>;
             final orderId = orders[index].id;
+
+            String userId = order['userId'];
+
+            // Only fetch user details if not already in cache
+            if (!userCache.containsKey(userId)) {
+              fetchUserDetails(userId);
+            }
 
             return Card(
               color: ThemeConstants.whiteColor,
@@ -189,8 +150,8 @@ class OrderListPage extends StatelessWidget {
                     ExpansionTile(
                       title: const Text("Selected Dates"),
                       children: order['selectedDates']
-                          .where((dateData) => status == 'completed'
-                              ? dateData['status'] == 'completed'
+                          .where((dateData) => widget.status == 'Completed'
+                              ? dateData['status'] == 'Completed'
                               : true)
                           .map<Widget>((dateData) {
                         DateTime date = DateTime.parse(dateData['date']);
@@ -256,7 +217,7 @@ class OrderListPage extends StatelessWidget {
                     }
                   },
                   itemBuilder: (context) => [
-                    if (status != 'cancelled')
+                    if (widget.status != 'cancelled')
                       const PopupMenuItem<String>(
                         value: 'cancel',
                         child: Text('Cancel Order'),
@@ -271,11 +232,34 @@ class OrderListPage extends StatelessWidget {
     );
   }
 
+  void fetchUserDetails(String userId) async {
+ 
+    AuthController _authController = Get.put(AuthController());
+    UserDetailsModel userDetails =
+        await _authController.fetchUserDatabypassUserId(userId);
+    print("User data for pin:");
+    print(userDetails.orderpin);
+
+    setState(() {
+      this.userDetails = userDetails;
+      userCache[userId] = userDetails;  // Cache the user details
+    });
+
+       if (userCache.containsKey(userId)) {
+      setState(() {
+        userDetails = userCache[userId]!;
+      });
+      return;
+    }
+
+  }
+
   bool _isSameDay(DateTime date1, DateTime date2) {
     return date1.year == date2.year &&
         date1.month == date2.month &&
         date1.day == date2.day;
   }
+
 
   Future<bool> _showConfirmationDialog(
       BuildContext context, String title, String message) async {
@@ -340,11 +324,12 @@ class OrderListPage extends StatelessWidget {
       String date,
       String newStatus,
       String dailyOrderId,
-      dynamic usersData) async {
+      UserDetailsModel usersData) async {
     try {
       String pin;
       if (newStatus == "Completed") {
         print("PRI :: $newStatus");
+        print("PIN :: ${usersData.orderpin}");
         pin = await _showPinDialog(context);
         if (usersData.orderpin == pin) {
           print("PRI3 :: $pin");
