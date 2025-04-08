@@ -44,6 +44,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     _addressController = Get.put(AddressController());
     checkoutController.fetchWalletBalance();
     // _getSelectedAddress();
+    setState(() {
+      addresss =
+          _addressController.getSelectedAddress() as Address?;
+    });
   }
 
   @override
@@ -122,7 +126,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               decoration: BoxDecoration(
                 color: ThemeConstants.whiteColor,
                 border:
-                    Border.all(color: ThemeConstants.secondaryLight, width: 1),
+                    Border.all(color: ThemeConstants.primaryColor, width: 1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Column(
@@ -298,6 +302,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     print("selected address");
 
                     await checkoutController.processPayment(
+                        addresss,
+                        // widget.totalPrice,
                         widget.orderData,
                         widget.orderData['price'],
                         widget.totalDays,
@@ -308,7 +314,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         context);
 
                     await _walletController2.saveWalletHistory(
-                        widget.orderData['price'],
+                        widget.totalPrice,
                         "Debited",
                         Generators.generatePaymentId(),
                         "Success",

@@ -214,6 +214,31 @@ class AuthController extends GetxController {
         walletBalance: 0.0,
         orderpin: '');
   }
+  Future<UserDetailsModel> fetchUserDatabypassUserId(String userId) async {
+    if (userId != null) {
+      DocumentSnapshot userDoc =
+          await _firestore.collection('difwa-users').doc(userId).get();
+      if (userDoc.exists) {
+        print("User data: ${userDoc.data()}");
+
+        var userDetails =
+            UserDetailsModel.fromJson(userDoc.data() as Map<String, dynamic>);
+        print("UserDetailsModel: $userDetails");
+
+        return userDetails;
+      }
+    }
+    return UserDetailsModel(
+        docId: "",
+        uid: "",
+        name: "",
+        number: "",
+        email: "",
+        floor: "",
+        role: "",
+        walletBalance: 0.0,
+        orderpin: '');
+  }
 
 ////////////////////////// HANDLE ROLE CHANGED ///////////////////
 

@@ -1,6 +1,6 @@
-import 'package:difwa/config/app_color.dart';
-import 'package:difwa/config/app_styles.dart';
 import 'package:difwa/routes/app_routes.dart';
+import 'package:difwa/utils/app__text_style.dart';
+import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -18,14 +18,14 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
 
   List<Widget> _buildPageIndicator() {
     return List.generate(
-      3, // Number of pages
+      4, // Number of pages
       (index) => AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         margin: const EdgeInsets.symmetric(horizontal: 4.0),
         height: 10.0,
         width: _currentIndex == index ? 20.0 : 10.0,
         decoration: BoxDecoration(
-          color: _currentIndex == index ? AppColors.primary : Colors.grey,
+          color: _currentIndex == index ? ThemeConstants.primaryColor : Colors.grey,
           borderRadius: BorderRadius.circular(10.0),
         ),
       ),
@@ -37,7 +37,7 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
       _pageController.nextPage(
           duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
     } else {
-      Get.toNamed(AppRoutes.createstore);
+      Get.toNamed(AppRoutes.vendoform);
     }
   }
 
@@ -56,22 +56,31 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
             },
             children: [
               _buildOnboardingPage(
-                middleImage: 'assets/images/stonb22.svg',
+                middleImage: 'assets/onboardingimg/onboarding0.svg',
                 newHeading: 'Streamlined Order Management',
                 newDescription:
-                    'Welcome to Difwa! Simplify your water delivery business today.',
+                    'Easily track, process, and manage customer orders in real-time. No more missed deliveries or errors—stay on top of your business effortlessly.',
                 titleColor: Colors.white,
                 showButton: false,
               ),
               _buildOnboardingPage(
-                middleImage: 'assets/images/stonb22.svg',
+                middleImage: 'assets/onboardingimg/onboarding1.svg',
+                newHeading: 'Streamlined Order Management',
+                newDescription:
+                    'Easily track, process, and manage customer orders in real-time. No more missed deliveries or errors—stay on top of your business effortlessly.',
+                titleColor: Colors.white,
+                showButton: false,
+              ),
+              _buildOnboardingPage(
+                middleImage: 'assets/onboardingimg/onboarding2.svg',
                 newHeading: 'Farm to Table!',
-                newDescription: 'Experience the freshness of local produce.',
+                newDescription:
+                    'Easily track, process, and manage customer orders in real-time. No more missed deliveries or errors—stay on top of your business effortlessly.',
                 titleColor: Colors.black,
                 showButton: false,
               ),
               _buildOnboardingPage(
-                middleImage: 'assets/images/stonb33.svg',
+                middleImage: 'assets/onboardingimg/onboarding3.svg',
                 newHeading: 'Join Our Community!',
                 newDescription:
                     'Connect with fellow food lovers and share recipes.',
@@ -112,42 +121,60 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
       child: Stack(
         children: [
           // Background image
-       
+
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-               
-                const SizedBox(height: 130),
-                SvgPicture.asset(
-                  middleImage,
+                Container(
+                  width: 300,
+                  height: 300,
+                  padding: const EdgeInsets.all(50),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(200),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 5,
+                        blurRadius: 7,
+                        offset:
+                            const Offset(0, 3), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                  child: SvgPicture.asset(
+                    middleImage,
+                  ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 130),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text(newHeading, style: AppStyle.heading1),
+                  padding:  EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text(newHeading, style: AppTextStyle.Text18700.copyWith(color: ThemeConstants.primaryColor)),
                 ),
                 // New Description below the new heading
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Text(newDescription,
-                      textAlign: TextAlign.center, style: AppStyle.greyText18),
+                      textAlign: TextAlign.center, style:AppTextStyle.Text14400),
                 ),
                 const SizedBox(height: 30),
                 // Button on the last page
                 if (showButton)
+
                   ElevatedButton(
                     style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(Colors.red),
-                      foregroundColor:
-                          WidgetStateProperty.all(Colors.white), // Set text color
+                      backgroundColor: WidgetStateProperty.all(ThemeConstants.primaryColor),
+                      foregroundColor: WidgetStateProperty.all(
+                          Colors.white), // Set text color
                     ),
                     onPressed: onNextPressed, // Call the passed function
                     child: const Text(
                       "Create Store",
                       style: TextStyle(
                           color: Colors.white,
-                          fontWeight: FontWeight.bold), // Ensure text color is red
+                          fontWeight:
+                              FontWeight.bold), // Ensure text color is red
                     ),
                   ),
 

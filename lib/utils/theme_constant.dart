@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ThemeConstants {
-  static const Color primaryColor = Color.fromARGB(255, 17, 191, 245);
+  static const Color primaryColor = Color(0xFF4BBEFF);
   static const Color primaryColorNew =    Color(0xFF02739C);
-  static const Color secondaryColor = Color(0xFFFFB53B);
-  static const Color secondarySkyBlue = Color(0xFF2EB7E2);
-  static const Color secondaryLight = Color(0xFFA8DDE3);
-  static const Color secondaryLight2 = Color.fromARGB(255, 182, 244, 250);
 
   static const Color borderColor = Color(0xFFD9D9D9);
 
@@ -18,6 +14,7 @@ class ThemeConstants {
   static const Color red = Colors.red;
   static const Color green = Colors.green;
   static const Color grey = Colors.grey;
+  static const Color softgrey = Color(0xFFF9FAFB);
 
   static const String primaryFont = 'Poppins';
   static const double defaultPadding = 16.0;

@@ -55,6 +55,8 @@ dependencies:
   fl_chart: ^0.70.2
   flutter_native_splash: ^2.4.4
   font_awesome_flutter: ^10.8.0
+  shared_preferences: ^2.5.3
+  video_player: ^2.9.5
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -132,4 +134,9 @@ flutter:
     - assets/imagebg.png
     - assets/images/onboard1.svg
     - assets/success.json
+    - assets/images/stonb22.svg
+    - assets/onboardingimg/onboarding1.svg
+    - assets/onboardingimg/onboarding2.svg
+    - assets/onboardingimg/onboarding3.svg
+    - assets/onboardingimg/onboarding0.svg
 

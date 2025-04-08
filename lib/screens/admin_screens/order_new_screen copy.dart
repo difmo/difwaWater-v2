@@ -1,54 +1,44 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:difwa/controller/admin_controller/add_items_controller.dart';
+import 'package:difwa/controller/admin_controller/order_controller.dart';
 import 'package:difwa/controller/auth_controller.dart';
 import 'package:difwa/models/user_models/user_details_model.dart';
+import 'package:difwa/utils/app__text_style.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
-class AdminPanelScreen extends StatefulWidget {
-  const AdminPanelScreen({super.key});
+class OrdersScreen extends StatefulWidget {
+  const OrdersScreen({super.key});
 
   @override
-  State<AdminPanelScreen> createState() => _AdminPanelScreenState();
+  State<OrdersScreen> createState() => _OrdersScreenState();
 }
 
-class _AdminPanelScreenState extends State<AdminPanelScreen>
+class _OrdersScreenState extends State<OrdersScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final FirebaseController _authController = Get.put(FirebaseController());
-  final AuthController _userData = Get.put(AuthController());
+  final OrdersController _ordersController = Get.put(OrdersController());
+
   String merchantIdd = "";
+  String userId = "";
   UserDetailsModel? usersData;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _fetchUserData();
+    _ordersController.fetchOrdersWhereAllCompleted();
     print("hello");
     _authController.fetchMerchantId("").then((merchantId) {
       print(merchantId);
       setState(() {
         merchantIdd = merchantId!;
       });
-      print("hello");
+      print("133");
     });
-  }
-
-  void _fetchUserData() async {
-    try {
-      UserDetailsModel user = await _userData.fetchUserData();
-      print(user.name);
-      print("order pin = ");
-      print(user.orderpin);
-      setState(() {
-        usersData = user;
-      });
-      print(usersData?.orderpin);
-    } catch (e) {
-      print("Error fetching user data: $e");
-    }
   }
 
   @override
@@ -56,22 +46,17 @@ class _AdminPanelScreenState extends State<AdminPanelScreen>
     return Scaffold(
       backgroundColor: ThemeConstants.whiteColor,
       appBar: AppBar(
+        toolbarHeight: 0,
         backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        title: const Text(
-          'Admin Panel',
-          style: TextStyle(color: Colors.blue),
-        ),
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.blue,
           labelColor: Colors.blue,
           unselectedLabelColor: Colors.grey,
-          tabs: const [
-            Tab(icon: Icon(Icons.pending), text: 'Pending'),
-            Tab(icon: Icon(Icons.check_box), text: 'Completed'),
-            Tab(icon: Icon(Icons.cancel), text: 'Cancelled'),
+          tabs: [
+            buildTab("Pending", 12, Icons.access_time),
+            buildTab("Completed", 45, Icons.check),
+            buildTab("Cancelled", 3, Icons.close),
           ],
         ),
       ),
@@ -81,43 +66,72 @@ class _AdminPanelScreenState extends State<AdminPanelScreen>
           OrderListPage(
             status: 'pending',
             merchantId: merchantIdd,
-            userDetails: usersData!,
           ),
           OrderListPage(
-            status: 'completed',
+            status: 'Completed',
             merchantId: merchantIdd,
-            userDetails: usersData!,
+            // Provide a default value or handle null
           ),
           OrderListPage(
             status: 'cancelled',
             merchantId: merchantIdd,
-            userDetails: usersData!,
-          ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget buildTab(String label, int count, IconData? icon) {
+    return Tab(
+      child: Row(
+        children: [
+          if (icon != null) const SizedBox(width: 4),
+          Text(label),
+          const SizedBox(width: 4),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              count.toString(),
+              style: const TextStyle(fontSize: 12),
+            ),
+          )
         ],
       ),
     );
   }
 }
 
-class OrderListPage extends StatelessWidget {
+class OrderListPage extends StatefulWidget {
   final String status;
   final String merchantId;
-  final UserDetailsModel userDetails;
 
-  const OrderListPage(
-      {super.key,
-      required this.status,
-      required this.merchantId,
-      required this.userDetails});
+  const OrderListPage({
+    super.key,
+    required this.status,
+    required this.merchantId,
+  });
+
+  @override
+  _OrderListPageState createState() => _OrderListPageState();
+}
+
+class _OrderListPageState extends State<OrderListPage> {
+  late UserDetailsModel userDetails;
+  // DateTime currentDate = DateTime.now();
+  DateTime currentDate = DateTime(2025, 4, 8);
+  Map<String, UserDetailsModel> userCache =
+      {}; // Cache for fetched user details
 
   @override
   Widget build(BuildContext context) {
-    // DateTime currentDate = DateTime.now();
-    DateTime currentDate = DateTime(2025, 4, 18);
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('difwa-orders')
-          .where('merchantId', isEqualTo: merchantId)
+          .where('merchantId', isEqualTo: widget.merchantId)
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -129,12 +143,11 @@ class OrderListPage extends StatelessWidget {
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return Center(
             child: Text(
-              'No $status orders found.',
+              'No ${widget.status} orders found.',
               style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
           );
         }
-
         final orders = snapshot.data!.docs;
 
         return ListView.builder(
@@ -144,33 +157,106 @@ class OrderListPage extends StatelessWidget {
             final order = orders[index].data() as Map<String, dynamic>;
             final orderId = orders[index].id;
 
+            String userId = order['userId'];
+
+            if (!userCache.containsKey(userId)) {
+              fetchUserDetails(userId);
+            }
+   
             return Card(
               color: ThemeConstants.whiteColor,
               margin: const EdgeInsets.symmetric(vertical: 8.0),
-              child: ListTile(
-                title: Text('Order ID: $orderId'),
-                subtitle: Column(
+              child: Container(
+                // title: Text('Order ID: $orderId'),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Total Price: ₹ ${order['totalPrice']}'),
-                    Text(
-                      'Order Date: ${DateTime.fromMillisecondsSinceEpoch(order['timestamp'].millisecondsSinceEpoch)}',
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Order : #$orderId",
+                          style: AppTextStyle.Text14700,
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFD6E9FF),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            '₹ ${order['totalPrice'].toString()}',
+                            style: const TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.start, // Adjust alignment as needed
+                      children: [
+                        Text(
+                          style: AppTextStyle.Text14400.copyWith(
+                              color: ThemeConstants.grey),
+                          '${DateFormat('MMMM d, yyyy').format(DateTime.fromMillisecondsSinceEpoch(order['timestamp'].millisecondsSinceEpoch).toLocal())} ',
+                        ),
+                        Text(
+                          style: AppTextStyle.Text14400.copyWith(
+                              color: ThemeConstants.grey),
+                          '${DateFormat('HH:mm').format(DateTime.fromMillisecondsSinceEpoch(order['timestamp'].millisecondsSinceEpoch).toLocal())}',
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 8),
                     ExpansionTile(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      tilePadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.person),
                       title: const Text("Selected Dates"),
                       children: order['selectedDates']
-                          .where((dateData) => status == 'completed'
-                              ? dateData['status'] == 'completed'
+                          .where((dateData) => widget.status == 'Completed'
+                              ? dateData['status'] == 'Completed'
                               : true)
                           .map<Widget>((dateData) {
-                        DateTime date = DateTime.parse(dateData['date']);
+                        // DateTime date = DateTime.parse(dateData['date']);
+                        // DateTime date = DateTime(2025, 4, 8);
                         String dateStatus = dateData['status'] ?? 'pending';
-                        bool isCurrentDate = _isSameDay(date, currentDate);
+                        bool isCurrentDate = _isSameDay(
+                            DateTime.parse(dateData['date']), currentDate);
+
+                        // print("Current date")
+                        // print("pritam");
+                        // print(dateData['status']);
+
+              
+
+
+                        // print(dateData['date']);
                         return ListTile(
-                          title: Text('Date: ${date.toLocal()}'),
+                          // textColor: Colors.red,
+                          title: Text(
+                            '${DateFormat('MMMM d, yyyy').format(DateTime.parse(dateData['date']))} ',
+                            // '${DateFormat('HH:mm').format(DateTime.parse(dateData['date']))}',
+
+                            style: TextStyle(
+                                color: _isSameDay(
+                                        DateTime.parse(dateData['date']),
+                                        currentDate)
+                                    ? Colors.green
+                                    : Colors.grey),
+                          ),
                           subtitle: Text('Status: $dateStatus'),
+
                           trailing: PopupMenuButton<String>(
+                            color: Colors.white,
                             onSelected: isCurrentDate
                                 ? (value) async {
                                     print("daily order id");
@@ -185,29 +271,33 @@ class OrderListPage extends StatelessWidget {
                                   }
                                 : null,
                             itemBuilder: (context) => [
-                              if (dateStatus == 'pending' &&
-                                  dateStatus != "Cancel")
-                                const PopupMenuItem<String>(
-                                  value: 'Preparing',
-                                  child: Text('Preparing'),
-                                ),
-                              if (dateStatus == 'Preparing' &&
-                                  dateStatus != "Cancel")
-                                const PopupMenuItem<String>(
-                                  value: 'Shipped',
-                                  child: Text('Shipped'),
-                                ),
-                              if (dateStatus == 'Shipped' &&
-                                  dateStatus != "Cancel")
-                                const PopupMenuItem<String>(
-                                  value: 'Completed',
-                                  child: Text('Completed'),
-                                ),
-                              if (dateStatus == 'pending')
-                                const PopupMenuItem<String>(
-                                  value: 'Cancel',
-                                  child: Text('Cancel'),
-                                ),
+                              if (isCurrentDate)
+                                if (dateStatus == 'pending' &&
+                                    dateStatus != "Cancel")
+                                  const PopupMenuItem<String>(
+                                    value: 'Preparing',
+                                    child: Text('Preparing'),
+                                  ),
+                              if (isCurrentDate)
+                                if (dateStatus == 'Preparing' &&
+                                    dateStatus != "Cancel")
+                                  const PopupMenuItem<String>(
+                                    value: 'Shipped',
+                                    child: Text('Shipped'),
+                                  ),
+                              if (isCurrentDate)
+                                if (dateStatus == 'Shipped' &&
+                                    dateStatus != "Cancel")
+                                  const PopupMenuItem<String>(
+                                    value: 'Completed',
+                                    child: Text('Completed'),
+                                  ),
+                              if (isCurrentDate)
+                                if (dateStatus == 'pending')
+                                  const PopupMenuItem<String>(
+                                    value: 'Cancel',
+                                    child: Text('Cancel'),
+                                  ),
                             ],
                           ),
                           enabled:
@@ -217,29 +307,32 @@ class OrderListPage extends StatelessWidget {
                     ),
                   ],
                 ),
-                trailing: PopupMenuButton<String>(
-                  onSelected: (value) async {
-                    if (value == 'cancel') {
-                      await cancelOrder(orderId);
-                    } else {
-                      await changeOrderStatus(
-                          context, orderId, value); // Pass context here
-                    }
-                  },
-                  itemBuilder: (context) => [
-                    if (status != 'cancelled')
-                      const PopupMenuItem<String>(
-                        value: 'cancel',
-                        child: Text('Cancel Order'),
-                      ),
-                  ],
-                ),
               ),
             );
           },
         );
       },
     );
+  }
+
+  void fetchUserDetails(String userId) async {
+    AuthController _authController = Get.put(AuthController());
+    UserDetailsModel userDetails =
+        await _authController.fetchUserDatabypassUserId(userId);
+    print("User data for pin:");
+    print(userDetails.orderpin);
+
+    setState(() {
+      this.userDetails = userDetails;
+      userCache[userId] = userDetails; // Cache the user details
+    });
+
+    if (userCache.containsKey(userId)) {
+      setState(() {
+        userDetails = userCache[userId]!;
+      });
+      return;
+    }
   }
 
   bool _isSameDay(DateTime date1, DateTime date2) {
@@ -305,17 +398,23 @@ class OrderListPage extends StatelessWidget {
     }
   }
 
+  bool _isOrderCompleted(List statusHistory) {
+    // Check if all statuses in statusHistory are 'completed'
+    return statusHistory.every((status) => status['status'] == 'completed');
+  }
+
   Future<void> changeDateStatus(
       BuildContext context,
       String orderId,
       String date,
       String newStatus,
       String dailyOrderId,
-      dynamic usersData) async {
+      UserDetailsModel usersData) async {
     try {
       String pin;
       if (newStatus == "Completed") {
         print("PRI :: $newStatus");
+        print("PIN :: ${usersData.orderpin}");
         pin = await _showPinDialog(context);
         if (usersData.orderpin == pin) {
           print("PRI3 :: $pin");

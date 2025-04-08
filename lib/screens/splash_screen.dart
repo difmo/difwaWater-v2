@@ -76,6 +76,8 @@ class _SplashScreenState extends State<SplashScreen>
         } else {
           Get.offNamed(AppRoutes.signUp);
         }
+      } else {
+        Get.offNamed(AppRoutes.signUp);
       }
     } catch (e) {
       Get.snackbar('Error', 'Failed to retrieve user role');

@@ -110,7 +110,7 @@ class AppTTextStyle {
     textStyle: const TextStyle(
       fontSize: 12,
       fontWeight: FontWeight.w700,
-      color: ThemeConstants.secondarySkyBlue,
+      color: ThemeConstants.primaryColor,
     ),
   );
   static TextStyle simpleText14300 = GoogleFonts.poppins(
@@ -410,7 +410,7 @@ class AppTTextStyle {
   static TextStyle largheadinText = GoogleFonts.poppins(
     fontSize: 28,
     fontWeight: FontWeight.w600,
-    color: ThemeConstants.secondaryColor,
+    color: ThemeConstants.primaryColor,
   );
 
   static TextStyle headingText = GoogleFonts.poppins(
