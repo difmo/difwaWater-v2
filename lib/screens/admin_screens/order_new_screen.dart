@@ -30,7 +30,7 @@ class _OrdersScreenState extends State<OrdersScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    // _ordersController.fetchOrdersWithAllStatusCompleted();
+    _ordersController.fetchOrdersWhereAllCompleted();
     print("hello");
     _authController.fetchMerchantId("").then((merchantId) {
       print(merchantId);
@@ -68,7 +68,7 @@ class _OrdersScreenState extends State<OrdersScreen>
             merchantId: merchantIdd,
           ),
           OrderListPage(
-            status: 'completed',
+            status: 'Completed',
             merchantId: merchantIdd,
             // Provide a default value or handle null
           ),
@@ -162,11 +162,7 @@ class _OrderListPageState extends State<OrderListPage> {
             if (!userCache.containsKey(userId)) {
               fetchUserDetails(userId);
             }
-            // bool isOrderCompleted = _isOrderCompleted(order['statusHistory']);
-            // print(isOrderCompleted)
-            // if (widget.status == 'pending' && isOrderCompleted) {
-            //   return Container(); // Skip this order
-            // }
+   
             return Card(
               color: ThemeConstants.whiteColor,
               margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -236,7 +232,14 @@ class _OrderListPageState extends State<OrderListPage> {
                         bool isCurrentDate = _isSameDay(
                             DateTime.parse(dateData['date']), currentDate);
 
-                        print(dateData['date']);
+                        // print("Current date")
+                        // print("pritam");
+                        // print(dateData['status']);
+
+              
+
+
+                        // print(dateData['date']);
                         return ListTile(
                           // textColor: Colors.red,
                           title: Text(
@@ -281,7 +284,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                   const PopupMenuItem<String>(
                                     value: 'Shipped',
                                     child: Text('Shipped'),
-                                  ),
+                                  ),  
                               if (isCurrentDate)
                                 if (dateStatus == 'Shipped' &&
                                     dateStatus != "Cancel")
