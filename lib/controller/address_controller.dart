@@ -8,10 +8,8 @@ class AddressController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   RxList<Address> addressList = <Address>[].obs;
 
-  // Variable to store the selected address
   Rx<Address?> selectedAddress = Rx<Address?>(null);
 
-  // Function to select an address
   void selectAddress(String docId) async {
     try {
       final user = _auth.currentUser;
@@ -20,20 +18,17 @@ class AddressController extends GetxController {
         return;
       }
 
-      // Get the reference to the user's address collection
       CollectionReference addressCollection = FirebaseFirestore.instance
           .collection('difwa-users')
           .doc(user.uid)
           .collection('User-address');
 
-      // First, find the address that is currently selected
       QuerySnapshot selectedAddressSnapshot = await addressCollection
           .where('isSelected', isEqualTo: true)
-          .limit(1) // Limit to 1 result, as only one address can be selected
+          .limit(1) 
           .get();
 
       if (selectedAddressSnapshot.docs.isNotEmpty) {
-        // If there's an address already selected, update it to set isSelected = false
         DocumentSnapshot selectedAddressDoc =
             selectedAddressSnapshot.docs.first;
         await selectedAddressDoc.reference.update({
@@ -42,7 +37,6 @@ class AddressController extends GetxController {
         print("Previously selected address deselected.");
       }
 
-      // Now, update the selected address to true
       DocumentReference addressDocRef = addressCollection.doc(docId);
       DocumentSnapshot addressDocSnapshot = await addressDocRef.get();
 
@@ -51,7 +45,6 @@ class AddressController extends GetxController {
           'isSelected': true,
         });
         print("Address selection updated successfully!");
-        // Set the selected address in the Rx variable
         selectedAddress.value =
             Address.fromJson(addressDocSnapshot.data() as Map<String, dynamic>);
         print("printing seelcted address");

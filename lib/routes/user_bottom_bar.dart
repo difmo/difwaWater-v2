@@ -1,5 +1,4 @@
 import 'package:difwa/config/app_color.dart';
-import 'package:difwa/screens/admin_screens/water_vendor_form.dart';
 import 'package:difwa/screens/book_now_screen.dart';
 import 'package:difwa/screens/ordershistory_screen.dart';
 import 'package:difwa/screens/profile_screen.dart';
@@ -57,7 +56,7 @@ class _HomeScreenState extends State<BottomUserHomePage> {
     return Scaffold(
       backgroundColor: ThemeConstants.whiteColor,
       body: _screens[
-          _selectedIndex], // Display the screen based on selected index
+          _selectedIndex], 
       bottomNavigationBar: Container(
         margin: const EdgeInsets.only(bottom: 0),
         padding: const EdgeInsets.only(top: 5.0),
@@ -65,16 +64,16 @@ class _HomeScreenState extends State<BottomUserHomePage> {
           boxShadow: const [
             BoxShadow(
               color: AppColors
-                  .inputfield, // Assuming AppColors.inputfield is a Color
-              blurRadius: 3.0, // Adjust blur radius as needed
-              spreadRadius: 0.5, // Adjust spread radius if needed
-              offset: Offset(0, 4), // Adjust the offset for shadow direction
+                  .inputfield, 
+              blurRadius: 3.0, 
+              spreadRadius: 0.5,
+              offset: Offset(0, 4), 
             ),
           ],
           borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(0), // No rounded corners on the top
+            top: Radius.circular(0), 
             bottom:
-                Radius.circular(8), // Optional: Adjust bottom corners' radius
+                Radius.circular(8), 
           ),
         ),
         child: BottomNavigationBar(

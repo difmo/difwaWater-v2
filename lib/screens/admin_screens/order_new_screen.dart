@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:difwa/controller/admin_controller/add_items_controller.dart';
-import 'package:difwa/controller/admin_controller/order_controller.dart';
 import 'package:difwa/controller/auth_controller.dart';
 import 'package:difwa/models/user_models/user_details_model.dart';
 import 'package:difwa/utils/app__text_style.dart';
@@ -20,7 +19,6 @@ class _OrdersScreenState extends State<OrdersScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final FirebaseController _authController = Get.put(FirebaseController());
-  final OrdersController _ordersController = Get.put(OrdersController());
 
   String merchantIdd = "";
   String userId = "";
@@ -30,7 +28,6 @@ class _OrdersScreenState extends State<OrdersScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _ordersController.fetchOrdersWhereAllCompleted();
     print("hello");
     _authController.fetchMerchantId("").then((merchantId) {
       print(merchantId);
@@ -121,8 +118,8 @@ class OrderListPage extends StatefulWidget {
 
 class _OrderListPageState extends State<OrderListPage> {
   late UserDetailsModel userDetails;
-  // DateTime currentDate = DateTime.now();
-  DateTime currentDate = DateTime(2025, 4, 8);
+  DateTime currentDate = DateTime.now();
+  // DateTime currentDate = DateTime(2025, 4, 8);
   Map<String, UserDetailsModel> userCache =
       {}; // Cache for fetched user details
 
@@ -148,7 +145,37 @@ class _OrderListPageState extends State<OrderListPage> {
             ),
           );
         }
-        final orders = snapshot.data!.docs;
+
+        List orders = [];
+
+        if (widget.status == "Completed") {
+          orders = snapshot.data!.docs.where((doc) {
+            return doc['selectedDates'].any((dateDoc) {
+              return dateDoc['statusHistory']['status']
+                      ?.toString()
+                      .toLowerCase() ==
+                  "completed";
+            });
+          }).toList();
+        } else if (widget.status == "cancelled") {
+          orders = snapshot.data!.docs.where((doc) {
+            return doc['selectedDates'].any((dateDoc) {
+              return dateDoc['statusHistory']['status']
+                      ?.toString()
+                      .toLowerCase() ==
+                  "cancel";
+            });
+          }).toList();
+        } else if (widget.status == "pending") {
+          orders = snapshot.data!.docs.where((doc) {
+            return doc['selectedDates'].any((dateDoc) {
+              return dateDoc['statusHistory']['status']
+                      ?.toString()
+                      .toLowerCase() ==
+                  "pending";
+            });
+          }).toList();
+        }
 
         return ListView.builder(
           padding: const EdgeInsets.all(8.0),
@@ -162,7 +189,7 @@ class _OrderListPageState extends State<OrderListPage> {
             if (!userCache.containsKey(userId)) {
               fetchUserDetails(userId);
             }
-   
+
             return Card(
               color: ThemeConstants.whiteColor,
               margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -236,9 +263,6 @@ class _OrderListPageState extends State<OrderListPage> {
                         // print("pritam");
                         // print(dateData['status']);
 
-              
-
-
                         // print(dateData['date']);
                         return ListTile(
                           // textColor: Colors.red,
@@ -284,7 +308,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                   const PopupMenuItem<String>(
                                     value: 'Shipped',
                                     child: Text('Shipped'),
-                                  ),  
+                                  ),
                               if (isCurrentDate)
                                 if (dateStatus == 'Shipped' &&
                                     dateStatus != "Cancel")
@@ -298,6 +322,12 @@ class _OrderListPageState extends State<OrderListPage> {
                                     value: 'Cancel',
                                     child: Text('Cancel'),
                                   ),
+                              if (dateStatus == 'Cancel' &&
+                                  widget.status != "pending")
+                                const PopupMenuItem<String>(
+                                  value: 'ReCompleted',
+                                  child: Text('Recompleted'),
+                                ),
                             ],
                           ),
                           enabled:
@@ -398,10 +428,7 @@ class _OrderListPageState extends State<OrderListPage> {
     }
   }
 
-  bool _isOrderCompleted(List statusHistory) {
-    // Check if all statuses in statusHistory are 'completed'
-    return statusHistory.every((status) => status['status'] == 'completed');
-  }
+ 
 
   Future<void> changeDateStatus(
       BuildContext context,

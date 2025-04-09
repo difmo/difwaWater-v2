@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:difwa/models/stores_models/payment_data_modal.dart';
 import 'package:difwa/models/stores_models/store_new_modal.dart';
 import 'package:difwa/models/stores_models/vendor_payment_model.dart';
 import 'package:difwa/models/stores_models/withdraw_request_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:difwa/controller/admin_controller/vendors_controller.dart';
+import 'package:intl/intl.dart';
 
 class PaymentHistoryController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -48,7 +50,7 @@ class PaymentHistoryController extends GetxController {
     try {
       debugPrint("Amountt: $amount");
       String? merchantId = await _VendorsController.fetchMerchantId();
-       VendorModal? storedata = await _VendorsController.fetchStoreData();
+      VendorModal? storedata = await _VendorsController.fetchStoreData();
 
       debugPrint("storedata234");
       debugPrint("Store Data11: ${storedata?.earnings}");
@@ -90,8 +92,6 @@ class PaymentHistoryController extends GetxController {
 
       await _VendorsController.updateStoreDetails({"earnings": remainsAmount});
 
-   
-
       await savePaymentHistory(amount, "completed", "Debited", "paymentId123",
           "success", "bulkOrderId123");
 
@@ -115,36 +115,35 @@ class PaymentHistoryController extends GetxController {
     }
   }
 
-
 ///////// fetchAllRequestForWithdraw //////////
-Future<List<WithdrawalRequestModel>> fetchAllRequestForWithdraw() async {
-  try {
-    debugPrint("Starting to fetch withdrawal requests...");
-    String? merchantId = await _VendorsController.fetchMerchantId();
-    debugPrint("Fetched merchantId: $merchantId"); // Debugging merchantId
-    if (merchantId == null) {
-      throw Exception("Merchant ID not found");
+  Future<List<WithdrawalRequestModel>> fetchAllRequestForWithdraw() async {
+    try {
+      debugPrint("Starting to fetch withdrawal requests...");
+      String? merchantId = await _VendorsController.fetchMerchantId();
+      debugPrint("Fetched merchantId: $merchantId"); // Debugging merchantId
+      if (merchantId == null) {
+        throw Exception("Merchant ID not found");
+      }
+      QuerySnapshot snapshot = await _firestore
+          .collection('difwa-payment-approved')
+          .where('merchantId', isEqualTo: merchantId)
+          .orderBy('timestamp', descending: true)
+          .get();
+
+      debugPrint("Fetched90 ${snapshot.docs.length} documents from Firestore.");
+
+      List<WithdrawalRequestModel> requests = snapshot.docs
+          .map((doc) => WithdrawalRequestModel.fromFirestore(doc))
+          .toList();
+
+      debugPrint("Mapped withdrawal requests: $requests");
+
+      return requests;
+    } catch (e) {
+      debugPrint("Error fetching withdrawal requests: $e");
+      return [];
     }
-    QuerySnapshot snapshot = await _firestore
-        .collection('difwa-payment-approved')
-        .where('merchantId', isEqualTo: merchantId)
-        .orderBy('timestamp', descending: true)
-        .get();
-
-    debugPrint("Fetched90 ${snapshot.docs.length} documents from Firestore."); 
-
-    List<WithdrawalRequestModel> requests = snapshot.docs
-        .map((doc) => WithdrawalRequestModel.fromFirestore(doc))
-        .toList();
-
-    debugPrint("Mapped withdrawal requests: $requests"); 
-
-    return requests;
-  } catch (e) {
-    debugPrint("Error fetching withdrawal requests: $e"); 
-    return [];
   }
-}
 
   Future<List<PaymentHistoryModel>> fetchPaymentHistoryByMerchantId() async {
     try {
@@ -173,4 +172,63 @@ Future<List<WithdrawalRequestModel>> fetchAllRequestForWithdraw() async {
       return [];
     }
   }
+
+Future<List<PaymentData>> fetchProcessedPaymentHistory() async {
+  try {
+    // Fetch merchant ID
+    String? merchantId = await _VendorsController.fetchMerchantId();
+    if (merchantId == null) {
+      throw Exception("Merchant ID not found");
+    }
+
+    debugPrint("Merchant ID: $merchantId");
+
+    // Fetch payment history from Firestore
+    QuerySnapshot snapshot = await _firestore
+        .collection('difwa-vendor_payment_history')
+        .where('merchantId', isEqualTo: merchantId)
+        .orderBy('timestamp', descending: true)
+        .get();
+
+    debugPrint("Fetched ${snapshot.docs.length} payment history records.");
+
+    List<PaymentData> paymentData = [];
+
+    // Iterate through each document in the snapshot
+    for (var doc in snapshot.docs) {
+      // Convert timestamp to DateTime
+      DateTime timestamp = (doc['timestamp'] as Timestamp).toDate();
+      double amount = doc['amount'];
+      String formattedDate = DateFormat('yyyy-MM-dd').format(timestamp);
+
+      debugPrint("Processing document: $formattedDate, Amount: $amount");
+
+      // Check if the date already exists in the list
+      PaymentData? existingData = paymentData.firstWhere(
+        (data) => data.date == formattedDate,
+        orElse: () => PaymentData(date: formattedDate, amount: 0.0),
+      );
+
+      if (existingData.amount == 0.0) {
+        // If no existing data found, add the new entry
+        debugPrint("New entry found for date: $formattedDate. Adding amount: $amount");
+        paymentData.add(PaymentData(date: formattedDate, amount: amount));
+      } else {
+        // If existing data found, update the amount
+        debugPrint("Existing entry found for date: $formattedDate. Updating amount: ${existingData.amount} + $amount");
+        existingData.amount += amount;
+      }
+    }
+
+    debugPrint("Final processed payment data: ${paymentData.map((data)=>data.toJson()).toList()}");
+
+    return paymentData;
+  } catch (e) {
+    debugPrint("Error fetching payment history: $e");
+    return [];
+  }
+}
+
+
+
 }

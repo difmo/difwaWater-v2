@@ -2,7 +2,6 @@
 import 'package:difwa/controller/admin_controller/vendors_controller.dart';
 import 'package:difwa/controller/earning_controller.dart';
 import 'package:difwa/controller/admin_controller/payment_history_controller.dart';
-import 'package:difwa/models/stores_models/store_model.dart';
 import 'package:difwa/models/stores_models/store_new_modal.dart';
 import 'package:difwa/models/stores_models/vendor_payment_model.dart';
 import 'package:difwa/routes/app_routes.dart';
@@ -272,6 +271,7 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
           color: ThemeConstants.whiteColor,
           child: ListTile(
             title: Text(
+                // ignore: unnecessary_null_comparison
                 transaction.timestamp != null
                     ? DateFormat.yMMMd().format(transaction.timestamp)
                     : 'Unknown Time',
