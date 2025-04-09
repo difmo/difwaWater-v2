@@ -20,10 +20,7 @@ class AuthController extends GetxController {
   Future<bool> signwithemail(String email, String name, String password,
       String number, bool isLoading, BuildContext context) async {
     try {
-      print(email);
-      print(name);
-      print(password);
-      print(number);
+
 
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
@@ -215,20 +212,18 @@ class AuthController extends GetxController {
         orderpin: '');
   }
   Future<UserDetailsModel> fetchUserDatabypassUserId(String userId) async {
-    if (userId != null) {
-      DocumentSnapshot userDoc =
-          await _firestore.collection('difwa-users').doc(userId).get();
-      if (userDoc.exists) {
-        print("User data: ${userDoc.data()}");
+    DocumentSnapshot userDoc =
+        await _firestore.collection('difwa-users').doc(userId).get();
+    if (userDoc.exists) {
+      print("User data: ${userDoc.data()}");
 
-        var userDetails =
-            UserDetailsModel.fromJson(userDoc.data() as Map<String, dynamic>);
-        print("UserDetailsModel: $userDetails");
+      var userDetails =
+          UserDetailsModel.fromJson(userDoc.data() as Map<String, dynamic>);
+      print("UserDetailsModel: $userDetails");
 
-        return userDetails;
-      }
+      return userDetails;
     }
-    return UserDetailsModel(
+      return UserDetailsModel(
         docId: "",
         uid: "",
         name: "",
