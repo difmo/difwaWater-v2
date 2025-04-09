@@ -65,9 +65,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return _isLoading
-        ? ProfileShimmer()
-        : Scaffold(
+    if (_isLoading) {
+      return ProfileShimmer();
+    } else {
+      return Scaffold(
             backgroundColor: Colors.white,
             body: usersData == null
                 ? const Center(child: CircularProgressIndicator())
@@ -229,7 +230,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: buildProfileOption(
                                 title: "Wallet",
                                 subtitle: "Wallet balance",
-                                balence: usersData?.walletBalance?.toString(),
+                                balence: '₹${usersData?.walletBalance?.toString() ?? '0.00'}',
                                 icon: Icons.account_balance_wallet_rounded,
                                 onTap: () {
                                   Get.to(() => WalletScreen(
@@ -443,6 +444,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
           );
+    }
   }
 
   Widget buildProfileOption({

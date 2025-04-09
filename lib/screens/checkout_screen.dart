@@ -44,10 +44,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     _addressController = Get.put(AddressController());
     checkoutController.fetchWalletBalance();
     // _getSelectedAddress();
-    setState(() {
-      addresss =
-          _addressController.getSelectedAddress() as Address?;
-    });
+  //   setState(() {
+  //   //   addresss =
+  //   //       // _addressController.getSelectedAddress() as Address? ;
+  //   // });
   }
 
   @override

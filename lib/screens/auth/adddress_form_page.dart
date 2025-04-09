@@ -140,7 +140,7 @@ class _AddressFormState extends State<AddressForm> {
       body: Stack(
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16, top: 50),
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 25),
             child: ListView(
               children: [
                 Form(
@@ -253,7 +253,7 @@ class _AddressFormState extends State<AddressForm> {
                   key: _formKeyAddress,
                   child: CommonTextField(
                     inputType: InputType.address,
-                    controller: _streetController,
+                    controller: _addressController,
                     onChanged: (value) {
                       _formKeyAddress.currentState!.validate();
                     },
