@@ -99,11 +99,12 @@ class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
               children: [
                 Row(
                   children: [
-                    const CircleAvatar(
+                    CircleAvatar(
                       backgroundColor: Colors.white,
                       radius: 30,
-                      backgroundImage: AssetImage(
-                          'assets/avatar.png'), // Replace with actual image
+                      backgroundImage: vendorData != null
+                          ? NetworkImage(vendorData!.images[0])
+                          : const AssetImage('assets/images/default_avatar.png') as ImageProvider,
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -228,7 +229,7 @@ class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
-                          children: [
+                          children: const [
                             Text(
                               "Performance Overview",
                               style: TextStyle(
@@ -289,12 +290,12 @@ class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
                         ),
                         const SizedBox(height: 12),
                         businessDetail("Service Area",
-                            "Downtown Manhattan & Brooklyn Areas"),
-                        businessDetail("Daily Capacity", "1000+ gallons"),
+                           vendorData!.deliveryArea),
+                        businessDetail("Daily Capacity", vendorData!.dailySupply),
                         businessDetail("Pricing",
-                            "\$1.5/gallon (Bulk discounts available)"),
+                           vendorData!.capacityOptions),
                         businessDetail(
-                            "Operating Hours", "Mon-Sat: 6:00 AM - 8:00 PM"),
+                            "Operating Hours", vendorData!.deliveryTimings),
                       ],
                     ),
                   ),

@@ -82,95 +82,47 @@ class VendorsController extends GetxController {
       await ref.putFile(imageFile);
 
       String imageUrl = await ref.getDownloadURL();
+
+      // Debugging snackbar
+      Get.snackbar(
+        'Upload Success',
+        'Image uploaded successfully: $fileName',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+
       return imageUrl;
     } catch (e) {
       print("Error uploading image: $e");
+
+      // Error snackbar
+      Get.snackbar(
+        'Upload Error',
+        'Failed to upload image: $fileName',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+
       rethrow;
     }
   }
 
-  Future<bool> submitForm2(List<XFile?> images) async {
+  Future<bool> submitForm2(List<String> images) async {
     print("hello1");
 
     print("hello2");
 
     try {
-      String aadhaarUrl = images[0] != null
-          ? await uploadImage(
-              File(images[0]!.path), 'aadhaar_${vendorNameController.text}')
-          : 'defaultAadhaarUrl'; // Or handle the null case as required
-
-      String panCardUrl = images[1] != null
-          ? await uploadImage(
-              File(images[1]!.path), 'panCard_${vendorNameController.text}')
-          : 'defaultPanCardUrl';
-
-      String passportPhotoUrl = images[2] != null
-          ? await uploadImage(File(images[2]!.path),
-              'passportPhoto_${vendorNameController.text}')
-          : 'defaultPassportPhotoUrl';
-
-      String businessLicenseUrl = images[3] != null
-          ? await uploadImage(File(images[3]!.path),
-              'businessLicense_${vendorNameController.text}')
-          : 'defaultBusinessLicenseUrl';
-
-      String waterQualityCertUrl = images[4] != null
-          ? await uploadImage(File(images[4]!.path),
-              'waterQualityCertificate_${vendorNameController.text}')
-          : 'defaultWaterQualityCertUrl';
-
-      String identityProofUrl = images[5] != null
-          ? await uploadImage(File(images[5]!.path),
-              'identityProof_${vendorNameController.text}')
-          : 'defaultIdentityProofUrl';
-
-      String bankDocumentUrl = images[6] != null
-          ? await uploadImage(File(images[6]!.path),
-              'bankDocument_${vendorNameController.text}')
-          : 'defaultBankDocumentUrl';
-
-      String bussinesImage1 = images[7] != null
-          ? await uploadImage(File(images[7]!.path),
-              'bussinesImage1_${vendorNameController.text}')
-          : 'defaultBussinesImage1Url';
-
-      String bussinesImage2 = images[8] != null
-          ? await uploadImage(File(images[8]!.path),
-              'bussinesImage2_${vendorNameController.text}')
-          : 'defaultBussinesImage2Url';
-      String bussinesImage3 = images[9] != null
-          ? await uploadImage(File(images[9]!.path),
-              'bussinesImage3_${vendorNameController.text}')
-          : 'defaultBussinesImage3Url';
-      String bussinesImage4 = images[10] != null
-          ? await uploadImage(File(images[10]!.path),
-              'bussinesImage3_${vendorNameController.text}')
-          : 'defaultBussinesImage3Url';
-      String bussinesImage5 = images[11] != null
-          ? await uploadImage(File(images[11]!.path),
-              'bussinesImage3_${vendorNameController.text}')
-          : 'defaultBussinesImage3Url';
+     
 
       String userId = await _getCurrentUserId();
       String merchantId = await _generateMerchantId();
 
       print("all data uploaded");
 
-      Map<String, String> imagesMap = {
-        'aadhaarCardImage': aadhaarUrl,
-        'panCardImage': panCardUrl,
-        'passportPhotoImage': passportPhotoUrl,
-        'businessLicenseImage': businessLicenseUrl,
-        'waterQualityCertificateImage': waterQualityCertUrl,
-        'identityProofImage': identityProofUrl,
-        'bankDocumentImage': bankDocumentUrl,
-        'bussinesImage1': bussinesImage1,
-        'bussinesImage2': bussinesImage2,
-        'bussinesImage3': bussinesImage3,
-        'bussinesImage4': bussinesImage4,
-        'bussinesImage5': bussinesImage5,
-      };
+ 
 
       VendorModal newUser = VendorModal(
         userId: userId,
@@ -182,7 +134,7 @@ class VendorsController extends GetxController {
         bussinessName: bussinessNameController.text,
         phoneNumber: phoneNumberController.text,
         businessAddress: businessAddressController.text,
-        images: imagesMap,
+        images: images,
         contactPerson: contactPersonController.text,
         areaCity: areaCityController.text,
         postalCode: postalCodeController.text,
@@ -207,6 +159,7 @@ class VendorsController extends GetxController {
       _showSuccessSnackbar(merchantId);
       return true;
     } catch (e) {
+      print("hamar error");
       print(e);
       _handleError(e);
       return false;
@@ -416,8 +369,10 @@ class VendorsController extends GetxController {
   }
 
   void _handleError(dynamic e) {
+    print("error test");
+    print(e);
     String errorMessage = e is FirebaseAuthException
-        ? e.message ?? 'An unknown error occurred'
+        ? e.message ?? 'An unknown sdfsdf error occurred'
         : 'An unknown error occurred';
     Get.snackbar('Error', errorMessage,
         snackPosition: SnackPosition.BOTTOM,
