@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:difwa/config/app_color.dart';
+import 'package:difwa/routes/user_bottom_bar.dart';
 import 'package:difwa/screens/user_onboarding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -242,7 +243,7 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          const UserOnboardingScreen()));
+                                          const BottomUserHomePage()));
                               if (!success) {
                                 // Handle failure (if needed)
                                 Get.snackbar(

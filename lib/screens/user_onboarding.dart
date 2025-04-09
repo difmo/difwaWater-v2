@@ -5,6 +5,7 @@ import 'package:difwa/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserOnboardingScreen extends StatefulWidget {
   const UserOnboardingScreen({super.key});
@@ -16,6 +17,30 @@ class UserOnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<UserOnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkOnboardingStatus();
+  }
+
+  // Check if the onboarding is completed
+  Future<void> _checkOnboardingStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool isOnboardingComplete = prefs.getBool('onboardingComplete') ?? false;
+
+    if (isOnboardingComplete) {
+      // If onboarding is already complete, skip to the home page
+      Get.offNamed(AppRoutes
+          .home); // Using `Get.offNamed` to replace this screen in the navigation stack
+    }
+  }
+
+  // Mark onboarding as complete in SharedPreferences
+  Future<void> _markOnboardingComplete() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('onboardingComplete', true);
+  }
 
   List<Widget> _buildPageIndicator() {
     return List.generate(
@@ -38,7 +63,8 @@ class _OnboardingScreenState extends State<UserOnboardingScreen> {
       _pageController.nextPage(
           duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
     } else {
-      Get.toNamed(AppRoutes.home);
+      _markOnboardingComplete(); // Mark onboarding as completed
+      Get.toNamed(AppRoutes.home); // Navigate to the home screen
     }
   }
 
@@ -57,22 +83,24 @@ class _OnboardingScreenState extends State<UserOnboardingScreen> {
             },
             children: [
               _buildOnboardingPage(
-                middleImage: 'assets/images/stonb22.svg',
+                middleImage: 'assets/onboardingimg/welcome.svg',
                 newHeading: 'Streamlined Order Management',
                 newDescription:
                     'Welcome to Difwa! Simplify your water delivery business today.',
                 titleColor: Colors.white,
                 showButton: false,
+                onNextPressed: _onNext,
               ),
               _buildOnboardingPage(
-                middleImage: 'assets/images/stonb22.svg',
+                middleImage: 'assets/onboardingimg/waterformet.svg',
                 newHeading: 'Farm to Table!',
                 newDescription: 'Experience the freshness of local produce.',
                 titleColor: Colors.black,
                 showButton: false,
+                onNextPressed: _onNext,
               ),
               _buildOnboardingPage(
-                middleImage: 'assets/images/stonb33.svg',
+                middleImage: 'assets/onboardingimg/onboarding2.svg',
                 newHeading: 'Join Our Community!',
                 newDescription:
                     'Connect with fellow food lovers and share recipes.',
@@ -95,6 +123,50 @@ class _OnboardingScreenState extends State<UserOnboardingScreen> {
               ],
             ),
           ),
+          // Bottom Left Button
+          Positioned(
+            bottom: 20,
+            left: 25,
+            child: TextButton(
+              onPressed: () {
+                Get.toNamed(AppRoutes.signUp);
+              },
+              child: Text(
+                "Skip",
+                style: TextStyle(
+                  color: AppColors.myblack,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+          // Bottom Right Button
+          Positioned(
+            bottom: 20,
+            right: 25,
+            child: Visibility(
+              visible: _currentIndex != 2, // Hide "Next" on the last page
+              child: TextButton(
+                onPressed: () {
+                  if (_currentIndex < 2) {
+                    _pageController.nextPage(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeIn);
+                  } else {
+                    _markOnboardingComplete(); // Mark onboarding as complete
+                    Get.toNamed(AppRoutes.userbottom);
+                  }
+                },
+                child: Text(
+                  "Next",
+                  style: TextStyle(
+                    color: const Color.fromARGB(179, 45, 45, 45),
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -114,13 +186,17 @@ class _OnboardingScreenState extends State<UserOnboardingScreen> {
         children: [
           Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const SizedBox(height: 130),
+                const SizedBox(height: 150),
                 SvgPicture.asset(
                   middleImage,
+                  width:
+                      300, // Adjust this value to make the image larger or smaller
+                  height:
+                      300, // Adjust this value to make the image larger or smaller
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 100),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Text(newHeading, style: AppStyle.heading1),
@@ -133,8 +209,12 @@ class _OnboardingScreenState extends State<UserOnboardingScreen> {
                 const SizedBox(height: 30),
                 if (showButton)
                   CustomButton(
-                    text: "Next",
-                    onPressed: () => onNextPressed,
+                    text: "Welcome",
+                    onPressed: () {
+                      _markOnboardingComplete(); // Mark onboarding as completed
+                      Get.toNamed(
+                          AppRoutes.signUp); // Navigate to the next screen
+                    },
                   ),
                 const SizedBox(height: 100),
               ],

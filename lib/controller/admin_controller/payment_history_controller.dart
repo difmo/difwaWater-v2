@@ -85,6 +85,8 @@ class PaymentHistoryController extends GetxController {
 
       await _VendorsController.updateStoreDetails({"earnings": remainsAmount});
 
+   
+
       await savePaymentHistory(amount, "completed", "Debited", "paymentId123",
           "success", "bulkOrderId123");
 
@@ -109,19 +111,20 @@ class PaymentHistoryController extends GetxController {
   }
 
 ///////// fetchAllRequestForWithdraw //////////
-  Future<List<WithdrawalRequestModel>> fetchAllRequestForWithdraw() async {
-    try {
-      debugPrint("Starting to fetch withdrawal requests...");
-      String? merchantId = await _VendorsController.fetchMerchantId();
-      debugPrint("Fetched merchantId: $merchantId"); // Debugging merchantId
-      if (merchantId == null) {
-        throw Exception("Merchant ID not found");
-      }
-      QuerySnapshot snapshot = await _firestore
-          .collection('difwa-payment-approved')
-          .where('merchantId', isEqualTo: merchantId)
-          .orderBy('timestamp', descending: true)
-          .get();
+
+Future<List<WithdrawalRequestModel>> fetchAllRequestForWithdraw() async {
+  try {
+    debugPrint("Starting to fetch withdrawal requests...");
+    String? merchantId = await _VendorsController.fetchMerchantId();
+    debugPrint("Fetched merchantId: $merchantId"); // Debugging merchantId
+    if (merchantId == null) {
+      throw Exception("Merchant ID not found");
+    }
+    QuerySnapshot snapshot = await _firestore
+        .collection('difwa-payment-approved')
+        .where('merchantId', isEqualTo: merchantId)
+        .orderBy('timestamp', descending: true)
+        .get();
 
       debugPrint("Fetched90 ${snapshot.docs.length} documents from Firestore.");
 

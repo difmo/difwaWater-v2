@@ -57,7 +57,7 @@ class _SplashScreenState extends State<SplashScreen>
     User? user = FirebaseAuth.instance.currentUser;
     user != null
         ? await _getUserRole(user.uid)
-        : Get.offNamed(AppRoutes.signUp);
+        : Get.offNamed(AppRoutes.useronboarding);
   }
 
   Future<void> _getUserRole(String userId) async {
@@ -74,14 +74,14 @@ class _SplashScreenState extends State<SplashScreen>
         } else if (role == 'isStoreKeeper') {
           Get.offNamed(AppRoutes.storebottombar);
         } else {
-          Get.offNamed(AppRoutes.signUp);
+          Get.offNamed(AppRoutes.useronboarding);
         }
       } else {
-        Get.offNamed(AppRoutes.signUp);
+        Get.offNamed(AppRoutes.useronboarding);
       }
     } catch (e) {
       Get.snackbar('Error', 'Failed to retrieve user role');
-      Get.offNamed(AppRoutes.signUp);
+      Get.offNamed(AppRoutes.useronboarding);
     }
   }
 
