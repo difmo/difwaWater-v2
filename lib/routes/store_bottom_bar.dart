@@ -3,11 +3,15 @@ import 'package:difwa/config/app_color.dart';
 import 'package:difwa/controller/admin_controller/add_items_controller.dart';
 import 'package:difwa/controller/admin_controller/vendors_controller.dart';
 import 'package:difwa/controller/admin_controller/payment_history_controller.dart';
+import 'package:difwa/models/stores_models/store_model.dart';
 import 'package:difwa/models/stores_models/store_new_modal.dart';
 import 'package:difwa/screens/admin_screens/order_new_screen.dart';
 import 'package:difwa/screens/admin_screens/store_dashboard_new.dart';
+import 'package:difwa/screens/admin_screens/store_home.dart';
+import 'package:difwa/screens/admin_screens/admin_orders_page.dart';
 import 'package:difwa/screens/admin_screens/store_items.dart';
 import 'package:difwa/screens/admin_screens/store_profile_new.dart';
+import 'package:difwa/screens/admin_screens/store_profile_screen.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -130,6 +134,11 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
     });
   }
 
+  // void _addPaymentHistory(String amount, String amountStatus, String userId,
+  //     String paymentId, String paymentStatus, String bulkOrderId) {
+  //   _paymentHistoryController.savePaymentHistory(
+  //       amount, amountStatus, userId, paymentId, paymentStatus, bulkOrderId);
+  // }
 
   void _updateOrderStatus(String status) {
     FirebaseFirestore.instance
