@@ -441,27 +441,27 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
         // videoPreview(),
 
         const SizedBox(height: 20),
-        CustomButton(
-          text: isLoading ? "Loading..." : "Submit",
-          onPressed: () async {
-            imageUrl.addAll(uploadedUrls);
-            setState(() {
-              isLoading = true;
-            });
+        // CustomButton(
+        //   text: isLoading ? "Loading..." : "Submit",
+        //   onPressed: () async {
+        //     imageUrl.addAll(uploadedUrls);
+        //     setState(() {
+        //       isLoading = true;
+        //     });
 
-            bool isSuccess = await controller.submitForm2(imageUrl);
-            if (isSuccess) {
-              Get.offAll(() => BottomStoreHomePage());
-              setState(() {
-                isLoading = false;
-              });
-            } else {
-              Get.snackbar(
-                  'Error', 'Failed to create the store. Please try again.',
-                  snackPosition: SnackPosition.BOTTOM);
-            }
-          },
-        )
+        //     bool isSuccess = await controller.submitForm2(imageUrl);
+        //     if (isSuccess) {
+        //       Get.offAll(() => BottomStoreHomePage());
+        //       setState(() {
+        //         isLoading = false;
+        //       });
+        //     } else {
+        //       Get.snackbar(
+        //           'Error', 'Failed to create the store. Please try again.',
+        //           snackPosition: SnackPosition.BOTTOM);
+        //     }
+        //   },
+        // )
       ],
     );
   }
