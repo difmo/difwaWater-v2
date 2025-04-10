@@ -3,7 +3,6 @@ import 'package:difwa/controller/auth_controller.dart';
 import 'package:difwa/models/user_models/user_details_model.dart';
 import 'package:difwa/routes/app_routes.dart';
 import 'package:difwa/screens/checkout_screen.dart';
-import 'package:difwa/utils/location_helper.dart';
 import 'package:difwa/widgets/CustomPopup.dart';
 import 'package:difwa/widgets/ImageCarouselApp.dart';
 import 'package:difwa/widgets/custom_appbar.dart';
@@ -12,7 +11,6 @@ import 'package:difwa/widgets/package_selector_component.dart';
 import 'package:difwa/widgets/simmers/HomePageShimmer.dart';
 import 'package:difwa/widgets/subscribe_button_component.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 
 import '../widgets/simmers/PackageSelectorShimmer .dart';

@@ -271,7 +271,6 @@ class _EarningsDashboardState extends State<EarningsDashboard> {
           color: ThemeConstants.whiteColor,
           child: ListTile(
             title: Text(
-                // ignore: unnecessary_null_comparison
                 transaction.timestamp != null
                     ? DateFormat.yMMMd().format(transaction.timestamp)
                     : 'Unknown Time',

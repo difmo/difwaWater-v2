@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 
 class OrdersController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  VendorsController _vendorsController = Get.put(VendorsController());
+  final VendorsController _vendorsController = Get.put(VendorsController());
   var verificationId = ''.obs;
   var userRole = ''.obs;
 

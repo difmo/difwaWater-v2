@@ -11,17 +11,12 @@ import 'package:difwa/screens/auth/login_screen.dart';
 import 'package:difwa/screens/auth/signup_screen.dart';
 import 'package:difwa/screens/available_service_select.dart';
 import 'package:difwa/screens/book_now_screen.dart';
-import 'package:difwa/screens/customer_support_pages/FAQ_page.dart';
-import 'package:difwa/screens/customer_support_pages/contact_info_page.dart';
-import 'package:difwa/screens/customer_support_pages/locate_us_page.dart';
 import 'package:difwa/screens/notification_page.dart';
-import 'package:difwa/screens/ordershistory_screen.dart';
 import 'package:difwa/screens/profile_screen.dart';
 import 'package:difwa/screens/splash_screen.dart';
 import 'package:difwa/screens/subscription_screen.dart';
 import 'package:difwa/screens/user_all_transaction_page.dart';
 import 'package:difwa/screens/user_onboarding.dart';
-import 'package:difwa/screens/user_wallet_page.dart';
 import 'package:get/get.dart';
 
 class AppRoutes {
@@ -34,16 +29,11 @@ class AppRoutes {
   static const otp = '/otp';
   static const userbottom = '/userbottom';
   static const subscription = '/subscription';
-  static const contactus = '/contactus';
-  static const faqpage = '/faqpage';
-  static const locateus = '/locateus';
   static const address_page = '/address_page';
   static const notification = '/notification_page';
   static const fullScreenPopup = '/fullScreenPopup';
   static const useronboarding = '/useronboarding';
   static const vendoform = '/vendorform';
-  static const historyscreen = '/historyscreen';
-  static const wallet = '/wallet';
 
   static const addbalance_screen = '/addbalance_screen';
 
@@ -130,31 +120,7 @@ class AppRoutes {
       transition: Transition.zoom, // Zoom transition for subscription screen
       transitionDuration: Duration(milliseconds: 800),
     ),
-    GetPage(
-      name: contactus, page: () => ContactPage(),
-      transition: Transition.zoom, // Zoom transition for subscription screen
-      transitionDuration: Duration(milliseconds: 800),
-    ),
 
-    GetPage(
-      name: faqpage, page: () => FAQPage(),
-      transition: Transition.zoom, // Zoom transition for subscription screen
-      transitionDuration: Duration(milliseconds: 800),
-    ),
-
-    GetPage(
-      name: locateus, page: () => LocateUsPage(),
-      transition: Transition.zoom, // Zoom transition for subscription screen
-      transitionDuration: Duration(milliseconds: 800),
-    ),
-
-    GetPage(
-      name: historyscreen, page: () => HistoryScreen(),
-      transition: Transition.zoom, // Zoom transition for subscription screen
-      transitionDuration: Duration(milliseconds: 800),
-    ),
-
-    
     /////////////////////////Admin Routes/////////////////
     // GetPage(
     //   name: createstore,

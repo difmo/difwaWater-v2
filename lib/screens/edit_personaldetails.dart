@@ -5,7 +5,6 @@ import 'package:difwa/models/user_models/user_details_model.dart';
 import 'package:difwa/screens/personal_details.dart';
 import 'package:difwa/utils/app__text_style.dart';
 import 'package:difwa/utils/theme_constant.dart';
-import 'package:difwa/widgets/custom_button.dart';
 import 'package:difwa/widgets/custom_input_field.dart';
 import 'package:difwa/widgets/subscribe_button_component.dart';
 import 'package:firebase_auth/firebase_auth.dart';

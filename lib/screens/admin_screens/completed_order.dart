@@ -105,7 +105,7 @@ class _OrderListPageState extends State<OrderListPage2> {
                         Text(
                           style: AppTextStyle.Text14400.copyWith(
                               color: ThemeConstants.grey),
-                          '${DateFormat('HH:mm').format(DateTime.fromMillisecondsSinceEpoch(order['timestamp'].millisecondsSinceEpoch).toLocal())}',
+                          DateFormat('HH:mm').format(DateTime.fromMillisecondsSinceEpoch(order['timestamp'].millisecondsSinceEpoch).toLocal()),
                         ),
                       ],
                     ),

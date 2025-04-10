@@ -56,7 +56,7 @@ class _HomeScreenState extends State<BottomUserHomePage> {
     return Scaffold(
       backgroundColor: ThemeConstants.whiteColor,
       body: _screens[
-          _selectedIndex], 
+          _selectedIndex], // Display the screen based on selected index
       bottomNavigationBar: Container(
         margin: const EdgeInsets.only(bottom: 0),
         padding: const EdgeInsets.only(top: 5.0),
@@ -64,16 +64,16 @@ class _HomeScreenState extends State<BottomUserHomePage> {
           boxShadow: const [
             BoxShadow(
               color: AppColors
-                  .inputfield, 
-              blurRadius: 3.0, 
-              spreadRadius: 0.5,
-              offset: Offset(0, 4), 
+                  .inputfield, // Assuming AppColors.inputfield is a Color
+              blurRadius: 3.0, // Adjust blur radius as needed
+              spreadRadius: 0.5, // Adjust spread radius if needed
+              offset: Offset(0, 4), // Adjust the offset for shadow direction
             ),
           ],
           borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(0), 
+            top: Radius.circular(0), // No rounded corners on the top
             bottom:
-                Radius.circular(8), 
+                Radius.circular(8), // Optional: Adjust bottom corners' radius
           ),
         ),
         child: BottomNavigationBar(

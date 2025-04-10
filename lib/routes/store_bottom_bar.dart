@@ -130,6 +130,11 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
     });
   }
 
+  // void _addPaymentHistory(String amount, String amountStatus, String userId,
+  //     String paymentId, String paymentStatus, String bulkOrderId) {
+  //   _paymentHistoryController.savePaymentHistory(
+  //       amount, amountStatus, userId, paymentId, paymentStatus, bulkOrderId);
+  // }
 
   void _updateOrderStatus(String status) {
     FirebaseFirestore.instance

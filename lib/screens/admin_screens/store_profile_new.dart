@@ -228,7 +228,7 @@ class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
-                          children: [
+                          children: const [
                             Text(
                               "Performance Overview",
                               style: TextStyle(

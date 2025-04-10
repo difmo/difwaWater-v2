@@ -20,7 +20,10 @@ class AuthController extends GetxController {
   Future<bool> signwithemail(String email, String name, String password,
       String number, bool isLoading, BuildContext context) async {
     try {
-
+      print(email);
+      print(name);
+      print(password);
+      print(number);
 
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
