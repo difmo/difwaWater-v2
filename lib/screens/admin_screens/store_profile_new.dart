@@ -25,6 +25,8 @@ class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
   UserDetailsModel? usersData;
   VendorModal? vendorData;
   bool notificationsEnabled = true;
+  bool isLoading = true;
+
   int totalOrders = 0;
   int pendingOrders = 0;
   int completedOrders = 0;
@@ -34,46 +36,37 @@ class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
   int overallPendingOrders = 0;
   int overallCompletedOrders = 0;
 
-
   @override
   void initState() {
     super.initState();
-    _fetchUserData();
-    _fetchVendorData();
-     _ordersController.fetchTotalTodayOrders().then((ordersCounts) {
-      setState(() {
-        totalOrders = ordersCounts['totalOrders']!;
-        pendingOrders = ordersCounts['pendingOrders']!;
-        completedOrders = ordersCounts['completedOrders']!;
-        preparingOrders = ordersCounts['preparingOrders']!;
-        shippedOrders = ordersCounts['shippedOrders']!;
-        overallTotalOrders = ordersCounts['overallTotalOrders']!;
-        overallPendingOrders = ordersCounts['overallPendingOrders']!;
-        overallCompletedOrders = ordersCounts['overallCompletedOrders']!;
-      });
-    });
+    _initData();
   }
 
-  void _fetchUserData() async {
+  Future<void> _initData() async {
     try {
-      UserDetailsModel user = await _userData.fetchUserData();
-      print(user.name);
+      final user = await _userData.fetchUserData();
+      final vendor = await controller.fetchStoreData();
+      final ordersCounts = await _ordersController.fetchTotalTodayOrders();
+  // final double addedmoney = 110.0; // Replace 0.0 with the appropriate value or calculation
+  // await controller.updateStoreDetails({"earnings": addedmoney});
       setState(() {
         usersData = user;
-      });
-    } catch (e) {
-      print("Error fetching user data: $e");
-    }
-  }
-  void _fetchVendorData() async {
-    try {
-      VendorModal? vendor = await controller.fetchStoreData();
-      print(vendor!.merchantId);
-      setState(() {
         vendorData = vendor;
+        totalOrders = ordersCounts['totalOrders'] ?? 0;
+        pendingOrders = ordersCounts['pendingOrders'] ?? 0;
+        completedOrders = ordersCounts['completedOrders'] ?? 0;
+        preparingOrders = ordersCounts['preparingOrders'] ?? 0;
+        shippedOrders = ordersCounts['shippedOrders'] ?? 0;
+        overallTotalOrders = ordersCounts['overallTotalOrders'] ?? 0;
+        overallPendingOrders = ordersCounts['overallPendingOrders'] ?? 0;
+        overallCompletedOrders = ordersCounts['overallCompletedOrders'] ?? 0;
+        isLoading = false;
       });
     } catch (e) {
-      print("Error fetching user data: $e");
+      print("Error fetching data: $e");
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -81,277 +74,277 @@ class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FB),
-      body: Column(
-        children: [
-          // Header
-          Container(
-            padding:
-                const EdgeInsets.only(top: 40, bottom: 20, left: 16, right: 16),
-            decoration: const BoxDecoration(
-              color: Color(0xFF2196F3),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(24),
-                bottomRight: Radius.circular(24),
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      body: isLoading || vendorData == null
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
               children: [
-                Row(
-                  children: [
-                    const CircleAvatar(
-                      backgroundColor: Colors.white,
-                      radius: 30,
-                      backgroundImage: AssetImage(
-                          'assets/avatar.png'), // Replace with actual image
+                // Header
+                Container(
+                  padding: const EdgeInsets.only(
+                      top: 40, bottom: 20, left: 16, right: 16),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF2196F3),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(24),
+                      bottomRight: Radius.circular(24),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
                         children: [
-                          Text(
-                            vendorData != null 
-                                ?vendorData!.bussinessName
-                                : "Loading...",
-              
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                          CircleAvatar(
+                            backgroundColor: Colors.white,
+                            radius: 30,
+                            backgroundImage: (vendorData != null &&
+                                    vendorData!.images.isNotEmpty)
+                                ? NetworkImage(vendorData!.images[0])
+                                : const AssetImage(
+                                        'assets/images/default_avatar.png')
+                                    as ImageProvider,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  vendorData?.bussinessName ?? "Loading...",
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  vendorData?.merchantId ?? "Loading...",
+                                  style: const TextStyle(
+                                      color: Colors.white70, fontSize: 14),
+                                ),
+                                Text(
+                                  vendorData?.businessAddress ?? "Loading...",
+                                  style: const TextStyle(
+                                      color: Colors.white60, fontSize: 12),
+                                ),
+                              ],
                             ),
                           ),
-                          Text(
-                            // "Premium Water Supplier",
-                            vendorData != null 
-                                ?vendorData!.merchantId
-                                : "Loading...",
-                            style:
-                                TextStyle(color: Colors.white70, fontSize: 14),
-                          ),
-                          Text(
-                            // "Serving fresh water since 2018",
-                            vendorData != null 
-                                ?vendorData!.businessAddress
-                                : "Loading...",
-                            style:
-                                TextStyle(color: Colors.white60, fontSize: 12),
+                          Container(
+                            decoration: const BoxDecoration(
+                              color: Colors.white24,
+                              shape: BoxShape.circle,
+                            ),
+                            padding: const EdgeInsets.all(6),
+                            child: const Icon(Icons.edit,
+                                color: Colors.white, size: 18),
                           ),
                         ],
                       ),
-                    ),
-                    Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.white24,
-                        shape: BoxShape.circle,
+                      const SizedBox(height: 12),
+                      const Row(
+                        children: [
+                          Icon(Icons.verified, color: Colors.green, size: 16),
+                          SizedBox(width: 4),
+                          Text(
+                            "Premium Service Provider",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        ],
                       ),
-                      padding: const EdgeInsets.all(6),
-                      child:
-                          const Icon(Icons.edit, color: Colors.white, size: 18),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 12), 
-                const Row(
-                  children: [
-                    Icon(Icons.verified, color: Colors.green, size: 16),
-                    SizedBox(width: 4),
-                    Text(
-                      "Premium Service Provider",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    )
-                  ],
-                ),
-              ],
-            ),
-          ),
 
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Premium badge box
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFEEF6FF),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Row(
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(Icons.star, color: Colors.blue),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        // Premium badge
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFEEF6FF),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Row(
                             children: [
-                              Text(
-                                "Premium Service Provider",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.blue),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                "Upgrade to Premium for priority deliveries and exclusive benefits",
-                                style: TextStyle(fontSize: 12),
+                              Icon(Icons.star, color: Colors.blue),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Premium Service Provider",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.blue),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      "Upgrade to Premium for priority deliveries and exclusive benefits",
+                                      style: TextStyle(fontSize: 12),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Performance Overview
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black12,
+                                offset: Offset(0, 4),
+                                blurRadius: 6,
                               ),
                             ],
                           ),
-                        )
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Performance overview
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black12,
-                          offset: Offset(0, 4),
-                          blurRadius: 6,
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              "Performance Overview",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: const [
+                                  Text(
+                                    "Performance Overview",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Spacer(),
+                                  Text(
+                                    "This Month",
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            Spacer(),
-                            Text(
-                              "This Month",
-                              style: TextStyle(
-                                color: Colors.blue,
-                                fontWeight: FontWeight.w500,
+                              const SizedBox(height: 12),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  PerformanceMetric(
+                                      label: "Deliveries",
+                                      value: totalOrders.toString()),
+                                  const PerformanceMetric(
+                                      label: "Rating", value: "4.9"),
+                                  const PerformanceMetric(
+                                      label: "Response", value: "98%"),
+                                ],
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                        SizedBox(height: 12),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            PerformanceMetric(
-                                label: "Deliveries", value: totalOrders.toString()),
-                            PerformanceMetric(label: "Rating", value: "4.9"),
-                            PerformanceMetric(label: "Response", value: "98%"),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
+                        const SizedBox(height: 16),
 
-                  // Business Details
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black12,
-                          offset: Offset(0, 4),
-                          blurRadius: 6,
+                        // Business Details
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black12,
+                                offset: Offset(0, 4),
+                                blurRadius: 6,
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Row(
+                                children: [
+                                  Text(
+                                    "Business Details",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  Spacer(),
+                                  Icon(Icons.edit, color: Colors.grey),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              businessDetail("Service Area",
+                                  vendorData?.deliveryArea ?? "N/A"),
+                              businessDetail("Daily Capacity",
+                                  vendorData?.dailySupply ?? "N/A"),
+                              businessDetail("Pricing",
+                                  vendorData?.capacityOptions ?? "N/A"),
+                              businessDetail("Operating Hours",
+                                  vendorData?.deliveryTimings ?? "N/A"),
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Row(
-                          children: [
-                            Text(
-                              "Business Details",
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            Spacer(),
-                            Icon(Icons.edit, color: Colors.grey),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        businessDetail("Service Area",
-                            "Downtown Manhattan & Brooklyn Areas"),
-                        businessDetail("Daily Capacity", "1000+ gallons"),
-                        businessDetail("Pricing",
-                            "\$1.5/gallon (Bulk discounts available)"),
-                        businessDetail(
-                            "Operating Hours", "Mon-Sat: 6:00 AM - 8:00 PM"),
-                      ],
-                    ),
-                  ),
 
-                  GestureDetector(
-                    onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => EarningsDashboard())),
-                    child: buildProfileOption(
-                        'Earnings', 'all data ', Icons.person),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: SizedBox(
-                      child: CustomButton(
-                        icon: Icon(
-                          Icons.logout,
-                          color: Colors.white,
+                        GestureDetector(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EarningsDashboard()),
+                          ),
+                          child: buildProfileOption(
+                              'Earnings', 'all data', Icons.attach_money),
                         ),
-                        height: 50,
-                        width: double.infinity,
-                        text: 'Logout',
-                        onPressed: () {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return YesNoPopup(
-                                  title: "Logout from app!",
-                                  description:
-                                      "Are you sure want to exit from application?",
-                                  noButtonText: "No",
-                                  yesButtonText: "Yes",
-                                  onNoButtonPressed: () async {
-                                    Navigator.pop(context); // Cancel action
-                                  },
-                                  onYesButtonPressed: () async {
-                                    await FirebaseAuth.instance.signOut();
-                                    Navigator.pushReplacementNamed(
-                                        context, '/login');
+
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: SizedBox(
+                            child: CustomButton(
+                              icon: const Icon(Icons.logout, color: Colors.white),
+                              height: 50,
+                              width: double.infinity,
+                              text: 'Logout',
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return YesNoPopup(
+                                      title: "Logout from app!",
+                                      description:
+                                          "Are you sure want to exit from application?",
+                                      noButtonText: "No",
+                                      yesButtonText: "Yes",
+                                      onNoButtonPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      onYesButtonPressed: () async {
+                                        await FirebaseAuth.instance.signOut();
+                                        Navigator.pushReplacementNamed(
+                                            context, '/login');
+                                      },
+                                    );
                                   },
                                 );
-                              });
-                        },
-                      ),
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-
-              
-                ],
-              ),
+                ),
+              ],
             ),
-          ),
-
-          // Bottom NavBar Placeholder
-        ],
-      ),
     );
   }
 
@@ -406,24 +399,24 @@ Widget buildProfileOption(String title, String subtitle, IconData icon) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
     child: Container(
-      padding: EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
       child: Row(
         children: [
           Icon(icon, color: ThemeConstants.borderColor),
-          SizedBox(width: 16),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(title,
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                SizedBox(height: 4),
-                Text(subtitle, style: TextStyle(color: Colors.grey)),
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 4),
+                Text(subtitle, style: const TextStyle(color: Colors.grey)),
               ],
             ),
           ),
-          Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+          const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
         ],
       ),
     ),

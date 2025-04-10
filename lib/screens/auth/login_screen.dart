@@ -23,6 +23,9 @@ class _LoginScreenState extends State<LoginScreenPage>
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final authController = Get.find<AuthController>();
+
+
+  
   final _formKeyEmail = GlobalKey<FormState>();
   final _formKeyPassword = GlobalKey<FormState>();
   bool isLoading = false;

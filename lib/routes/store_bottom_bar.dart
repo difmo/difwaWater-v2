@@ -58,7 +58,7 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
       setState(() {
         merchantIdd = merchantId!;
       });
-      _listenForNewOrders();
+    _listenForNewOrders();
     });
 
     _isVibrating = false;
@@ -71,7 +71,7 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
     _orderSubscription = FirebaseFirestore.instance
         .collection('difwa-orders')
         .where('merchantId', isEqualTo: merchantIdd)
-        .where('status', isEqualTo: 'paid') // Listen for paid orders
+        .where('status', isEqualTo: 'pending') 
         .snapshots()
         .listen((snapshot) {
       print("Snapshot received: ${snapshot.docs.length} documents found");
@@ -220,7 +220,7 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
     );
   }
 
-  // Show popup with order details
+  // Show popup with order detailssdfdsfsd
   void _showPopup(BuildContext context, Map<String, dynamic> orderData) {
     showDialog(
       context: context,
@@ -342,7 +342,8 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
                             print(addedmoney);
                             print(previousEarnings);
                             print(orderData["totalPrice"]);
-                            await _VendorsController.updateStoreDetails({"earnings":addedmoney});
+                            await _VendorsController.updateStoreDetails(
+                                {"earnings": addedmoney});
                             Navigator.of(context).pop();
                           },
                           style: TextButton.styleFrom(
