@@ -9,7 +9,6 @@ import 'package:difwa/widgets/custom_input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:video_player/video_player.dart';
 
 import 'package:image_picker/image_picker.dart';
 
@@ -23,7 +22,6 @@ class VendorMultiStepForm extends StatefulWidget {
 class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
   final PageController _controller = PageController();
   final VendorsController controller = Get.put(VendorsController());
-  VideoPlayerController? _videoPlayerController;
 // dsfsd
   final _formKeyVendorName = GlobalKey<FormState>();
   final _formKeyVendorBussinessName = GlobalKey<FormState>();
@@ -441,27 +439,27 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
         // videoPreview(),
 
         const SizedBox(height: 20),
-        // CustomButton(
-        //   text: isLoading ? "Loading..." : "Submit",
-        //   onPressed: () async {
-        //     imageUrl.addAll(uploadedUrls);
-        //     setState(() {
-        //       isLoading = true;
-        //     });
+        CustomButton(
+          text: isLoading ? "Loading..." : "Submit",
+          onPressed: () async {
+            imageUrl.addAll(uploadedUrls);
+            setState(() {
+              isLoading = true;
+            });
 
-        //     bool isSuccess = await controller.submitForm2(imageUrl);
-        //     if (isSuccess) {
-        //       Get.offAll(() => BottomStoreHomePage());
-        //       setState(() {
-        //         isLoading = false;
-        //       });
-        //     } else {
-        //       Get.snackbar(
-        //           'Error', 'Failed to create the store. Please try again.',
-        //           snackPosition: SnackPosition.BOTTOM);
-        //     }
-        //   },
-        // )
+            bool isSuccess = await controller.submitForm2(imageUrl);
+            if (isSuccess) {
+              Get.offAll(() => BottomStoreHomePage());
+              setState(() {
+                isLoading = false;
+              });
+            } else {
+              Get.snackbar(
+                  'Error', 'Failed to create the store. Please try again.',
+                  snackPosition: SnackPosition.BOTTOM);
+            }
+          },
+        )
       ],
     );
   }
