@@ -24,7 +24,7 @@ class VendorModal {
   String gstNumber;
   String remarks;
   String status;
-  Map<String, String> images;
+  List<String> images;
   bool isVerified = false;
   String createdAt;
   String updatedAt;
@@ -130,7 +130,7 @@ class VendorModal {
       gstNumber: json['gstNumber'] ?? '',
       remarks: json['remarks'] ?? '',
       status: json['status'] ?? '',
-      images: Map<String, String>.from(json['images'] ?? {}), // Parsing the images map
+      images: List<String>.from(json['images'] ?? []), // Parsing the images list
       isVerified: json['isVerified'] ?? false,
       createdAt: json['createdAt'] ?? '',
       updatedAt: json['updatedAt'] ?? '',
@@ -204,7 +204,7 @@ class VendorModal {
       gstNumber: map['gstNumber'] ?? '',
       remarks: map['remarks'] ?? '',
       status: map['status'] ?? '',
-      images: Map<String, String>.from(map['images'] ?? {}), // Extracting images map
+      images: List<String>.from(map['images'] ?? []), // Extracting images list
       isVerified: map['isVerified'] ?? false,
       createdAt: map['createdAt'] ?? '',
       updatedAt: map['updatedAt'] ?? '',

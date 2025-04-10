@@ -3,11 +3,15 @@ import 'package:difwa/config/app_color.dart';
 import 'package:difwa/controller/admin_controller/add_items_controller.dart';
 import 'package:difwa/controller/admin_controller/vendors_controller.dart';
 import 'package:difwa/controller/admin_controller/payment_history_controller.dart';
+import 'package:difwa/models/stores_models/store_model.dart';
 import 'package:difwa/models/stores_models/store_new_modal.dart';
 import 'package:difwa/screens/admin_screens/order_new_screen.dart';
 import 'package:difwa/screens/admin_screens/store_dashboard_new.dart';
+import 'package:difwa/screens/admin_screens/store_home.dart';
+import 'package:difwa/screens/admin_screens/admin_orders_page.dart';
 import 'package:difwa/screens/admin_screens/store_items.dart';
 import 'package:difwa/screens/admin_screens/store_profile_new.dart';
+// import 'package:difwa/screens/admin_screens/store_profile_screen.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -67,7 +71,7 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
     _orderSubscription = FirebaseFirestore.instance
         .collection('difwa-orders')
         .where('merchantId', isEqualTo: merchantIdd)
-        .where('status', isEqualTo: 'paid') // Listen for paid orders
+        .where('status', isEqualTo: 'pending')
         .snapshots()
         .listen((snapshot) {
       print("Snapshot received: ${snapshot.docs.length} documents found");
@@ -216,7 +220,7 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
     );
   }
 
-  // Show popup with order details
+  // Show popup with order detailssdfdsfsd
   void _showPopup(BuildContext context, Map<String, dynamic> orderData) {
     showDialog(
       context: context,
@@ -338,7 +342,8 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
                             print(addedmoney);
                             print(previousEarnings);
                             print(orderData["totalPrice"]);
-                            await _VendorsController.updateStoreDetails({"earnings":addedmoney});
+                            await _VendorsController.updateStoreDetails(
+                                {"earnings": addedmoney});
                             Navigator.of(context).pop();
                           },
                           style: TextButton.styleFrom(
