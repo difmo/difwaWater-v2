@@ -97,8 +97,12 @@ class DashboardScreen extends StatelessWidget {
                 ],
               ),
             ),
+<<<<<<< HEAD
 
             // Scrollable Dashboard Content
+=======
+// dfgsdc
+>>>>>>> 586dff508ab8fc03d0c2711102dab563c48747d7
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
