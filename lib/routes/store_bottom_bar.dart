@@ -8,10 +8,7 @@ import 'package:difwa/screens/admin_screens/order_new_screen.dart';
 import 'package:difwa/screens/admin_screens/store_dashboard_new.dart';
 import 'package:difwa/screens/admin_screens/store_items.dart';
 import 'package:difwa/screens/admin_screens/store_profile_new.dart';
-<<<<<<< HEAD
 // import 'package:difwa/screens/admin_screens/store_profile_screen.dart';
-=======
->>>>>>> 586dff508ab8fc03d0c2711102dab563c48747d7
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';

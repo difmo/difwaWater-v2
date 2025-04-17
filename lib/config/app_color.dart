@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const Color primary = Color(0xFF5975F1);
-    static const Color logoprimary = Color(0xFF1d3757);
-    static const Color logosecondry = Color(0xFF11baf9); // Opaque color (Blueish tone)
- // Opaque color (Blueish tone)
+  static const Color primary = Color(0xFF169DFF);
+  static const Color logoprimary = Color(0xFF1d3757);
+  static const Color logosecondry =
+      Color(0xFF11baf9); // Opaque color (Blueish tone)
+  // Opaque color (Blueish tone)
   static const Color secondary =
       Color(0xFFDDE1F5); // Opaque color (Light blueish tone)
   static const Color inactive = Color.fromARGB(159, 206, 206, 206);
@@ -15,11 +16,8 @@ class AppColors {
   static const Color myGreen = Colors.green;
   static const Color buttonbgColor = Color(0xFF096FCE);
   static const Color buttontextcolor = Color(0xFF4878BB);
-static const Color inputfield = Color(0xFF169DFF);
-static const Color cardbgcolor = Color(0xFFE9F5F9);
-
-
-
+  static const Color inputfield = Color(0xFF169DFF);
+  static const Color cardbgcolor = Color(0xFFE9F5F9);
 
   static var primaryColor = const Color(0xFF6256CA);
 
@@ -29,10 +27,9 @@ static const Color cardbgcolor = Color(0xFFE9F5F9);
 
   AppColors(Color primaryColor);
 
-   // Custom Gradient for Button Background
+  // Custom Gradient for Button Background
   static const LinearGradient buttonBgGradient = LinearGradient(
-    colors: [Color(0xFF3EFFFF), Color(0xFF169DFF)]
-, // Custom gradient colors
+    colors: [Color(0xFF3EFFFF), Color(0xFF169DFF)], // Custom gradient colors
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -45,5 +42,5 @@ static const Color cardbgcolor = Color(0xFFE9F5F9);
   );
 
   static const Color iconbgStart = Color(0xFF3EFFFF); // Start color
-  static const Color iconbgEnd = Color(0xFF169DFF);   // End color
+  static const Color iconbgEnd = Color(0xFF169DFF); // End color
 }

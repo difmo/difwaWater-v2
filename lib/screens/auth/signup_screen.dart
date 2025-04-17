@@ -1,12 +1,10 @@
 import 'dart:ui';
 
-import 'package:difwa/config/app_color.dart';
 import 'package:difwa/routes/user_bottom_bar.dart';
-import 'package:difwa/screens/user_onboarding.dart';
+import 'package:difwa/utils/app__text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:difwa/config/app_styles.dart';
 import 'package:difwa/controller/auth_controller.dart';
 import 'package:difwa/screens/auth/login_screen.dart';
 import 'package:difwa/widgets/custom_button.dart';
@@ -90,17 +88,16 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                     const SizedBox(height: 30),
                     Text(
                       "Create Your Account ",
-                      style: AppStyle.headingBlack.copyWith(
-                        fontSize: isSmallScreen ? 20 : 24,
+                      style: AppTextStyle.Text18300LogoColor.copyWith(
+                        fontSize: isSmallScreen ? 24 : 30,
+                        fontWeight: FontWeight.bold,
                       ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 10),
                     Text(
                       "Order water with ease or register as a \nvendor to sell. Sign up now!",
-                      style: AppStyle.greyText18.copyWith(
-                        fontSize: isSmallScreen ? 14 : 18,
-                      ),
+                      style: AppTextStyle.Text18300,
                       textAlign: TextAlign.center, // Ensure it's center-aligned
                     ),
                     const SizedBox(height: 30),
@@ -271,7 +268,10 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text("Already have an account?"),
+                        const Text(
+                          "Already have an account?",
+                          style: AppTextStyle.Text18300,
+                        ),
                         TextButton(
                           onPressed: () {
                             Navigator.push(
@@ -280,13 +280,8 @@ class _MobileNumberPageState extends State<MobileNumberPage>
                                     builder: (context) =>
                                         const LoginScreenPage()));
                           },
-                          child: const Text(
-                            'Login here',
-                            style: TextStyle(
-                              color: AppColors.logosecondry,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          child: const Text('SignIn',
+                              style: AppTextStyle.Text18300LogoColor),
                         ),
                       ],
                     ),

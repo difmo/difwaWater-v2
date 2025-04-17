@@ -1,3 +1,4 @@
+import 'package:difwa/config/app_color.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
 
@@ -79,6 +80,16 @@ class AppTextStyle {
     fontSize: 18,
     fontWeight: FontWeight.w300,
     color: ThemeConstants.blackColor,
+  );
+  static const TextStyle Text18300LogoColor = TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.w400,
+    color: AppColors.logoprimary,
+  );
+  static const TextStyle Text16300LogoColor = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.bold,
+    color: AppColors.logoprimary,
   );
   static const TextStyle Text18600 = TextStyle(
     fontSize: 18,

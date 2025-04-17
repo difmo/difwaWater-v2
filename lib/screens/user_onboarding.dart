@@ -1,9 +1,10 @@
 import 'package:difwa/config/app_color.dart';
-import 'package:difwa/config/app_styles.dart';
+import 'package:difwa/controller/OnboardingController.dart';
 import 'package:difwa/routes/app_routes.dart';
-import 'package:difwa/widgets/custom_button.dart';
+import 'package:difwa/utils/app__text_style.dart';
+import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,212 +12,233 @@ class UserOnboardingScreen extends StatefulWidget {
   const UserOnboardingScreen({super.key});
 
   @override
-  _OnboardingScreenState createState() => _OnboardingScreenState();
+  State<UserOnboardingScreen> createState() => _OnboardingScreenState();
 }
 
 class _OnboardingScreenState extends State<UserOnboardingScreen> {
-  final PageController _pageController = PageController();
-  int _currentIndex = 0;
+  final OnboardingController controller = Get.put(OnboardingController());
+
+  final List<Map<String, String>> onboardingData = [
+    {
+      'image': 'assets/onboardingimg/welcome.svg',
+      'title': 'Welcome to Difwa',
+      'description':
+          'Get water delivered to your home with just a few taps. Reliable service, always on time, anytime you need it.',
+    },
+    {
+      'image': 'assets/onboardingimg/waterformet.svg',
+      'title': 'From Source to Sip',
+      'description':
+          'We partner with trusted sources to bring you the cleanest water. Every drop is filtered and certified for safety.',
+    },
+    {
+      'image': 'assets/onboardingimg/onboarding2.svg',
+      'title': 'Hydrate. Simplified.',
+      'description':
+          'Thousands trust Difwa to stay hydrated. Join the community and make water delivery effortless and efficient.',
+    },
+  ];
 
   @override
   void initState() {
     super.initState();
-    _checkOnboardingStatus();
+    // _checkOnboardingStatus();
   }
 
-  // Check if the onboarding is completed
   Future<void> _checkOnboardingStatus() async {
     final prefs = await SharedPreferences.getInstance();
     bool isOnboardingComplete = prefs.getBool('onboardingComplete') ?? false;
-
     if (isOnboardingComplete) {
-      // If onboarding is already complete, skip to the home page
-      Get.offNamed(AppRoutes
-          .home); // Using `Get.offNamed` to replace this screen in the navigation stack
+      Get.offAllNamed(AppRoutes.signUp); // skip onboarding if already done
     }
   }
 
-  // Mark onboarding as complete in SharedPreferences
   Future<void> _markOnboardingComplete() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('onboardingComplete', true);
-  }
-
-  List<Widget> _buildPageIndicator() {
-    return List.generate(
-      3,
-      (index) => AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        margin: const EdgeInsets.symmetric(horizontal: 4.0),
-        height: 10.0,
-        width: _currentIndex == index ? 20.0 : 10.0,
-        decoration: BoxDecoration(
-          color: _currentIndex == index ? AppColors.primary : Colors.grey,
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-      ),
-    );
-  }
-
-  void _onNext() {
-    if (_currentIndex < 2) {
-      _pageController.nextPage(
-          duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
-    } else {
-      _markOnboardingComplete(); // Mark onboarding as completed
-      Get.toNamed(AppRoutes.home); // Navigate to the home screen
-    }
+    Get.offAllNamed(AppRoutes.signUp); // navigate to signup
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: Stack(
         children: [
-          PageView(
-            controller: _pageController,
-            onPageChanged: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
-            },
-            children: [
-              _buildOnboardingPage(
-                middleImage: 'assets/onboardingimg/welcome.svg',
-                newHeading: 'Streamlined Order Management',
-                newDescription:
-                    'Welcome to Difwa! Simplify your water delivery business today.',
-                titleColor: Colors.white,
-                showButton: false,
-                onNextPressed: _onNext,
-              ),
-              _buildOnboardingPage(
-                middleImage: 'assets/onboardingimg/waterformet.svg',
-                newHeading: 'Farm to Table!',
-                newDescription: 'Experience the freshness of local produce.',
-                titleColor: Colors.black,
-                showButton: false,
-                onNextPressed: _onNext,
-              ),
-              _buildOnboardingPage(
-                middleImage: 'assets/onboardingimg/onboarding2.svg',
-                newHeading: 'Join Our Community!',
-                newDescription:
-                    'Connect with fellow food lovers and share recipes.',
-                titleColor: Colors.white,
-                showButton: true,
-                onNextPressed: _onNext,
-              ),
-            ],
-          ),
-          Positioned(
-            bottom: 30.0,
-            left: 20.0,
-            right: 20.0,
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: _buildPageIndicator(),
-                ),
-              ],
-            ),
-          ),
-          // Bottom Left Button
-          Positioned(
-            bottom: 20,
-            left: 25,
-            child: TextButton(
-              onPressed: () {
-                Get.toNamed(AppRoutes.signUp);
-              },
-              child: Text(
-                "Skip",
-                style: TextStyle(
-                  color: AppColors.myblack,
-                  fontSize: 16,
-                ),
-              ),
-            ),
-          ),
-          // Bottom Right Button
-          Positioned(
-            bottom: 20,
-            right: 25,
-            child: Visibility(
-              visible: _currentIndex != 2, // Hide "Next" on the last page
-              child: TextButton(
-                onPressed: () {
-                  if (_currentIndex < 2) {
-                    _pageController.nextPage(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeIn);
-                  } else {
-                    _markOnboardingComplete(); // Mark onboarding as complete
-                    Get.toNamed(AppRoutes.userbottom);
-                  }
-                },
-                child: Text(
-                  "Next",
-                  style: TextStyle(
-                    color: const Color.fromARGB(179, 45, 45, 45),
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            ),
-          ),
+          _buildPageView(),
+          _buildIndicator(),
+          _buildBackgroundCircle(),
+          _buildBottomButtons(),
         ],
       ),
     );
   }
 
-  Widget _buildOnboardingPage({
-    required String middleImage,
-    required String newHeading,
-    required String newDescription,
-    required Color titleColor,
-    required bool showButton,
-    VoidCallback? onNextPressed,
-  }) {
+  void _onNext() {
+    if (controller.currentIndex < 2) {
+      controller.nextPage();
+    } else {
+      _markOnboardingComplete();
+      Get.toNamed(AppRoutes.signUp);
+    }
+  }
+
+  Widget _buildPageView() {
+    return PageView.builder(
+      controller: controller.pageController,
+      onPageChanged: (index) => controller.currentIndex.value = index,
+      itemCount: onboardingData.length,
+      itemBuilder: (context, index) {
+        return OnboardingPage(
+          image: onboardingData[index]['image']!,
+          title: onboardingData[index]['title']!,
+          description: onboardingData[index]['description']!,
+        );
+      },
+    );
+  }
+
+  Widget _buildIndicator() {
+    return Positioned(
+      left: 0,
+      right: 0,
+      bottom: 220,
+      child: Align(
+        alignment: Alignment.center,
+        child: Obx(() {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(
+              onboardingData.length,
+              (index) => Container(
+                margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                width: 50.0,
+                height: 8.0,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  color: controller.currentIndex.value == index
+                      ? AppColors.buttonbgColor
+                      : AppColors.darkGrey,
+                ),
+              ),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _buildBackgroundCircle() {
+    return Positioned(
+      left: -400,
+      right: -400,
+      bottom: -500,
+      child: Center(
+        child: Container(
+          width: 800,
+          height: 700,
+          decoration: BoxDecoration(
+            color: AppColors.cardbgcolor,
+            shape: BoxShape.circle,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomButtons() {
+    return Positioned(
+      left: 0,
+      right: 0,
+      bottom: 50,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Container(
+            width: double.infinity,
+            height: 65,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: _markOnboardingComplete,
+                  child: Text("Skip", style: AppTextStyle.Text18300LogoColor),
+                ),
+                Obx(() {
+                  return controller.currentIndex.value !=
+                          onboardingData.length - 1
+                      ? TextButton(
+                          onPressed: _onNext,
+                          child: Text("Next",
+                              style: AppTextStyle.Text18300LogoColor),
+                        )
+                      : TextButton(
+                          onPressed: _markOnboardingComplete,
+                          child: Text("Get Started",
+                              style: AppTextStyle.Text18300LogoColor),
+                        );
+                }),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class OnboardingPage extends StatelessWidget {
+  final String image;
+  final String title;
+  final String description;
+
+  const OnboardingPage({
+    Key? key,
+    required this.image,
+    required this.title,
+    required this.description,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(0.0),
+      padding: const EdgeInsets.all(8.0),
       child: Stack(
         children: [
-          Center(
+          Positioned(
+            top: 300,
+            left: 0,
+            right: 0,
+            child: SvgPicture.asset(
+              image,
+              height: 300,
+              fit: BoxFit.contain,
+            ),
+          ),
+          Positioned(
+            top: 150,
+            left: 16,
+            right: 16,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const SizedBox(height: 150),
-                SvgPicture.asset(
-                  middleImage,
-                  width:
-                      300, // Adjust this value to make the image larger or smaller
-                  height:
-                      300, // Adjust this value to make the image larger or smaller
-                ),
-                const SizedBox(height: 100),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text(newHeading, style: AppStyle.heading1),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text(newDescription,
-                      textAlign: TextAlign.center, style: AppStyle.greyText18),
-                ),
-                const SizedBox(height: 30),
-                if (showButton)
-                  CustomButton(
-                    text: "Welcome",
-                    onPressed: () {
-                      _markOnboardingComplete(); // Mark onboarding as completed
-                      Get.toNamed(
-                          AppRoutes.signUp); // Navigate to the next screen
-                    },
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Text(
+                    title,
+                    style: AppTextStyle.Text18300LogoColor.copyWith(
+                        fontSize: 28, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
                   ),
-                const SizedBox(height: 100),
+                ),
+                SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Text(
+                    description,
+                    style: AppTextStyle.Text18300LogoColor.copyWith(
+                        fontSize: 18, color: AppColors.buttontextcolor),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ],
             ),
           ),

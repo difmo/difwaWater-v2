@@ -1,4 +1,4 @@
-import 'package:difwa/utils/theme_constant.dart';
+import 'package:difwa/config/app_color.dart';
 import 'package:flutter/material.dart';
 
 class SubscribeButtonComponent extends StatelessWidget {
@@ -19,7 +19,7 @@ class SubscribeButtonComponent extends StatelessWidget {
       onTap: onPressed,
       child: Container(
         decoration: const BoxDecoration(
-          color: ThemeConstants.blackColor,
+          color: AppColors.logoprimary,
           borderRadius: BorderRadius.all(Radius.circular(2)),
         ),
         padding: const EdgeInsets.all(16),

@@ -1,3 +1,4 @@
+import 'package:difwa/config/app_color.dart';
 import 'package:flutter/material.dart';
 
 class ImageCarouselPage extends StatefulWidget {
@@ -90,7 +91,7 @@ class _ImageCarouselPageState extends State<ImageCarouselPage> {
                           begin: Alignment.bottomCenter,
                           end: Alignment.center,
                           colors: [
-                            Colors.black.withOpacity(0.9),
+                            AppColors.textBlack.withOpacity(0.9),
                             Colors.transparent
                           ],
                         ),
@@ -153,7 +154,7 @@ class _ImageCarouselPageState extends State<ImageCarouselPage> {
       height: 8,
       width: _currentPage == index ? 20 : 8,
       decoration: BoxDecoration(
-        color: _currentPage == index ? Colors.blueAccent : Colors.grey,
+        color: _currentPage == index ? AppColors.primary : Colors.grey,
         borderRadius: BorderRadius.circular(8),
       ),
     );

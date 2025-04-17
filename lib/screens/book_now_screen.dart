@@ -110,16 +110,6 @@ class _BookNowScreenState extends State<BookNowScreen> {
     });
 
     if (package != null) {
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   SnackBar(
-      //       content: Text(
-      //         'Selected Package: ${package['size']}L',
-      //         style: TextStyle(color: Colors.white), // Ensure text is visible
-      //       ),
-      //       duration: const Duration(milliseconds: 2), // Set duration to 2ms
-      //       backgroundColor: ThemeConstants.primaryColor // Set background color
-      //       ),
-      // );
       _calculateTotalPrice(); // Ensure immediate total price update
     }
   }

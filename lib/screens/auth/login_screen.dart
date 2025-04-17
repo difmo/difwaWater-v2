@@ -1,10 +1,9 @@
 import 'dart:ui';
+import 'package:difwa/utils/app__text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:difwa/config/app_color.dart';
-import 'package:difwa/config/app_styles.dart';
 import 'package:difwa/utils/validators.dart';
 import 'package:difwa/controller/auth_controller.dart';
 import 'package:difwa/widgets/custom_button.dart';
@@ -24,8 +23,6 @@ class _LoginScreenState extends State<LoginScreenPage>
   final _passwordController = TextEditingController();
   final authController = Get.find<AuthController>();
 
-
-  
   final _formKeyEmail = GlobalKey<FormState>();
   final _formKeyPassword = GlobalKey<FormState>();
   bool isLoading = false;
@@ -92,9 +89,8 @@ class _LoginScreenState extends State<LoginScreenPage>
                       opacity: _fadeAnimation,
                       child: Text(
                         "Welcome Back!",
-                        style: AppStyle.headingBlack.copyWith(
+                        style: AppTextStyle.Text18300LogoColor.copyWith(
                           fontSize: isSmallScreen ? 22 : 26,
-                          color: Colors.black87,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -104,10 +100,7 @@ class _LoginScreenState extends State<LoginScreenPage>
                       opacity: _fadeAnimation,
                       child: Text(
                         "Log in to order water instantly or \nmanage your vendor account.",
-                        style: AppStyle.greyText18.copyWith(
-                          fontSize: isSmallScreen ? 14 : 16,
-                          color: Colors.black54,
-                        ),
+                        style: AppTextStyle.Text18300,
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -155,10 +148,8 @@ class _LoginScreenState extends State<LoginScreenPage>
                               onPressed: () {
                                 Get.toNamed(AppRoutes.signUp);
                               },
-                              child: const Text(
-                                'Forgot Password?',
-                                style: TextStyle(color: AppColors.logosecondry),
-                              ),
+                              child: const Text('Forgot Password?',
+                                  style: AppTextStyle.Text18300LogoColor),
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -173,15 +164,15 @@ class _LoginScreenState extends State<LoginScreenPage>
                                   try {
                                     bool success =
                                         await authController.loginwithemail(
-                                      _emailController.text,
-                                      _passwordController.text,
-                                      isLoading,
-                                    );
+                                            _emailController.text,
+                                            _passwordController.text,
+                                            isLoading,
+                                            context);
 
-                                    if (!success) {
-                                      Get.snackbar("Login Failed",
-                                          "Invalid email or password.");
-                                    }
+                                    // if (!success) {
+                                    //   Get.snackbar("Login Failed",
+                                    //       "Invalid email or password.");
+                                    // }
                                   } catch (e) {
                                     Get.snackbar(
                                         "Error", "Something went wrong");
@@ -200,18 +191,15 @@ class _LoginScreenState extends State<LoginScreenPage>
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text(
-                                "Don't have an account?",
-                                style: TextStyle(color: Colors.black54),
-                              ),
+                              const Text("Don't have an account?",
+                                  style: AppTextStyle.Text18300),
                               TextButton(
                                 onPressed: () {
                                   Get.toNamed(AppRoutes.signUp);
                                 },
                                 child: const Text(
-                                  'Sign Up Now',
-                                  style:
-                                      TextStyle(color: AppColors.logosecondry),
+                                  'Create New',
+                                  style: AppTextStyle.Text18300LogoColor,
                                 ),
                               ),
                             ],

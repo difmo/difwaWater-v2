@@ -6,7 +6,6 @@ import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
 
 class VendorsController extends GetxController {
   final _formKey = GlobalKey<FormState>();
@@ -115,14 +114,10 @@ class VendorsController extends GetxController {
     print("hello2");
 
     try {
-     
-
       String userId = await _getCurrentUserId();
       String merchantId = await _generateMerchantId();
 
       print("all data uploaded");
-
- 
 
       VendorModal newUser = VendorModal(
         userId: userId,

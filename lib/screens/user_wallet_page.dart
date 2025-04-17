@@ -117,7 +117,7 @@ class _WalletScreenState extends State<WalletScreen> {
           onNotificationPressed: () => Get.toNamed(AppRoutes.notification),
           onMenuPressed: widget.onMenuPressed,
           hasNotifications: true,
-          badgeCount: 5,
+          badgeCount: 0,
           usersData: usersData,
         ),
       ),

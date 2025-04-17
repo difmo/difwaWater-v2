@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ThemeConstants {
-  static const Color primaryColor = Color(0xFF4BBEFF);
-  static const Color primaryColorNew =    Color(0xFF02739C);
+  static const Color primaryColor = Color.fromARGB(255, 58, 165, 228);
+  static const Color primaryColorNew = Color(0xFF02739C);
 
   static const Color borderColor = Color(0xFFD9D9D9);
 
@@ -24,5 +24,3 @@ class ThemeConstants {
   static const String videoUrl =
       "https://firebasestorage.googleapis.com/v0/b/global-24bf4.appspot.com/o/dummy%2Fdummy1mp.mp4?alt=media&token=7cbef76f-c686-4622-a11b-a2fd5a3b65ae";
 }
-
-

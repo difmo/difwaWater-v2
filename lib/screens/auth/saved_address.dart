@@ -8,7 +8,7 @@ import 'package:difwa/models/address_model.dart';
 // Extension to capitalize first letter
 extension CapExtension on String {
   String get capitalizeFirst =>
-      this.isNotEmpty ? '${this[0].toUpperCase()}${this.substring(1)}' : '';
+      isNotEmpty ? '${this[0].toUpperCase()}${substring(1)}' : '';
 }
 
 class SavveAddressPage extends StatelessWidget {
@@ -75,7 +75,7 @@ class SavveAddressPage extends StatelessWidget {
                                 : Colors.grey.shade300,
                             width: isSelected ? 2 : 1,
                           ),
-                          boxShadow: [
+                          boxShadow: const [
                             BoxShadow(
                               color: Colors.black12,
                               blurRadius: 6,

@@ -3,6 +3,7 @@ import 'package:difwa/screens/book_now_screen.dart';
 import 'package:difwa/screens/ordershistory_screen.dart';
 import 'package:difwa/screens/profile_screen.dart';
 import 'package:difwa/screens/user_wallet_page.dart';
+import 'package:difwa/utils/app__text_style.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -77,8 +78,8 @@ class _HomeScreenState extends State<BottomUserHomePage> {
           ),
         ),
         child: BottomNavigationBar(
-          selectedLabelStyle: TextStyle(color: Colors.blue),
-          unselectedItemColor: Colors.black,
+          selectedLabelStyle: AppTextStyle.Text16300LogoColor,
+          unselectedItemColor: AppColors.logoprimary,
           backgroundColor: Colors.white,
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
@@ -89,7 +90,7 @@ class _HomeScreenState extends State<BottomUserHomePage> {
             BottomNavigationBarItem(
               icon: _buildSvgIcon(
                   'assets/icons/order.svg', 'assets/icons/order_filled.svg', 1),
-              label: 'My Orders',
+              label: 'Orders',
             ),
             BottomNavigationBarItem(
               icon: _buildSvgIcon('assets/icons/wallet.svg',

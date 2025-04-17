@@ -4,7 +4,6 @@ import 'package:difwa/config/app_color.dart';
 import 'package:difwa/controller/address_controller.dart';
 import 'package:difwa/models/address_model.dart';
 import 'package:difwa/utils/app__text_style.dart';
-import 'package:difwa/utils/loader.dart';
 import 'package:difwa/utils/location_helper.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/utils/validators.dart';
@@ -172,7 +171,8 @@ class _AddressFormState extends State<AddressForm> {
       backgroundColor: ThemeConstants.whiteColor,
       appBar: AppBar(
         backgroundColor: ThemeConstants.whiteColor,
-        title: Text('Save Address', style: AppTextStyle.Text18700),
+        title: Text(widget.flag != "isEdit" ? 'Save Address' : 'Update Address',
+            style: AppTextStyle.Text18700),
       ),
       body: Stack(
         children: [
@@ -204,6 +204,7 @@ class _AddressFormState extends State<AddressForm> {
                     children: [
                       Expanded(
                         child: CommonTextField(
+                          icon: Icons.location_pin,
                           inputType: InputType.pin,
                           controller: _zipController,
                           label: 'Pincode',
@@ -222,7 +223,7 @@ class _AddressFormState extends State<AddressForm> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Row(
-                              children: [
+                              children: const [
                                 Icon(Icons.location_on,
                                     color: AppColors.inputfield),
                                 SizedBox(width: 10),
@@ -239,6 +240,7 @@ class _AddressFormState extends State<AddressForm> {
                     children: [
                       Expanded(
                         child: CommonTextField(
+                          icon: Icons.location_city,
                           inputType: InputType.name,
                           controller: _stateController,
                           label: 'State',
@@ -249,6 +251,7 @@ class _AddressFormState extends State<AddressForm> {
                       SizedBox(width: 10),
                       Expanded(
                         child: CommonTextField(
+                          icon: Icons.location_city,
                           inputType: InputType.name,
                           controller: _cityController,
                           label: 'City',
@@ -260,6 +263,7 @@ class _AddressFormState extends State<AddressForm> {
                   ),
                   SizedBox(height: 20),
                   CommonTextField(
+                    icon: Icons.home,
                     inputType: InputType.address,
                     controller: _streetController,
                     label: 'House No./Building Name',
@@ -268,6 +272,7 @@ class _AddressFormState extends State<AddressForm> {
                   ),
                   SizedBox(height: 20),
                   CommonTextField(
+                    icon: Icons.streetview,
                     inputType: InputType.address,
                     controller: _floorController,
                     label: 'Road name, Area, Landmark',
@@ -287,14 +292,18 @@ class _AddressFormState extends State<AddressForm> {
                     ],
                   ),
                   SizedBox(height: 10),
-                  LocationTypeSelector(
-                    selected: selectedLocationType,
-                    options: ["home", "work"],
-                    onChanged: (val) {
-                      setState(() {
-                        selectedLocationType = val;
-                      });
-                    },
+                  Row(
+                    children: [
+                      LocationTypeSelector(
+                        selected: selectedLocationType,
+                        options: const ["home", "work"],
+                        onChanged: (val) {
+                          setState(() {
+                            selectedLocationType = val;
+                          });
+                        },
+                      ),
+                    ],
                   ),
                   SizedBox(height: 20),
                   Row(

@@ -39,7 +39,7 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
   bool isLoading = false;
   List<XFile?> selectedImages = [];
   List<XFile?> businessImages = [];
-    List<String> uploadedUrls = [];
+  List<String> uploadedUrls = [];
   XFile? businessVideo;
 
   final _formKey = GlobalKey<FormState>();
@@ -122,7 +122,6 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                 onChanged: (value) {
                   _formKeyVendorName.currentState!.validate();
                 },
-                
                 label: 'Vendor Name',
                 hint: 'Vendor Name',
                 icon: Icons.email,
@@ -243,23 +242,27 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
           children: [
             stepHeader("KYC / Documents"),
             uploadCard("Aadhaar Card", () => pickFile("Aadhaar Card"),
-                aadhaarCardImage,imageUrl[0]),
-            uploadCard("PAN Card", () => pickFile("PAN Card"), panCardImage, imageUrl[1]),  
+                aadhaarCardImage, imageUrl[0]),
+            uploadCard("PAN Card", () => pickFile("PAN Card"), panCardImage,
+                imageUrl[1]),
             uploadCard("Passport-size Photo", () => pickFile("Passport Photo"),
-                passportPhotoImage,imageUrl[2]),
+                passportPhotoImage, imageUrl[2]),
             uploadCard("Business License", () => pickFile("Business License"),
-                businessLicenseImage ,imageUrl[3]),
+                businessLicenseImage, imageUrl[3]),
             uploadCard(
                 "Water Quality Certificate",
                 () => pickFile("Water Quality Certificate"),
-                waterQualityCertificateImage ,imageUrl[4]),
+                waterQualityCertificateImage,
+                imageUrl[4]),
             uploadCard("Identity Proof", () => pickFile("Identity Proof"),
-                identityProofImage ,imageUrl[5]),
-            uploadCard("Bank Passbook or Cancelled Cheque",
-                () => pickFile("Bank Document"), bankDocumentImage ,imageUrl[0]),
+                identityProofImage, imageUrl[5]),
+            uploadCard(
+                "Bank Passbook or Cancelled Cheque",
+                () => pickFile("Bank Document"),
+                bankDocumentImage,
+                imageUrl[0]),
             uploadCard("Business Images", () => pickBusinessImages(),
-                businessImages.isEmpty ? null : businessImages[0] , imageUrl[0]),
-           
+                businessImages.isEmpty ? null : businessImages[0], imageUrl[0]),
           ],
         ),
 
@@ -385,16 +388,14 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
           borderRadius: BorderRadius.circular(8),
         ),
         child: Center(
-          child: image == null
-              ? Text("Upload $label",
-                  style: const TextStyle(color: Colors.grey))
-              : Image.network(
-                 url,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                )
-            
-        ),
+            child: image == null
+                ? Text("Upload $label",
+                    style: const TextStyle(color: Colors.grey))
+                : Image.network(
+                    url,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                  )),
       ),
     );
   }
@@ -488,7 +489,6 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
     );
   }
 
-
   // }
 
   Future<void> pickBusinessVideo() async {
@@ -503,17 +503,16 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
     }
   }
 
-
   Future<void> pickBusinessImages() async {
     final ImagePicker picker = ImagePicker();
-    final List<XFile>? pickedFiles = await picker.pickMultiImage();
-    if (pickedFiles != null && pickedFiles.isNotEmpty) {
+    final List<XFile> pickedFiles = await picker.pickMultiImage();
+    if (pickedFiles.isNotEmpty) {
       uploadImagesOneByOne(pickedFiles, "Business Images");
-      
     }
   }
-  Future<void> uploadImagesOneByOne(List<XFile?> images, String documentType) async {
 
+  Future<void> uploadImagesOneByOne(
+      List<XFile?> images, String documentType) async {
     for (var image in images) {
       if (image != null) {
         String url = await uploadImage(File(image.path), documentType);
@@ -521,6 +520,7 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
       }
     }
   }
+
   Widget displayBusinessImages() {
     return GridView.builder(
       shrinkWrap: true,
@@ -607,7 +607,7 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
             style: const TextStyle(fontSize: 16),
           ),
           Text(
-            "$value",
+            value,
             style: const TextStyle(fontSize: 16),
           ),
         ],
@@ -616,7 +616,6 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
   }
 
   Future<String> uploadImage(File image, String documentType) async {
-
     String url = await controller.uploadImage(image, documentType);
     return url;
   }
@@ -693,7 +692,7 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                         _formKeyVendorBussinessName.currentState?.validate();
                         // if (_formKeyVendorName.currentState?.validate() ??
                         //     false) {
-                          nextStep();
+                        nextStep();
                         // }
                       },
                     ),

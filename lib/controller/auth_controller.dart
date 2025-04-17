@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:difwa/models/user_models/user_details_model.dart';
 import 'package:difwa/routes/app_routes.dart';
+import 'package:difwa/widgets/CustomPopup.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,8 +13,6 @@ class AuthController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   var verificationId = ''.obs;
   var userRole = ''.obs;
-
-  
 
 ////////// SIGN UP WITH EMAIL ///////////////////////////
 
@@ -48,8 +47,8 @@ class AuthController extends GetxController {
   }
 
 ////////////////////////// LOGIN WITH EMAIL ///////////////////////////
-  Future<bool> loginwithemail(
-      String email, String password, bool isLoading) async {
+  Future<bool> loginwithemail(String email, String password, bool isLoading,
+      BuildContext context) async {
     try {
       await _auth.signInWithEmailAndPassword(
         email: email,
@@ -59,10 +58,34 @@ class AuthController extends GetxController {
       _navigateToDashboard();
       return true;
     } on FirebaseAuthException catch (e) {
-      Get.snackbar('Error', e.message ?? 'An error occurred while logging in');
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CustomPopup(
+              title: "Oops! Login Failed \n${e.message.toString()}",
+              description: e.message.toString(),
+              buttonText: "Got It!",
+              onButtonPressed: () {
+                Get.back();
+              },
+            );
+          });
+
       return false;
     } catch (e) {
-      Get.snackbar('Error', 'An unexpected error occurred: $e');
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CustomPopup(
+              title: "Oops! Something Went Wrong",
+              description: "An unexpected error occurred: $e",
+              buttonText: "Got It!",
+              onButtonPressed: () {
+                Get.back();
+              },
+            );
+          });
+
       return false;
     }
   }
@@ -214,6 +237,7 @@ class AuthController extends GetxController {
         walletBalance: 0.0,
         orderpin: '');
   }
+
   Future<UserDetailsModel> fetchUserDatabypassUserId(String userId) async {
     DocumentSnapshot userDoc =
         await _firestore.collection('difwa-users').doc(userId).get();
@@ -226,7 +250,7 @@ class AuthController extends GetxController {
 
       return userDetails;
     }
-      return UserDetailsModel(
+    return UserDetailsModel(
         docId: "",
         uid: "",
         name: "",
