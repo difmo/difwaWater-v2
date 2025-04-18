@@ -23,8 +23,14 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
   final PageController _controller = PageController();
   final VendorsController controller = Get.put(VendorsController());
 // dsfsd
+  final _formKey = GlobalKey<FormState>();
   final _formKeyVendorName = GlobalKey<FormState>();
   final _formKeyVendorBussinessName = GlobalKey<FormState>();
+  final _formKeyPersonName = GlobalKey<FormState>();
+  final _forKeyPhoneNumber = GlobalKey<FormState>();
+  final _formKeyEmail = GlobalKey<FormState>();
+  final _formKeyVendorType = GlobalKey<FormState>();
+
   List<String> imageUrl = [
     "",
     "",
@@ -41,8 +47,6 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
   List<XFile?> businessImages = [];
   List<String> uploadedUrls = [];
   XFile? businessVideo;
-
-  final _formKey = GlobalKey<FormState>();
 
   // Form Data
   String vendorName = '';
@@ -103,59 +107,106 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             stepHeader("Basic Vendor Info"),
-            // textInput("Vendor Name", "Enter vendor name", Icons.business,
-            //     (value) {
-            //   _formKeyVendorName.currentState!.validate();
-            //   vendorName = value;
-            // },
-
-            //     // (value) => vendorName = value,
-
-            //     controller.vendorNameController,
-            //     InputType.text),
-
+            SizedBox(
+              height: 10,
+            ),
             Form(
               key: _formKeyVendorName,
               child: CommonTextField(
                 controller: controller.vendorNameController,
-                inputType: InputType.email,
+                hint: " Enter Vendor Name",
+                label: "Vendor Name",
+                icon: Icons.person,
+                validator: (value) =>
+                    Validators.validateEmpty(value, "Vendor Name"),
                 onChanged: (value) {
-                  _formKeyVendorName.currentState!.validate();
+                  _formKeyVendorName.currentState?.validate();
                 },
-                label: 'Vendor Name',
-                hint: 'Vendor Name',
-                icon: Icons.email,
-                validator: Validators.validateName,
+                inputType: InputType.text,
               ),
             ),
-            textInput(
-                "Bussiness Name",
-                "Enter vendor name",
-                Icons.business,
-                (value) => bussinessName = value,
-                controller.bussinessNameController,
-                InputType.text),
-            textInput(
-                "Contact Person Name",
-                "Enter name",
-                Icons.person,
-                (value) => contactPerson = value,
-                controller.contactPersonController,
-                InputType.text),
-            textInput(
-                "Phone Number",
-                "Enter phone number",
-                Icons.phone,
-                (value) => phoneNumber = value,
-                controller.phoneNumberController,
-                InputType.phone),
-            textInput(
-                "Email",
-                "Enter email",
-                Icons.email,
-                (value) => email = value,
-                controller.emailController,
-                InputType.email),
+            SizedBox(
+              height: 20,
+            ),
+            Form(
+              key:_formKeyPersonName,
+              child: CommonTextField(
+                controller: controller.vendorNameController,
+                hint: "Bussiness Name",
+                label: "Bussiness Name",
+                icon: Icons.business,
+                validator: (value) => Validators.validateEmpty(
+                  value,
+                  "Bussiness Name",
+                ),
+                onChanged: (value) {
+                  _formKeyVendorBussinessName.currentState?.validate();
+                },
+                inputType: InputType.text,
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+
+            Form(
+              key: _formKeyVendorBussinessName,
+              child: CommonTextField(
+                controller: controller.contactPersonController,
+                hint: "Contact Person Name",
+                icon: Icons.person,
+                validator: (value) =>
+                    Validators.validateEmpty(value, "Contact Person Name"),
+                onChanged: (value) {
+                  _formKeyVendorBussinessName.currentState?.validate();
+                },
+                inputType: InputType.text,
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Form(
+              child: CommonTextField(
+                controller: controller.phoneNumberController,
+                hint: "Phone Number",
+                icon: Icons.phone,
+                validator: (value) =>
+                    Validators.validateEmpty(value, "Phone Number"),
+                onChanged: (value) {
+                  _formKeyVendorName.currentState?.validate();
+                },
+                inputType: InputType.phone,
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Form(
+              child: CommonTextField(
+                controller: controller.emailController,
+                hint: "Email",
+                icon: Icons.email,
+                validator: (value) => Validators.validateEmpty(value, "Email"),
+                onChanged: (value) {
+                  _formKeyVendorName.currentState?.validate();
+                },
+                inputType: InputType.email,
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+
+            // textInput(
+            //   "Email",
+            //   "Enter email",
+            //   Icons.email,
+            //   (value) => email = value,
+            //   controller.emailController,
+            //   InputType.email,
+            //   _formKeyVendorName,
+            // ),
             dropdownInput("Vendor Type", ["Bottled", "Tanker", "RO", "Mineral"],
                 (value) => vendorType = value ?? ''),
           ],
@@ -167,33 +218,41 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
           children: [
             stepHeader("Location Details"),
             textInput(
-                "Business Address",
-                "Enter address",
-                Icons.location_on,
-                (value) => businessAddress = value,
-                controller.businessAddressController,
-                InputType.address),
+              "Business Address",
+              "Enter address",
+              Icons.location_on,
+              (value) => businessAddress = value,
+              controller.businessAddressController,
+              InputType.address,
+              _formKeyVendorName,
+            ),
             textInput(
-                "Area/City",
-                "Enter area or city",
-                Icons.location_city,
-                (value) => areaCity = value,
-                controller.areaCityController,
-                InputType.text),
+              "Area/City",
+              "Enter area or city",
+              Icons.location_city,
+              (value) => areaCity = value,
+              controller.areaCityController,
+              InputType.text,
+              _formKeyVendorName,
+            ),
             textInput(
-                "PIN/ZIP Code",
-                "Enter postal code",
-                Icons.pin,
-                (value) => postalCode = value,
-                controller.postalCodeController,
-                InputType.pin),
+              "PIN/ZIP Code",
+              "Enter postal code",
+              Icons.pin,
+              (value) => postalCode = value,
+              controller.postalCodeController,
+              InputType.pin,
+              _formKeyVendorName,
+            ),
             textInput(
-                "State/Province",
-                "Enter state",
-                Icons.location_on,
-                (value) => state = value,
-                controller.stateController,
-                InputType.text),
+              "State/Province",
+              "Enter state",
+              Icons.location_on,
+              (value) => state = value,
+              controller.stateController,
+              InputType.text,
+              _formKeyVendorName,
+            ),
           ],
         ),
 
@@ -207,33 +266,41 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                 ["Drinking", "Industrial", "RO", "Mineral"],
                 (value) => waterType = value ?? ''),
             textInput(
-                "Capacity Options",
-                "e.g. 20L, 500L, 1000L",
-                Icons.filter_1,
-                (value) => capacityOptions = value,
-                controller.capacityOptionsController,
-                InputType.text),
+              "Capacity Options",
+              "e.g. 20L, 500L, 1000L",
+              Icons.filter_1,
+              (value) => capacityOptions = value,
+              controller.capacityOptionsController,
+              InputType.text,
+              _formKeyVendorName,
+            ),
             textInput(
-                "Daily Supply Capacity (in Litres)",
-                "e.g. 2000",
-                Icons.local_drink,
-                (value) => dailySupply = value,
-                controller.dailySupplyController,
-                InputType.text),
+              "Daily Supply Capacity (in Litres)",
+              "e.g. 2000",
+              Icons.local_drink,
+              (value) => dailySupply = value,
+              controller.dailySupplyController,
+              InputType.text,
+              _formKeyVendorName,
+            ),
             textInput(
-                "Delivery Area Covered",
-                "Enter area",
-                Icons.map,
-                (value) => deliveryArea = value,
-                controller.deliveryAreaController,
-                InputType.text),
+              "Delivery Area Covered",
+              "Enter area",
+              Icons.map,
+              (value) => deliveryArea = value,
+              controller.deliveryAreaController,
+              InputType.text,
+              _formKeyVendorName,
+            ),
             textInput(
-                "Delivery Timings",
-                "e.g. 6 AM - 8 PM",
-                Icons.access_time,
-                (value) => deliveryTimings = value,
-                controller.deliveryTimingsController,
-                InputType.text),
+              "Delivery Timings",
+              "e.g. 6 AM - 8 PM",
+              Icons.access_time,
+              (value) => deliveryTimings = value,
+              controller.deliveryTimingsController,
+              InputType.text,
+              _formKeyVendorName,
+            ),
           ],
         ),
 
@@ -272,42 +339,52 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
           children: [
             stepHeader("Financial / Payment Info"),
             textInput(
-                "Bank Name",
-                "Enter bank name",
-                Icons.account_balance,
-                (value) => bankName = value,
-                controller.bankNameController,
-                InputType.text),
+              "Bank Name",
+              "Enter bank name",
+              Icons.account_balance,
+              (value) => bankName = value,
+              controller.bankNameController,
+              InputType.text,
+              _formKeyVendorName,
+            ),
             textInput(
-                "Account Number",
-                "Enter account number",
-                Icons.account_box,
-                (value) => accountNumber = value,
-                controller.accountNumberController,
-                InputType.text),
+              "Account Number",
+              "Enter account number",
+              Icons.account_box,
+              (value) => accountNumber = value,
+              controller.accountNumberController,
+              InputType.text,
+              _formKeyVendorName,
+            ),
             textInput(
-                "UPI ID",
-                "Enter UPI ID",
-                Icons.account_box,
-                (value) => upiId = value,
-                controller.upiIdController,
-                InputType.text),
+              "UPI ID",
+              "Enter UPI ID",
+              Icons.account_box,
+              (value) => upiId = value,
+              controller.upiIdController,
+              InputType.text,
+              _formKeyVendorName,
+            ),
             textInput(
-                "IFSC/SWIFT Code",
-                "Enter IFSC/SWIFT",
-                Icons.code,
-                (value) => ifscCode = value,
-                controller.ifscCodeController,
-                InputType.text),
+              "IFSC/SWIFT Code",
+              "Enter IFSC/SWIFT",
+              Icons.code,
+              (value) => ifscCode = value,
+              controller.ifscCodeController,
+              InputType.text,
+              _formKeyVendorName,
+            ),
             dropdownInput("Payment Terms", ["Prepaid", "Postpaid", "Weekly"],
                 (value) => status = value ?? ''),
             textInput(
-                "GST Number / Tax ID",
-                "Enter GST/Tax ID",
-                Icons.business_center,
-                (value) => gstNumber = value,
-                controller.gstNumberController,
-                InputType.text),
+              "GST Number / Tax ID",
+              "Enter GST/Tax ID",
+              Icons.business_center,
+              (value) => gstNumber = value,
+              controller.gstNumberController,
+              InputType.text,
+              _formKeyVendorName,
+            ),
           ],
         ),
 
@@ -333,6 +410,7 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
     Function(String) onChanged,
     TextEditingController controller,
     InputType type,
+    GlobalKey<FormState> _formKey,
   ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -340,18 +418,30 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
         Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
         const SizedBox(height: 6),
         CommonTextField(
-          // validator: ,
           controller: controller,
           hint: hint,
           icon: icon,
           onChanged: onChanged,
           inputType: type,
-          validator: Validators.validateName,
         ),
       ]),
     );
   }
+  // Form(
+  //             key: _formKeyVendorName,
+  //             child: CommonTextField(
+  //               controller: controller.vendorNameController,
+  //               inputType: InputType.email,
+  //               onChanged: (value) {
+  //                 _formKeyVendorName.currentState!.validate();
+  //               },
 
+  //               label: 'Vendor Name',
+  //               hint: 'Vendor Name',
+  //               icon: Icons.email,
+  //               validator: Validators.validateName,
+  //             ),
+  //           ),
   Widget dropdownInput(
       String label, List<String> items, Function(String?) onChanged) {
     String? selectedValue;
@@ -690,10 +780,10 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                           _currentStep == steps.length - 1 ? "Finish" : "Next",
                       onPressed: () {
                         _formKeyVendorBussinessName.currentState?.validate();
-                        // if (_formKeyVendorName.currentState?.validate() ??
-                        //     false) {
-                        nextStep();
-                        // }
+                        if (_formKeyVendorName.currentState?.validate() ??
+                            false) {
+                          nextStep();
+                        }
                       },
                     ),
                   ),

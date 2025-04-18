@@ -48,9 +48,11 @@ class _OnboardingScreenState extends State<UserOnboardingScreen> {
   Future<void> _checkOnboardingStatus() async {
     final prefs = await SharedPreferences.getInstance();
     bool isOnboardingComplete = prefs.getBool('onboardingComplete') ?? false;
-    if (isOnboardingComplete) {
-      Get.offAllNamed(AppRoutes.signUp); // skip onboarding if already done
-    }
+
+    // if (isOnboardingComplete) {
+    //   Get.offNamed(AppRoutes
+    //       .home); // Using `Get.offNamed` to replace this screen in the navigation stack
+    // }
   }
 
   Future<void> _markOnboardingComplete() async {

@@ -32,6 +32,16 @@ class Validators {
     return null;
   }
 
+  static String? validateEmpty(String? value, String? fieldName) {
+    if (value == null || value.isEmpty) {
+      return '$fieldName is required';
+    }
+    // if (!RegExp(r'^[A-Z][a-zA-Z ]*$').hasMatch(value)) {
+    //   return 'Name must start with a capital letter and contain only letters';
+    // }
+    return null;
+  }
+
   static String? validatePassword(String? value) {
     if (value == null || value.isEmpty) {
       return 'Password is required';
@@ -86,6 +96,13 @@ class Validators {
       return 'Road name, Area, Landmark is required';
     }
 
+    return null;
+  }
+
+  static String? validateRequiredField(String? value, String? fieldName) {
+    if (value == null) {
+      return '$fieldName is required';
+    }
     return null;
   }
 }

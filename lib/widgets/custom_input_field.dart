@@ -229,7 +229,7 @@ class _CommonTextFieldState extends State<CommonTextField> {
           ),
           borderRadius: BorderRadius.circular(widget.borderRadius ?? 16.0),
         ),
-        contentPadding: EdgeInsets.symmetric(vertical: 18, horizontal: 17),
+        contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 17),
 
         // contentPadding:
         //     EdgeInsets.symmetric(vertical: widget.height ?? 0, horizontal: 17),

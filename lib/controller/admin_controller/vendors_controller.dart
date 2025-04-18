@@ -19,6 +19,9 @@ class VendorsController extends GetxController {
   final TextEditingController bussinessNameController = TextEditingController();
   final TextEditingController contactPersonController = TextEditingController();
   final TextEditingController phoneNumberController = TextEditingController();
+  final TextEditingController vendorTypeController = TextEditingController();
+
+
   final TextEditingController businessAddressController =
       TextEditingController();
   final TextEditingController areaCityController = TextEditingController();
