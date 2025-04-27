@@ -1,3 +1,4 @@
+import 'package:difwa/config/app_color.dart';
 import 'package:difwa/routes/app_routes.dart';
 import 'package:difwa/utils/app__text_style.dart';
 import 'package:difwa/utils/theme_constant.dart';
@@ -25,7 +26,9 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
         height: 10.0,
         width: _currentIndex == index ? 20.0 : 10.0,
         decoration: BoxDecoration(
-          color: _currentIndex == index ? ThemeConstants.primaryColor : Colors.grey,
+          color: _currentIndex == index
+              ? ThemeConstants.primaryColor
+              : Colors.grey,
           borderRadius: BorderRadius.circular(10.0),
         ),
       ),
@@ -149,35 +152,40 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
                 ),
                 const SizedBox(height: 130),
                 Padding(
-                  padding:  EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text(newHeading, style: AppTextStyle.Text18700.copyWith(color: ThemeConstants.primaryColor)),
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text(newHeading,
+                      style: AppTextStyle.Text18700.copyWith(
+                          color: ThemeConstants.primaryColor)),
                 ),
                 // New Description below the new heading
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Text(newDescription,
-                      textAlign: TextAlign.center, style:AppTextStyle.Text14400),
+                      textAlign: TextAlign.center,
+                      style: AppTextStyle.Text14400),
                 ),
                 const SizedBox(height: 30),
                 // Button on the last page
                 if (showButton)
-
-                  ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(ThemeConstants.primaryColor),
-                      foregroundColor: WidgetStateProperty.all(
-                          Colors.white), // Set text color
-                    ),
-                    onPressed: onNextPressed, // Call the passed function
-                    child: const Text(
-                      "Create Store",
-                      style: TextStyle(
+                  Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor:
+                            WidgetStateProperty.all(AppColors.logoprimary),
+                        foregroundColor: WidgetStateProperty.all(Colors.white),
+                      ),
+                      onPressed: onNextPressed,
+                      child: const Text(
+                        "Create Store",
+                        style: TextStyle(
                           color: Colors.white,
-                          fontWeight:
-                              FontWeight.bold), // Ensure text color is red
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
-
                 const SizedBox(height: 100),
               ],
             ),

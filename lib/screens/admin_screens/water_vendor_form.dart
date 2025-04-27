@@ -27,7 +27,6 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
   final _formKeyVendorName = GlobalKey<FormState>();
   final _formKeyVendorBussinessName = GlobalKey<FormState>();
   final _formKeyPersonName = GlobalKey<FormState>();
-  
 
   List<String> imageUrl = [
     "",
@@ -128,7 +127,7 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
               height: 20,
             ),
             Form(
-              key:_formKeyPersonName,
+              key: _formKeyPersonName,
               child: CommonTextField(
                 controller: controller.vendorNameController,
                 hint: "Bussiness Name",
@@ -778,9 +777,7 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                       text:
                           _currentStep == steps.length - 1 ? "Finish" : "Next",
                       onPressed: () {
-                 
-                          nextStep();
-                        
+                        nextStep();
                       },
                     ),
                   ),
