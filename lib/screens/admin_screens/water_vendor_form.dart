@@ -80,6 +80,7 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
   XFile? bankDocumentImage;
 
   void nextStep() {
+    print("hello");
     if (_currentStep < 5) {
       setState(() => _currentStep++);
       _controller.nextPage(
