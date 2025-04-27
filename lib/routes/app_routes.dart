@@ -5,6 +5,7 @@ import 'package:difwa/screens/add_balance_screen.dart';
 import 'package:difwa/screens/admin_screens/payment_methods.dart';
 import 'package:difwa/screens/admin_screens/request_for_withdraw.dart';
 import 'package:difwa/screens/admin_screens/global_popup.dart';
+import 'package:difwa/screens/admin_screens/stor_edit_profile.dart';
 import 'package:difwa/screens/admin_screens/water_vendor_form.dart';
 import 'package:difwa/screens/auth/adddress_form_page.dart';
 import 'package:difwa/screens/auth/login_screen.dart';
@@ -34,6 +35,7 @@ class AppRoutes {
   static const fullScreenPopup = '/fullScreenPopup';
   static const useronboarding = '/useronboarding';
   static const vendoform = '/vendorform';
+  static const vendor_edit_form = '/vendor_edit_form';
 
   static const addbalance_screen = '/addbalance_screen';
 
@@ -67,57 +69,57 @@ class AppRoutes {
     GetPage(
       name: useronboarding,
       page: () => UserOnboardingScreen(),
-      transition: Transition.fadeIn, // Fade transition for profile
+      transition: Transition.fadeIn, 
       transitionDuration: Duration(milliseconds: 600),
     ),
     GetPage(
       name: profile,
       page: () => ProfileScreen(),
-      transition: Transition.fadeIn, // Fade transition for profile
+      transition: Transition.fadeIn, 
       transitionDuration: Duration(milliseconds: 600),
     ),
     GetPage(
       name: notification,
       page: () => const NotificationScreen(),
-      transition: Transition.fadeIn, // Fade transition for profile
+      transition: Transition.fadeIn, 
       transitionDuration: Duration(milliseconds: 600),
     ),
     GetPage(
       name: availableservices,
       page: () => const AvailableServiceSelect(),
       transition:
-          Transition.downToUp, // Slide-up transition for available services
+          Transition.downToUp, 
       transitionDuration: Duration(milliseconds: 700),
     ),
     GetPage(
       name: login,
       page: () => const LoginScreenPage(),
-      transition: Transition.circularReveal, // Circular reveal effect for login
+      transition: Transition.circularReveal, 
       transitionDuration: Duration(milliseconds: 1000),
     ),
     GetPage(
       name: signUp,
       page: () => const MobileNumberPage(),
-      transition: Transition.circularReveal, // Circular reveal effect for login
+      transition: Transition.circularReveal, 
       transitionDuration: Duration(milliseconds: 1000),
     ),
     GetPage(
       name: fullScreenPopup,
       page: () => FullScreenPopupPage(),
-      transition: Transition.circularReveal, // Circular reveal effect for login
+      transition: Transition.circularReveal, 
       transitionDuration: Duration(milliseconds: 1000),
     ),
     GetPage(
       name: userbottom,
       page: () => const BottomUserHomePage(),
       transition: Transition
-          .rightToLeft, // Slide transition from right for user dashboard
+          .rightToLeft,
       transitionDuration: Duration(milliseconds: 600),
     ),
     GetPage(
       name: subscription,
       page: () => SubscriptionScreen(),
-      transition: Transition.zoom, // Zoom transition for subscription screen
+      transition: Transition.zoom, 
       transitionDuration: Duration(milliseconds: 800),
     ),
 
@@ -125,25 +127,31 @@ class AppRoutes {
     // GetPage(
     //   name: createstore,
     //   page: () => const CreateStorePage(),
-    //   transition: Transition.fadeIn, // Smooth fade-in for create store page
+    //   transition: Transition.fadeIn, 
     //   transitionDuration: Duration(milliseconds: 500),
     // ),
     GetPage(
       name: paymentmethods,
       page: () => const PaymentMethods(),
-      transition: Transition.fadeIn, // Smooth fade-in for create store page
+      transition: Transition.fadeIn, 
       transitionDuration: Duration(milliseconds: 500),
     ),
     GetPage(
       name: requestforwithdraw,
       page: () => const RequestForWithdraw(),
-      transition: Transition.fadeIn, // Smooth fade-in for create store page
+      transition: Transition.fadeIn, 
       transitionDuration: Duration(milliseconds: 500),
     ),
     GetPage(
       name: vendoform,
       page: () => const VendorMultiStepForm(),
-      transition: Transition.fadeIn, // Smooth fade-in for create store page
+      transition: Transition.fadeIn, 
+      transitionDuration: Duration(milliseconds: 500),
+    ),
+    GetPage(
+      name: vendor_edit_form,
+      page: () => EditVendorDetailsScreen(),
+      transition: Transition.fadeIn, 
       transitionDuration: Duration(milliseconds: 500),
     ),
     GetPage(

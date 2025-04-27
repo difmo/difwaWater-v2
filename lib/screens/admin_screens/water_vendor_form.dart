@@ -27,9 +27,7 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
   final _formKeyVendorName = GlobalKey<FormState>();
   final _formKeyVendorBussinessName = GlobalKey<FormState>();
   final _formKeyPersonName = GlobalKey<FormState>();
-  final _forKeyPhoneNumber = GlobalKey<FormState>();
-  final _formKeyEmail = GlobalKey<FormState>();
-  final _formKeyVendorType = GlobalKey<FormState>();
+  
 
   List<String> imageUrl = [
     "",
@@ -780,11 +778,9 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                       text:
                           _currentStep == steps.length - 1 ? "Finish" : "Next",
                       onPressed: () {
-                        _formKeyVendorBussinessName.currentState?.validate();
-                        if (_formKeyVendorName.currentState?.validate() ??
-                            false) {
+                 
                           nextStep();
-                        }
+                        
                       },
                     ),
                   ),

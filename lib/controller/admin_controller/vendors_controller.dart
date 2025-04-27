@@ -147,7 +147,7 @@ class VendorsController extends GetxController {
         ifscCode: ifscCodeController.text,
         gstNumber: gstNumberController.text,
         remarks: remarksController.text,
-        status: statusController.text,
+        status: "pending",
         vendorType: 'isVendor',
       );
       print("new user created");
@@ -163,6 +163,81 @@ class VendorsController extends GetxController {
       return false;
     }
   }
+
+
+Future<void> editVendorDetails({VendorModal? modal}) async {
+  try {
+    String userId = await _getCurrentUserId();
+    String? merchantId = await fetchMerchantId();
+    if (merchantId == null) throw Exception("Merchant ID not found.");
+
+    final data = {
+      'vendorName': modal?.vendorName ?? vendorNameController.text,
+      'bussinessName': modal?.bussinessName ?? bussinessNameController.text,
+      'email': modal?.email ?? emailController.text,
+      'phoneNumber': modal?.phoneNumber ?? phoneNumberController.text,
+      'contactPerson': modal?.contactPerson ?? contactPersonController.text,
+      'businessAddress': modal?.businessAddress ?? businessAddressController.text,
+      'areaCity': modal?.areaCity ?? areaCityController.text,
+      'postalCode': modal?.postalCode ?? postalCodeController.text,
+      'state': modal?.state ?? stateController.text,
+      'waterType': modal?.waterType ?? waterTypeController.text,
+      'capacityOptions': modal?.capacityOptions ?? capacityOptionsController.text,
+      'dailySupply': modal?.dailySupply ?? dailySupplyController.text,
+      'deliveryArea': modal?.deliveryArea ?? deliveryAreaController.text,
+      'deliveryTimings': modal?.deliveryTimings ?? deliveryTimingsController.text,
+      'bankName': modal?.bankName ?? bankNameController.text,
+      'accountNumber': modal?.accountNumber ?? accountNumberController.text,
+      'upiId': modal?.upiId ?? upiIdController.text,
+      'ifscCode': modal?.ifscCode ?? ifscCodeController.text,
+      'gstNumber': modal?.gstNumber ?? gstNumberController.text,
+      'remarks': modal?.remarks ?? remarksController.text,
+      'status': "pending",
+      'vendorType': modal?.vendorType ?? 'isVendor',
+    };
+
+    await FirebaseFirestore.instance
+        .collection('difwa-stores')
+        .doc(userId)
+        .update(data);
+
+    Get.snackbar(
+      'Success',
+      'Vendor details updated successfully!',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.green,
+      colorText: Colors.white,
+    );
+  } catch (e) {
+    print("Edit vendor error: $e");
+    Get.snackbar(
+      'Error',
+      'Failed to edit vendor: ${e.toString()}',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
+  }
+}
+
+ var storeStatus = false.obs; // Observable boolean
+  var balance = 0.0.obs; // Observable double
+
+  void fetchStoreDataRealTime(String merchantId) {
+    FirebaseFirestore.instance
+        .collection('difwa-stores')
+        .where('merchantId', isEqualTo: merchantId)
+        .snapshots()
+        .listen((snapshot) {
+      if (snapshot.docs.isNotEmpty) {
+        final storeDoc = snapshot.docs.first;
+        storeStatus.value = storeDoc['isActive'] ?? false;
+        balance.value = storeDoc['earnings'] ?? 0.0;
+      }
+    });
+  }
+  
+
 
   Future<VendorModal?> fetchStoreData() async {
     String? merchantId = await _authController.fetchMerchantId("");

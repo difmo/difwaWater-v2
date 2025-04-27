@@ -18,6 +18,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final OrdersController _ordersController = Get.put(OrdersController());
   final VendorsController _vendorsController = Get.put(VendorsController());
   String merchantIdd = "";
+  bool storeStatus = false;
 
   int todaytotalOrders = 0;
   int todaypendingOrders = 0;
@@ -33,8 +34,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     print("hello");
+
+
+  _vendorsController.fetchMerchantId().then((merchantId) {
+      if (merchantId != null) {
+        merchantIdd = merchantId;
+        _vendorsController.fetchStoreDataRealTime(merchantId);
+      }
+    });
+
     _vendorsController.fetchStoreData().then((vendor) {
       setState(() {
+        print("status");
+        storeStatus = vendor?.isActive ?? false;
+        print(storeStatus);
         balance = vendor?.earnings ??
             0; // Assuming 'balance' is a field in VendorModal
       });
@@ -102,23 +115,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               fontWeight: FontWeight.bold, fontSize: 18)),
                       Row(
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.blue.shade50,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: const Row(
-                              children: [
-                                Icon(Icons.circle,
-                                    size: 10, color: Colors.blue),
-                                SizedBox(width: 5),
-                                Text("Online",
-                                    style: TextStyle(color: Colors.blue)),
-                              ],
-                            ),
-                          ),
+                         Obx(() {
+  final isActive = _vendorsController.storeStatus.value;
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    decoration: BoxDecoration(
+      color: isActive ? Colors.green.shade50 : Colors.grey.shade200,
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: Row(
+      children: [
+        Icon(
+          Icons.circle,
+          size: 10,
+          color: isActive ? Colors.green : Colors.grey,
+        ),
+        const SizedBox(width: 5),
+        Text(
+          isActive ? "Online" : "Offline",
+          style: TextStyle(color: isActive ? Colors.green : Colors.grey),
+        ),
+      ],
+    ),
+  );
+}),
+
                           const SizedBox(width: 10),
                           const Icon(Icons.notifications_none),
                         ],
@@ -138,7 +159,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Text("Overview",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16)),
+                        Text("View All", style: TextStyle(color: Colors.blue)),
+                      ],
+                    ),
 
+                    const SizedBox(height: 20),
                     // Stats Cards
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -158,24 +189,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ],
                     ),
 
-                    const SizedBox(height: 20),
-
                     // Revenue Chart
 
-                    // Order Status Cards
+                    const SizedBox(height: 20),
+                    // Recent Orders
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Text("Today Status",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16)),
+                        Text("View All", style: TextStyle(color: Colors.blue)),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         StatusCard(
-                            label: 'Today Pending Orders',
+                            label: 'Pending Orders',
                             value: todaypendingOrders.toString(),
                             color: Colors.orange),
                         StatusCard(
-                            label: 'Today Shipped Orders',
+                            label: 'Shipped Orders',
                             value: todayshippedOrders.toString(),
                             color: Colors.blue),
                         StatusCard(
-                            label: 'Today Completed Orders',
+                            label: 'Completed Orders',
                             value: todaycompletedOrders.toString(),
                             color: Colors.green),
                       ],
@@ -338,8 +379,8 @@ class StatusCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 100,
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      width: 110,
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -349,9 +390,15 @@ class StatusCard extends StatelessWidget {
         children: [
           Text(value,
               style: TextStyle(
-                  color: color, fontWeight: FontWeight.bold, fontSize: 18)),
+                  color: color, fontWeight: FontWeight.bold, fontSize: 28)),
           const SizedBox(height: 4),
-          Text(label, style: const TextStyle(color: Colors.black54)),
+          Text(
+            label,
+            style: const TextStyle(
+              color: Colors.black54,
+            ),
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     );

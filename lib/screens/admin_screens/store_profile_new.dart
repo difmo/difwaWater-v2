@@ -3,6 +3,7 @@ import 'package:difwa/controller/admin_controller/vendors_controller.dart';
 import 'package:difwa/controller/auth_controller.dart';
 import 'package:difwa/models/stores_models/store_new_modal.dart';
 import 'package:difwa/models/user_models/user_details_model.dart';
+import 'package:difwa/routes/app_routes.dart';
 import 'package:difwa/screens/admin_screens/earnings.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/widgets/custom_button.dart';
@@ -94,15 +95,20 @@ class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
                     children: [
                       Row(
                         children: [
-                          CircleAvatar(
-                            backgroundColor: Colors.white,
-                            radius: 30,
-                            backgroundImage: (vendorData != null &&
-                                    vendorData!.images.isNotEmpty)
-                                ? NetworkImage(vendorData!.images[0])
-                                : const AssetImage(
-                                        'assets/images/default_avatar.png')
-                                    as ImageProvider,
+                          GestureDetector(
+                            onTap: () {
+                              Get.toNamed(AppRoutes.vendor_edit_form);
+                            },
+                            child: CircleAvatar(
+                              backgroundColor: Colors.white,
+                              radius: 30,
+                              backgroundImage: (vendorData != null &&
+                                      vendorData!.images.isNotEmpty)
+                                  ? NetworkImage(vendorData!.images[0])
+                                  : const AssetImage(
+                                          'assets/images/default_avatar.png')
+                                      as ImageProvider,
+                            ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(

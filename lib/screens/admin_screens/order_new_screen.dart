@@ -54,9 +54,9 @@ class _OrdersScreenState extends State<OrdersScreen>
           labelColor: Colors.blue,
           unselectedLabelColor: Colors.grey,
           tabs: [
-            buildTab("Pending", 12, Icons.access_time),
-            buildTab("Completed", 45, Icons.check),
-            buildTab("Cancelled", 3, Icons.close),
+            buildTab("Pending", 0, Icons.access_time),
+            buildTab("Completed", 0, Icons.check),
+            buildTab("Cancelled", 0, Icons.close),
           ],
         ),
       ),

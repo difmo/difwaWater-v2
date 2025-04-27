@@ -162,7 +162,7 @@ class _LoginScreenState extends State<LoginScreenPage>
                                     _formKeyPassword.currentState!.validate()) {
                                   setState(() => isLoading = true);
                                   try {
-                                    bool success =
+                      
                                         await authController.loginwithemail(
                                             _emailController.text,
                                             _passwordController.text,
