@@ -1,4 +1,5 @@
 import 'package:difwa/config/app_color.dart';
+import 'package:difwa/controller/auth_controller.dart';
 import 'package:difwa/routes/app_routes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ Future<void> main() async {
   // await Firebase.initializeApp();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  Get.put(AuthController());
   runApp(const MyApp());
 }
 

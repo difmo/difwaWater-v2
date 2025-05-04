@@ -12,64 +12,10 @@ class VendorsController extends GetxController {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  ////////////////
-  final emailController = TextEditingController();
-  final TextEditingController vendorNameController = TextEditingController();
-  final TextEditingController bussinessNameController = TextEditingController();
-  final TextEditingController contactPersonController = TextEditingController();
-  final TextEditingController phoneNumberController = TextEditingController();
-  final TextEditingController vendorTypeController = TextEditingController();
-
-
-  final TextEditingController businessAddressController =
-      TextEditingController();
-  final TextEditingController areaCityController = TextEditingController();
-  final TextEditingController postalCodeController = TextEditingController();
-  final TextEditingController stateController = TextEditingController();
-  final TextEditingController waterTypeController = TextEditingController();
-  final TextEditingController capacityOptionsController =
-      TextEditingController();
-  final TextEditingController dailySupplyController = TextEditingController();
-  final TextEditingController deliveryAreaController = TextEditingController();
-  final TextEditingController deliveryTimingsController =
-      TextEditingController();
-  final TextEditingController bankNameController = TextEditingController();
-  final TextEditingController accountNumberController = TextEditingController();
-  final TextEditingController upiIdController = TextEditingController();
-  final TextEditingController ifscCodeController = TextEditingController();
-  final TextEditingController gstNumberController = TextEditingController();
-  final TextEditingController remarksController = TextEditingController();
-  final TextEditingController statusController = TextEditingController();
   final FirebaseStorage _storage = FirebaseStorage.instance;
   File? imageFile;
   final FirebaseController _authController = Get.put(FirebaseController());
   @override
-  void onClose() {
-    emailController.dispose();
-    contactPersonController.dispose();
-    areaCityController.dispose();
-    postalCodeController.dispose();
-    stateController.dispose();
-    waterTypeController.dispose();
-    capacityOptionsController.dispose();
-    dailySupplyController.dispose();
-    deliveryAreaController.dispose();
-    deliveryTimingsController.dispose();
-    bankNameController.dispose();
-    accountNumberController.dispose();
-    upiIdController.dispose();
-    ifscCodeController.dispose();
-    gstNumberController.dispose();
-    remarksController.dispose();
-    statusController.dispose();
-    vendorNameController.dispose();
-    bussinessNameController.dispose();
-    phoneNumberController.dispose();
-    businessAddressController.dispose();
-    super.onClose();
-  }
-
   Future<void> checkFunction() async {
     String merchantId = await _generateMerchantId();
     print("generated merchant id ");
@@ -111,48 +57,32 @@ class VendorsController extends GetxController {
     }
   }
 
-  Future<bool> submitForm2(List<String> images) async {
+  Future<bool> submitForm2(
+      Map<String, String> images, VendorModal? newUser) async {
     print("hello1");
 
     print("hello2");
 
     try {
       String userId = await _getCurrentUserId();
+
       String merchantId = await _generateMerchantId();
 
       print("all data uploaded");
+      if (newUser != null) {
+        newUser = newUser.copyWith(
+          userId: userId,
+          merchantId: merchantId,
+        );
+      }
 
-      VendorModal newUser = VendorModal(
-        userId: userId,
-        upiId: upiIdController.text,
-        merchantId: merchantId,
-        earnings: 0.0,
-        email: emailController.text,
-        vendorName: vendorNameController.text,
-        bussinessName: bussinessNameController.text,
-        phoneNumber: phoneNumberController.text,
-        businessAddress: businessAddressController.text,
-        images: images,
-        contactPerson: contactPersonController.text,
-        areaCity: areaCityController.text,
-        postalCode: postalCodeController.text,
-        state: stateController.text,
-        waterType: waterTypeController.text,
-        capacityOptions: capacityOptionsController.text,
-        dailySupply: dailySupplyController.text,
-        deliveryArea: deliveryAreaController.text,
-        deliveryTimings: deliveryTimingsController.text,
-        bankName: bankNameController.text,
-        accountNumber: accountNumberController.text,
-        ifscCode: ifscCodeController.text,
-        gstNumber: gstNumberController.text,
-        remarks: remarksController.text,
-        status: "pending",
-        vendorType: 'isVendor',
-      );
       print("new user created");
       print(newUser.toString());
-      await _saveUserStore(newUser);
+      if (newUser != null) {
+        await _saveUserStore(newUser);
+      } else {
+        throw Exception('VendorModal cannot be null');
+      }
       await _updateUserRole(userId, merchantId);
       _showSuccessSnackbar(merchantId);
       return true;
@@ -164,63 +94,50 @@ class VendorsController extends GetxController {
     }
   }
 
+  Future<void> editVendorDetails({VendorModal? modal}) async {
+    try {
+      if (modal == null) {
+        throw Exception("Vendor modal is null.");
+      }
 
-Future<void> editVendorDetails({VendorModal? modal}) async {
-  try {
-    String userId = await _getCurrentUserId();
-    String? merchantId = await fetchMerchantId();
-    if (merchantId == null) throw Exception("Merchant ID not found.");
+      String userId = await _getCurrentUserId();
+      String? merchantId = await fetchMerchantId();
+      if (merchantId == null) {
+        throw Exception("Merchant ID not found for user: $userId");
+      }
 
-    final data = {
-      'vendorName': modal?.vendorName ?? vendorNameController.text,
-      'bussinessName': modal?.bussinessName ?? bussinessNameController.text,
-      'email': modal?.email ?? emailController.text,
-      'phoneNumber': modal?.phoneNumber ?? phoneNumberController.text,
-      'contactPerson': modal?.contactPerson ?? contactPersonController.text,
-      'businessAddress': modal?.businessAddress ?? businessAddressController.text,
-      'areaCity': modal?.areaCity ?? areaCityController.text,
-      'postalCode': modal?.postalCode ?? postalCodeController.text,
-      'state': modal?.state ?? stateController.text,
-      'waterType': modal?.waterType ?? waterTypeController.text,
-      'capacityOptions': modal?.capacityOptions ?? capacityOptionsController.text,
-      'dailySupply': modal?.dailySupply ?? dailySupplyController.text,
-      'deliveryArea': modal?.deliveryArea ?? deliveryAreaController.text,
-      'deliveryTimings': modal?.deliveryTimings ?? deliveryTimingsController.text,
-      'bankName': modal?.bankName ?? bankNameController.text,
-      'accountNumber': modal?.accountNumber ?? accountNumberController.text,
-      'upiId': modal?.upiId ?? upiIdController.text,
-      'ifscCode': modal?.ifscCode ?? ifscCodeController.text,
-      'gstNumber': modal?.gstNumber ?? gstNumberController.text,
-      'remarks': modal?.remarks ?? remarksController.text,
-      'status': "pending",
-      'vendorType': modal?.vendorType ?? 'isVendor',
-    };
+      // Prepare the data to update, excluding null fields
+      Map<String, dynamic> updateData = modal.toMap();
+      updateData.removeWhere((key, value) => value == null);
 
-    await FirebaseFirestore.instance
-        .collection('difwa-stores')
-        .doc(userId)
-        .update(data);
+      // Update Firestore document
+      await FirebaseFirestore.instance
+          .collection('difwa-stores')
+          .doc(userId)
+          .set(updateData,
+              SetOptions(merge: true)); // Use merge for partial updates
 
-    Get.snackbar(
-      'Success',
-      'Vendor details updated successfully!',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.green,
-      colorText: Colors.white,
-    );
-  } catch (e) {
-    print("Edit vendor error: $e");
-    Get.snackbar(
-      'Error',
-      'Failed to edit vendor: ${e.toString()}',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.red,
-      colorText: Colors.white,
-    );
+      Get.snackbar(
+        'Success',
+        'Vendor details updated successfully!',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      print("Edit vendor error: $e");
+      Get.snackbar(
+        'Error',
+        'Failed to edit vendor: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      rethrow; // Rethrow for debugging purposes
+    }
   }
-}
 
- var storeStatus = false.obs; // Observable boolean
+  var storeStatus = false.obs; // Observable boolean
   var balance = 0.0.obs; // Observable double
 
   void fetchStoreDataRealTime(String merchantId) {
@@ -236,8 +153,6 @@ Future<void> editVendorDetails({VendorModal? modal}) async {
       }
     });
   }
-  
-
 
   Future<VendorModal?> fetchStoreData() async {
     String? merchantId = await _authController.fetchMerchantId("");

@@ -151,7 +151,7 @@ class _SplashScreenState extends State<SplashScreen>
               ),
             ),
             Positioned(
-              bottom: 20, // Keep it slightly above the bottom for spacing
+              bottom: 20,
               left: 0,
               right: 0,
               child: FadeTransition(

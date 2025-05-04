@@ -2,7 +2,7 @@ import 'package:difwa/config/app_color.dart';
 import 'package:difwa/controller/OnboardingController.dart';
 import 'package:difwa/routes/app_routes.dart';
 import 'package:difwa/utils/app__text_style.dart';
-import 'package:difwa/utils/theme_constant.dart';
+import 'package:difwa/widgets/others/back_press_toexit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -45,32 +45,24 @@ class _OnboardingScreenState extends State<UserOnboardingScreen> {
     // _checkOnboardingStatus();
   }
 
-  Future<void> _checkOnboardingStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    bool isOnboardingComplete = prefs.getBool('onboardingComplete') ?? false;
-
-    // if (isOnboardingComplete) {
-    //   Get.offNamed(AppRoutes
-    //       .home); // Using `Get.offNamed` to replace this screen in the navigation stack
-    // }
-  }
-
   Future<void> _markOnboardingComplete() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('onboardingComplete', true);
-    Get.offAllNamed(AppRoutes.signUp); // navigate to signup
+    Get.offAllNamed(AppRoutes.login); // navigate to signup
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          _buildPageView(),
-          _buildIndicator(),
-          _buildBackgroundCircle(),
-          _buildBottomButtons(),
-        ],
+    return BackPressToExit(
+      child: Scaffold(
+        body: Stack(
+          children: [
+            _buildPageView(),
+            _buildIndicator(),
+            _buildBackgroundCircle(),
+            _buildBottomButtons(),
+          ],
+        ),
       ),
     );
   }
@@ -80,7 +72,7 @@ class _OnboardingScreenState extends State<UserOnboardingScreen> {
       controller.nextPage();
     } else {
       _markOnboardingComplete();
-      Get.toNamed(AppRoutes.signUp);
+      Get.toNamed(AppRoutes.login);
     }
   }
 
