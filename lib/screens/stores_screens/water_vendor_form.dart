@@ -952,6 +952,7 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
 
   void submitData() async {
     VendorModal vendorModal = VendorModal(
+        isVerified: false,
         userId: "",
         merchantId: "",
         earnings: 0,

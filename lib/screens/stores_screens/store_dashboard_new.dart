@@ -113,7 +113,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 isActive: isActive), // or false
 
                             const SizedBox(width: 10),
-                            const Icon(Icons.notifications_none),
+                            // const Icon(Icons.notifications_none),
                           ],
                         ),
                       ],

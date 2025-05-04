@@ -7,9 +7,7 @@ import 'package:difwa/controller/admin_controller/vendors_controller.dart';
 import 'package:difwa/models/stores_models/store_new_modal.dart';
 
 class EditVendorDetailsScreen extends StatefulWidget {
-  final VendorModal? vendorModal;
-
-  const EditVendorDetailsScreen({Key? key, this.vendorModal}) : super(key: key);
+  const EditVendorDetailsScreen({Key? key}) : super(key: key);
 
   @override
   _EditVendorDetailsScreenState createState() =>
@@ -43,10 +41,11 @@ class _EditVendorDetailsScreenState extends State<EditVendorDetailsScreen> {
   final TextEditingController remarksController = TextEditingController();
 
   bool isDataFetched = false;
-  bool isLoading = true; // Added loading state
+  bool isLoading = true;
   int currentStep = 0;
   Map<String, String> images = {};
   final ImagePicker _picker = ImagePicker();
+  VendorModal? vendor; // Store fetched vendor data
 
   // Custom color scheme
   static const Color primaryRed = ThemeConstants.primaryColor;
@@ -67,35 +66,35 @@ class _EditVendorDetailsScreenState extends State<EditVendorDetailsScreen> {
     if (isDataFetched || !mounted) return;
 
     try {
-      setState(() => isLoading = true); // Start loading
-      final vendor = await vendorsController.fetchStoreData();
-      print('Fetched vendor: $vendor'); // Debug log
+      setState(() => isLoading = true);
+      vendor = await vendorsController.fetchStoreData();
+      print('Fetched vendor: $vendor');
       if (vendor != null && mounted) {
         setState(() {
-          vendorNameController.text = vendor.vendorName ?? '';
-          bussinessNameController.text = vendor.bussinessName ?? '';
-          emailController.text = vendor.email ?? '';
-          phoneNumberController.text = vendor.phoneNumber ?? '';
-          contactPersonController.text = vendor.contactPerson ?? '';
-          businessAddressController.text = vendor.businessAddress ?? '';
-          areaCityController.text = vendor.areaCity ?? '';
-          postalCodeController.text = vendor.postalCode ?? '';
-          stateController.text = vendor.state ?? '';
-          waterTypeController.text = vendor.waterType ?? '';
-          capacityOptionsController.text = vendor.capacityOptions ?? '';
-          dailySupplyController.text = vendor.dailySupply ?? '';
-          deliveryAreaController.text = vendor.deliveryArea ?? '';
-          deliveryTimingsController.text = vendor.deliveryTimings ?? '';
-          bankNameController.text = vendor.bankName ?? '';
-          accountNumberController.text = vendor.accountNumber ?? '';
-          upiIdController.text = vendor.upiId ?? '';
-          ifscCodeController.text = vendor.ifscCode ?? '';
-          gstNumberController.text = vendor.gstNumber ?? '';
-          remarksController.text = vendor.remarks ?? '';
-          images = Map<String, String>.from(vendor.images);
+          vendorNameController.text = vendor!.vendorName ?? '';
+          bussinessNameController.text = vendor!.bussinessName ?? '';
+          emailController.text = vendor!.email ?? '';
+          phoneNumberController.text = vendor!.phoneNumber ?? '';
+          contactPersonController.text = vendor!.contactPerson ?? '';
+          businessAddressController.text = vendor!.businessAddress ?? '';
+          areaCityController.text = vendor!.areaCity ?? '';
+          postalCodeController.text = vendor!.postalCode ?? '';
+          stateController.text = vendor!.state ?? '';
+          waterTypeController.text = vendor!.waterType ?? '';
+          capacityOptionsController.text = vendor!.capacityOptions ?? '';
+          dailySupplyController.text = vendor!.dailySupply ?? '';
+          deliveryAreaController.text = vendor!.deliveryArea ?? '';
+          deliveryTimingsController.text = vendor!.deliveryTimings ?? '';
+          bankNameController.text = vendor!.bankName ?? '';
+          accountNumberController.text = vendor!.accountNumber ?? '';
+          upiIdController.text = vendor!.upiId ?? '';
+          ifscCodeController.text = vendor!.ifscCode ?? '';
+          gstNumberController.text = vendor!.gstNumber ?? '';
+          remarksController.text = vendor!.remarks ?? '';
+          images = Map<String, String>.from(vendor!.images);
 
           isDataFetched = true;
-          isLoading = false; // Stop loading
+          isLoading = false;
         });
       } else {
         if (mounted) {
@@ -151,7 +150,8 @@ class _EditVendorDetailsScreenState extends State<EditVendorDetailsScreen> {
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildTextField(vendorNameController, 'Vendor Name'),
+              _buildTextField(vendorNameController, 'Vendor Name',
+                  isEditable: false),
               _buildTextField(bussinessNameController, 'Business Name'),
               _buildTextField(emailController, 'Email'),
               _buildTextField(phoneNumberController, 'Phone Number'),
@@ -341,11 +341,13 @@ class _EditVendorDetailsScreenState extends State<EditVendorDetailsScreen> {
   }
 
   // Helper method to build TextFormField widgets
-  Widget _buildTextField(TextEditingController controller, String label) {
+  Widget _buildTextField(TextEditingController controller, String label,
+      {bool isEditable = true}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: TextFormField(
         controller: controller,
+        readOnly: !isEditable, // Set read-only based on isEditable
         decoration: InputDecoration(
           labelStyle: TextStyle(
             color: textSecondary,
@@ -383,7 +385,9 @@ class _EditVendorDetailsScreenState extends State<EditVendorDetailsScreen> {
           contentPadding:
               const EdgeInsets.symmetric(vertical: 10, horizontal: 17),
           labelText: label,
-          fillColor: Colors.white,
+          fillColor: isEditable
+              ? Colors.white
+              : Colors.grey[200], // Visual cue for disabled
           filled: true,
         ),
         style: const TextStyle(fontSize: 16, color: textPrimary),
@@ -397,31 +401,31 @@ class _EditVendorDetailsScreenState extends State<EditVendorDetailsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Row(
-        //   children: [
-        //     Expanded(
-        //       child: Text(
-        //         imageName,
-        //         style: const TextStyle(
-        //           fontSize: 14,
-        //           fontWeight: FontWeight.w500,
-        //           color: textPrimary,
-        //         ),
-        //       ),
-        //     ),
-        //     ElevatedButton(
-        //       onPressed: () => _pickAndUploadImage(imageKey, imageName),
-        //       style: ElevatedButton.styleFrom(
-        //         backgroundColor: primaryRed,
-        //         foregroundColor: Colors.white,
-        //         shape: RoundedRectangleBorder(
-        //           borderRadius: BorderRadius.circular(12),
-        //         ),
-        //       ),
-        //       child: const Text('Upload'),
-        //     ),
-        //   ],
-        // ),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                imageName,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: textPrimary,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () => _pickAndUploadImage(imageKey, imageName),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryRed,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text('Upload'),
+            ),
+          ],
+        ),
         const SizedBox(height: 8),
         if (imageUrl != null && imageUrl.isNotEmpty)
           _buildImageWidget(imageUrl, imageName),
@@ -476,10 +480,11 @@ class _EditVendorDetailsScreenState extends State<EditVendorDetailsScreen> {
     );
   }
 
+  // Display business images
   Widget displayBusinessImages() {
     List<String> businessImages = images["businessImages"]
             ?.split(',')
-            .map((url) => url.trim())
+            .where((url) => url.trim().isNotEmpty)
             .toList() ??
         [];
 
@@ -507,8 +512,9 @@ class _EditVendorDetailsScreenState extends State<EditVendorDetailsScreen> {
           );
   }
 
+  // Save vendor data
   void saveData() {
-    VendorModal updatedVendor = VendorModal(
+    VendorModal updatedVendor = vendor!.copyWith(
       vendorName: vendorNameController.text,
       bussinessName: bussinessNameController.text,
       email: emailController.text,
@@ -529,9 +535,11 @@ class _EditVendorDetailsScreenState extends State<EditVendorDetailsScreen> {
       ifscCode: ifscCodeController.text,
       gstNumber: gstNumberController.text,
       remarks: remarksController.text,
-      vendorType: widget.vendorModal?.vendorType ?? 'isVendor',
+      vendorType: vendor!.vendorType, // Use fetched vendor's vendorType
       images: images,
+      updatedAt: DateTime.now().toIso8601String(),
     );
+
     vendorsController.editVendorDetails(modal: updatedVendor);
   }
 

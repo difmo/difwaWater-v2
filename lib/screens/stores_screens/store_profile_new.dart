@@ -110,8 +110,10 @@ class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
                 Container(
                   padding: const EdgeInsets.only(
                       top: 40, bottom: 20, left: 16, right: 16),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF2196F3),
+                  decoration: BoxDecoration(
+                    color: isSwitched
+                        ? Color.fromARGB(255, 0, 197, 105)
+                        : Color(0xFF2196F3),
                     borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(24),
                       bottomRight: Radius.circular(24),
@@ -347,6 +349,8 @@ class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
                           padding: const EdgeInsets.all(16.0),
                           child: SizedBox(
                             child: CustomButton(
+                              baseTextColor: ThemeConstants.softgrey,
+                              backgroundColor: ThemeConstants.primaryColor,
                               icon:
                                   const Icon(Icons.logout, color: Colors.white),
                               height: 50,

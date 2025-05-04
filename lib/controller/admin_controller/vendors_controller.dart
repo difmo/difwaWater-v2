@@ -91,7 +91,10 @@ class VendorsController extends GetxController {
 
       String userId = await _getCurrentUserId();
       Map<String, dynamic> updateData = modal.toMap();
-      updateData.removeWhere((key, value) => value == null);
+      updateData.removeWhere((key, value) => value == null || value == '');
+
+      print(
+          "Updating vendor details for userId: $userId with data: $updateData");
 
       await FirebaseFirestore.instance
           .collection('difwa-stores')
@@ -115,6 +118,31 @@ class VendorsController extends GetxController {
         colorText: Colors.white,
       );
       rethrow;
+    }
+  }
+
+  Future<void> updateStoreDetails(Map<String, dynamic> updates) async {
+    try {
+      String userId = await _getCurrentUserId();
+      await FirebaseFirestore.instance
+          .collection('difwa-stores')
+          .doc(userId)
+          .update(updates);
+      Get.snackbar(
+        'Success',
+        'Store details updated successfully',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to update store: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
@@ -372,24 +400,24 @@ class VendorsController extends GetxController {
     }
   }
 
-  Future<void> updateStoreDetails(Map<String, dynamic> updates) async {
-    try {
-      String userId = await _getCurrentUserId();
-      await FirebaseFirestore.instance
-          .collection('difwa-stores')
-          .doc(userId)
-          .update(updates);
-      Get.snackbar('Success', 'Store details updated successfully',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white);
-    } catch (e) {
-      Get.snackbar('Error', 'Failed to update store: ${e.toString()}',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white);
-    }
-  }
+  // Future<void> updateStoreDetails(Map<String, dynamic> updates) async {
+  //   try {
+  //     String userId = await _getCurrentUserId();
+  //     await FirebaseFirestore.instance
+  //         .collection('difwa-stores')
+  //         .doc(userId)
+  //         .update(updates);
+  //     Get.snackbar('Success', 'Store details updated successfully',
+  //         snackPosition: SnackPosition.BOTTOM,
+  //         backgroundColor: Colors.green,
+  //         colorText: Colors.white);
+  //   } catch (e) {
+  //     Get.snackbar('Error', 'Failed to update store: ${e.toString()}',
+  //         snackPosition: SnackPosition.BOTTOM,
+  //         backgroundColor: Colors.red,
+  //         colorText: Colors.white);
+  //   }
+  // }
 
   GlobalKey<FormState> get formKey => _formKey;
 }
