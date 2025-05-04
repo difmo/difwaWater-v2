@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:difwa/controller/admin_controller/add_items_controller.dart';
 import 'package:difwa/controller/admin_controller/order_controller.dart';
 import 'package:difwa/controller/admin_controller/vendors_controller.dart';
+import 'package:difwa/screens/store_widgets/blinking_status_indicator.dart';
 import 'package:difwa/screens/stores_screens/payment_history_graph.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -53,14 +54,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
     _ordersController.fetchTotalTodayOrders().then((ordersCounts) {
       setState(() {
-        //         'totalOrders': todayTotalOrders,
-        // 'pendingOrders': todayPendingOrders,
-        // 'completedOrders': todayTotalCompletedOrder,
-        // 'preparingOrders': todayPreparingOrders,
-        // 'shippedOrders': todayShippedOrders,
-        // 'overallTotalOrders': overallTotalOrders,
-        // 'overallPendingOrders': overallPendingOrders,
-        // 'overallCompletedOrders': overallCompletedOrders,
         todaytotalOrders = ordersCounts['totalOrders']!; // today
         todaypendingOrders = ordersCounts['pendingOrders']!;
         todaycompletedOrders = ordersCounts['completedOrders']!;
@@ -105,54 +98,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Welcome Row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Welcome, James',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 18)),
-                      Row(
-                        children: [
-                          Obx(() {
-                            final isActive =
-                                _vendorsController.storeStatus.value;
-                            return Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: isActive
-                                    ? Colors.green.shade50
-                                    : Colors.grey.shade200,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.circle,
-                                    size: 10,
-                                    color:
-                                        isActive ? Colors.green : Colors.grey,
-                                  ),
-                                  const SizedBox(width: 5),
-                                  Text(
-                                    isActive ? "Online" : "Offline",
-                                    style: TextStyle(
-                                        color: isActive
-                                            ? Colors.green
-                                            : Colors.grey),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }),
-                          const SizedBox(width: 10),
-                          const Icon(Icons.notifications_none),
-                        ],
-                      )
-                    ],
-                  ),
+                  Obx(() {
+                    final isActive = _vendorsController.storeStatus.value;
+                    final vendorName = _vendorsController.vendorName.value;
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Welcome, $vendorName',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 18)),
+                        Row(
+                          children: [
+                            BlinkingStatusIndicator(
+                                isActive: isActive), // or false
 
+                            const SizedBox(width: 10),
+                            const Icon(Icons.notifications_none),
+                          ],
+                        ),
+                      ],
+                    );
+                  }),
                   const SizedBox(height: 10),
                 ],
               ),
@@ -171,7 +137,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         Text("Overview",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 16)),
-                        Text("View All", style: TextStyle(color: Colors.blue)),
+                        // Text("View All", style: TextStyle(color: Colors.blue)),
                       ],
                     ),
 
@@ -183,13 +149,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         StatCard(
                           title: 'All Total Orders',
                           value: overallTotalOrders.toString(),
-                          percent: '+12.5%',
                           color: Colors.green,
                         ),
                         StatCard(
                           title: 'Revenue',
-                          value: '\$$balance',
-                          percent: '+8.2%',
+                          value: '\$balance',
                           color: Colors.green,
                         ),
                       ],
@@ -205,7 +169,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         Text("Today Status",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 16)),
-                        Text("View All", style: TextStyle(color: Colors.blue)),
+                        // Text("View All", style: TextStyle(color: Colors.blue)),
                       ],
                     ),
 
@@ -265,7 +229,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         Text("Recent Orders",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 16)),
-                        Text("View All", style: TextStyle(color: Colors.blue)),
+                        // Text("View All", style: TextStyle(color: Colors.blue)),
                       ],
                     ),
                     const SizedBox(height: 10),
@@ -334,14 +298,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
 class StatCard extends StatelessWidget {
   final String title;
   final String value;
-  final String percent;
   final Color color;
 
   const StatCard({
     super.key,
     required this.title,
     required this.value,
-    required this.percent,
     required this.color,
   });
 
@@ -363,7 +325,6 @@ class StatCard extends StatelessWidget {
                   const TextStyle(fontWeight: FontWeight.bold, fontSize: 22)),
           Text(title, style: const TextStyle(color: Colors.black54)),
           const SizedBox(height: 4),
-          Text(percent, style: TextStyle(color: color, fontSize: 12)),
         ],
       ),
     );

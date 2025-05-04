@@ -4,6 +4,7 @@ import 'package:difwa/controller/auth_controller.dart';
 import 'package:difwa/models/stores_models/store_new_modal.dart';
 import 'package:difwa/models/user_models/user_details_model.dart';
 import 'package:difwa/routes/app_routes.dart';
+import 'package:difwa/screens/store_widgets/custom_toggle_switch.dart';
 import 'package:difwa/screens/stores_screens/earnings.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/widgets/custom_button.dart';
@@ -21,12 +22,13 @@ class SupplierProfileScreen extends StatefulWidget {
 
 class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
   final AuthController _userData = Get.put(AuthController());
-  final VendorsController controller = Get.put(VendorsController());
+  final VendorsController vendorsController = Get.put(VendorsController());
   final OrdersController _ordersController = Get.put(OrdersController());
   UserDetailsModel? usersData;
   VendorModal? vendorData;
   bool notificationsEnabled = true;
   bool isLoading = true;
+  bool isSwitched = false;
 
   int totalOrders = 0;
   int pendingOrders = 0;
@@ -51,8 +53,15 @@ class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
       print('User data fetched: $user');
 
       print('Fetching vendor data...');
-      final vendor = await controller.fetchStoreData();
+      final vendor = await vendorsController.fetchStoreData();
       print('Vendor data fetched: $vendor');
+      setState(() {
+        if (vendor?.isActive == true) {
+          isSwitched = true;
+        } else {
+          isSwitched = false;
+        }
+      });
 
       print('Fetching orders data...');
       final ordersCounts = await _ordersController.fetchTotalTodayOrders();
@@ -113,21 +122,16 @@ class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
                     children: [
                       Row(
                         children: [
-                          GestureDetector(
-                            onTap: () {
-                              Get.toNamed(AppRoutes.vendor_edit_form);
-                            },
-                            child: CircleAvatar(
-                              backgroundColor: Colors.white,
-                              radius: 30,
-                              backgroundImage: (vendorData != null &&
-                                      vendorData!.images.isNotEmpty &&
-                                      vendorData!.images[""] != null)
-                                  ? NetworkImage(vendorData!.images[""]!)
-                                  : const AssetImage(
-                                          'assets/images/default_avatar.png')
-                                      as ImageProvider,
-                            ),
+                          CircleAvatar(
+                            backgroundColor: Colors.white,
+                            radius: 30,
+                            backgroundImage: (vendorData != null &&
+                                    vendorData!.images.isNotEmpty &&
+                                    vendorData!.images["aadharImg"] != null)
+                                ? NetworkImage(vendorData!.images["aadharImg"]!)
+                                : const AssetImage(
+                                        'assets/images/default_avatar.png')
+                                    as ImageProvider,
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -155,20 +159,17 @@ class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
                               ],
                             ),
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              Get.toNamed(AppRoutes.vendor_edit_form);
+                          ModernToggleSwitch(
+                            initialValue: isSwitched,
+                            onToggle: (value) async {
+                              print('Toggled: $value');
+                              await vendorsController
+                                  .updateStoreDetails({"isActive": value});
+                              setState(() {
+                                isSwitched = !isSwitched;
+                              });
                             },
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                color: Colors.white24,
-                                shape: BoxShape.circle,
-                              ),
-                              padding: const EdgeInsets.all(6),
-                              child: const Icon(Icons.edit,
-                                  color: Colors.white, size: 18),
-                            ),
-                          ),
+                          )
                         ],
                       ),
                       const SizedBox(height: 12),
@@ -274,9 +275,9 @@ class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
                                       label: "Deliveries",
                                       value: totalOrders.toString()),
                                   const PerformanceMetric(
-                                      label: "Rating", value: "4.9"),
+                                      label: "Rating", value: "0.0"),
                                   const PerformanceMetric(
-                                      label: "Response", value: "98%"),
+                                      label: "Response", value: "00%"),
                                 ],
                               ),
                             ],

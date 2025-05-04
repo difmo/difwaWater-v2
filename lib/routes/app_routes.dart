@@ -6,6 +6,7 @@ import 'package:difwa/screens/stores_screens/payment_methods.dart';
 import 'package:difwa/screens/stores_screens/request_for_withdraw.dart';
 import 'package:difwa/screens/stores_screens/global_popup.dart';
 import 'package:difwa/screens/stores_screens/stor_edit_profile.dart';
+import 'package:difwa/screens/stores_screens/store_not_verified_page.dart';
 import 'package:difwa/screens/stores_screens/water_vendor_form.dart';
 import 'package:difwa/screens/auth/adddress_form_page.dart';
 import 'package:difwa/screens/auth/login_screen.dart';
@@ -38,6 +39,7 @@ class AppRoutes {
   static const vendor_edit_form = '/vendor_edit_form';
 
   static const addbalance_screen = '/addbalance_screen';
+  static const vendor_not_verified = '/vendor_not_verified';
 
   //////// Admin stuff////////
   static const additem = '/additem';
@@ -53,6 +55,12 @@ class AppRoutes {
     GetPage(
       name: splash,
       page: () => const SplashScreen(),
+      transition: Transition.fadeIn,
+      transitionDuration: Duration(seconds: 1),
+    ),
+    GetPage(
+      name: vendor_not_verified,
+      page: () => const StoreNotVerifiedPage(),
       transition: Transition.fadeIn,
       transitionDuration: Duration(seconds: 1),
     ),

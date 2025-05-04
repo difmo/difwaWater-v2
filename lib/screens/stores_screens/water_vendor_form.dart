@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:difwa/controller/admin_controller/vendors_controller.dart';
 import 'package:difwa/models/stores_models/store_new_modal.dart';
 import 'package:difwa/routes/store_bottom_bar.dart';
+import 'package:difwa/screens/stores_screens/store_not_verified_page.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/utils/validators.dart';
 import 'package:difwa/widgets/custom_button.dart';
@@ -935,7 +936,7 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
     bool isSuccess = await controller.submitForm2(imageUrl, vendorModal);
     setState(() => isLoading = false);
     if (isSuccess) {
-      Get.offAll(() => const BottomStoreHomePage());
+      Get.offAll(() => const StoreNotVerifiedPage());
     } else {
       Get.snackbar('Error', 'Failed to create the store. Please try again.',
           snackPosition: SnackPosition.BOTTOM);

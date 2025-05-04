@@ -139,6 +139,7 @@ class VendorsController extends GetxController {
 
   var storeStatus = false.obs; // Observable boolean
   var balance = 0.0.obs; // Observable double
+  var vendorName = "".obs; // Observable double
 
   void fetchStoreDataRealTime(String merchantId) {
     FirebaseFirestore.instance
@@ -150,6 +151,7 @@ class VendorsController extends GetxController {
         final storeDoc = snapshot.docs.first;
         storeStatus.value = storeDoc['isActive'] ?? false;
         balance.value = storeDoc['earnings'] ?? 0.0;
+        vendorName.value = storeDoc['vendorName'] ?? "No name";
       }
     });
   }
