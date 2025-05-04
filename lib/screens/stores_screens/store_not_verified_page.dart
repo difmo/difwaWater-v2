@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:difwa/controller/admin_controller/vendors_controller.dart';
 import 'package:difwa/routes/app_routes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ class StoreNotVerifiedPage extends StatefulWidget {
 
 class _StoreNotVerifiedPageState extends State<StoreNotVerifiedPage> {
   Stream<DocumentSnapshot>? _vendorStream;
+  VendorsController _vendorsController = Get.put(VendorsController());
 
   @override
   void initState() {
@@ -20,16 +22,18 @@ class _StoreNotVerifiedPageState extends State<StoreNotVerifiedPage> {
     _listenForVerification();
   }
 
-  void _listenForVerification() {
+  void _listenForVerification() async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) {
       Get.offAllNamed(AppRoutes.useronboarding);
       return;
     }
-
+    String? merchantId = await _vendorsController.fetchMerchantId();
+    print("444444");
+    print(merchantId);
     _vendorStream = FirebaseFirestore.instance
         .collection('difwa-stores')
-        .doc(userId)
+        .doc(merchantId)
         .snapshots();
 
     _vendorStream!.listen((snapshot) {

@@ -53,10 +53,10 @@ class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
       print('User data fetched: $user');
 
       print('Fetching vendor data...');
-      final vendor = await vendorsController.fetchStoreData();
-      print('Vendor data fetched: $vendor');
+      vendorData = await vendorsController.fetchStoreData();
+      print('Vendor data fetched: $vendorData');
       setState(() {
-        if (vendor?.isActive == true) {
+        if (vendorData?.isActive == true) {
           isSwitched = true;
         } else {
           isSwitched = false;
@@ -70,7 +70,7 @@ class _SupplierProfileScreenState extends State<SupplierProfileScreen> {
       if (mounted) {
         setState(() {
           usersData = user;
-          vendorData = vendor;
+
           totalOrders = ordersCounts['totalOrders'] ?? 0;
           pendingOrders = ordersCounts['pendingOrders'] ?? 0;
           completedOrders = ordersCounts['completedOrders'] ?? 0;

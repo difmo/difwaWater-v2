@@ -100,6 +100,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 children: [
                   Obx(() {
                     final isActive = _vendorsController.storeStatus.value;
+                    print("from dashboard");
+                    print(isActive);
                     final vendorName = _vendorsController.vendorName.value;
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

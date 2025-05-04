@@ -98,7 +98,7 @@ class VendorsController extends GetxController {
 
       await FirebaseFirestore.instance
           .collection('difwa-stores')
-          .doc(userId)
+          .doc(await fetchMerchantId())
           .set(updateData, SetOptions(merge: true));
 
       Get.snackbar(
@@ -123,10 +123,9 @@ class VendorsController extends GetxController {
 
   Future<void> updateStoreDetails(Map<String, dynamic> updates) async {
     try {
-      String userId = await _getCurrentUserId();
       await FirebaseFirestore.instance
           .collection('difwa-stores')
-          .doc(userId)
+          .doc(await fetchMerchantId())
           .update(updates);
       Get.snackbar(
         'Success',
@@ -150,17 +149,19 @@ class VendorsController extends GetxController {
   var balance = 0.0.obs;
   var vendorName = "".obs;
 
-  void fetchStoreDataRealTime(String merchantId) {
+  void fetchStoreDataRealTime(String merchantId) async {
     FirebaseFirestore.instance
         .collection('difwa-stores')
-        .where('merchantId', isEqualTo: merchantId)
+        .doc(await fetchMerchantId())
         .snapshots()
         .listen((snapshot) {
-      if (snapshot.docs.isNotEmpty) {
-        final storeDoc = snapshot.docs.first;
-        storeStatus.value = storeDoc['isActive'] ?? false;
-        balance.value = storeDoc['earnings']?.toDouble() ?? 0.0;
-        vendorName.value = storeDoc['vendorName'] ?? "No name";
+      if (snapshot.exists) {
+        if (snapshot.exists) {
+          final storeData = snapshot.data() as Map<String, dynamic>;
+          storeStatus.value = storeData['isActive'] ?? false;
+          balance.value = storeData['earnings']?.toDouble() ?? 0.0;
+          vendorName.value = storeData['vendorName'] ?? "No name";
+        }
       }
     });
   }
@@ -170,7 +171,7 @@ class VendorsController extends GetxController {
       String userId = await _getCurrentUserId();
       DocumentSnapshot storeDoc = await FirebaseFirestore.instance
           .collection('difwa-stores')
-          .doc(userId)
+          .doc(await fetchMerchantId())
           .get();
 
       if (storeDoc.exists) {
@@ -363,7 +364,7 @@ class VendorsController extends GetxController {
     try {
       String userId = await _getCurrentUserId();
       DocumentSnapshot storeDoc =
-          await _firestore.collection('difwa-stores').doc(userId).get();
+          await _firestore.collection('difwa-users').doc(userId).get();
 
       if (!storeDoc.exists) {
         return null;

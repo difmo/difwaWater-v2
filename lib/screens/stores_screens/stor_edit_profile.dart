@@ -385,9 +385,7 @@ class _EditVendorDetailsScreenState extends State<EditVendorDetailsScreen> {
           contentPadding:
               const EdgeInsets.symmetric(vertical: 10, horizontal: 17),
           labelText: label,
-          fillColor: isEditable
-              ? Colors.white
-              : Colors.grey[200], // Visual cue for disabled
+          fillColor: isEditable ? Colors.white : Colors.grey[200],
           filled: true,
         ),
         style: const TextStyle(fontSize: 16, color: textPrimary),
