@@ -87,6 +87,8 @@ class _SplashScreenState extends State<SplashScreen>
       } else if (role == 'isStoreKeeper') {
         vendorData = await _vendorsController.fetchStoreData();
         final isVendorVerified = vendorData?.isVerified ?? false;
+        print("isverified");
+        print(isVendorVerified);
 
         if (isVendorVerified) {
           Get.offNamed(AppRoutes.storebottombar);

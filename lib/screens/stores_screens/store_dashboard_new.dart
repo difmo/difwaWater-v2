@@ -123,7 +123,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ],
               ),
             ),
-// dfgsdc
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
@@ -153,13 +152,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                         StatCard(
                           title: 'Revenue',
-                          value: '\$balance',
+                          value: '\₹$balance',
                           color: Colors.green,
                         ),
                       ],
                     ),
-
-                    // Revenue Chart
 
                     const SizedBox(height: 20),
                     // Recent Orders

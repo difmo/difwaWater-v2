@@ -35,6 +35,9 @@ class _StoreNotVerifiedPageState extends State<StoreNotVerifiedPage> {
     _vendorStream!.listen((snapshot) {
       if (snapshot.exists) {
         final isVerified = snapshot['isVerified'] ?? false;
+        final merchantId = snapshot['merchantId'] ?? false;
+        print('FROM HOME');
+        print(merchantId);
         if (isVerified) {
           Get.offAllNamed(AppRoutes.storebottombar);
         }

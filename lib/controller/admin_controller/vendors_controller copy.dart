@@ -15,20 +15,23 @@ class VendorsController extends GetxController {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   File? imageFile;
   final FirebaseController _authController = Get.put(FirebaseController());
-
   @override
   Future<void> checkFunction() async {
     String merchantId = await _generateMerchantId();
-    print("Generated merchant ID: $merchantId");
+    print("generated merchant id ");
+    print(merchantId);
     return;
   }
 
   Future<String> uploadImage(File imageFile, String fileName) async {
     try {
       Reference ref = _storage.ref().child('vendor_images/$fileName');
+
       await ref.putFile(imageFile);
+
       String imageUrl = await ref.getDownloadURL();
 
+      // Debugging snackbar
       Get.snackbar(
         'Upload Success',
         'Image uploaded successfully: $fileName',
@@ -40,6 +43,8 @@ class VendorsController extends GetxController {
       return imageUrl;
     } catch (e) {
       print("Error uploading image: $e");
+
+      // Error snackbar
       Get.snackbar(
         'Upload Error',
         'Failed to upload image: $fileName',
@@ -47,6 +52,7 @@ class VendorsController extends GetxController {
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
+
       rethrow;
     }
   }
@@ -62,22 +68,20 @@ class VendorsController extends GetxController {
           userId: userId,
           merchantId: merchantId,
         );
+      }
+      if (newUser != null) {
+        print("here i am 1");
+        await _saveUserStore(newUser, merchantId);
+        print("here i am 2");
       } else {
         throw Exception('VendorModal cannot be null');
       }
-
-      print("Saving user store...");
-      await _saveUserStore(newUser, merchantId); // Use userId as document ID
-      print("User store saved.");
-
-      print("Updating user role...");
       await _updateUserRole(userId, merchantId);
-      print("User role updated.");
-
       _showSuccessSnackbar(merchantId);
       return true;
     } catch (e) {
-      print("Error in submitForm2: $e");
+      print("hamar error");
+      print(e);
       _handleError(e);
       return false;
     }
@@ -90,13 +94,21 @@ class VendorsController extends GetxController {
       }
 
       String userId = await _getCurrentUserId();
+      String? merchantId = await fetchMerchantId();
+      if (merchantId == null) {
+        throw Exception("Merchant ID not found for user: $userId");
+      }
+
+      // Prepare the data to update, excluding null fields
       Map<String, dynamic> updateData = modal.toMap();
       updateData.removeWhere((key, value) => value == null);
 
+      // Update Firestore document
       await FirebaseFirestore.instance
           .collection('difwa-stores')
           .doc(userId)
-          .set(updateData, SetOptions(merge: true));
+          .set(updateData,
+              SetOptions(merge: true)); // Use merge for partial updates
 
       Get.snackbar(
         'Success',
@@ -114,13 +126,13 @@ class VendorsController extends GetxController {
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
-      rethrow;
+      rethrow; // Rethrow for debugging purposes
     }
   }
 
-  var storeStatus = false.obs;
-  var balance = 0.0.obs;
-  var vendorName = "".obs;
+  var storeStatus = false.obs; // Observable boolean
+  var balance = 0.0.obs; // Observable double
+  var vendorName = "".obs; // Observable double
 
   void fetchStoreDataRealTime(String merchantId) {
     FirebaseFirestore.instance
@@ -131,24 +143,34 @@ class VendorsController extends GetxController {
       if (snapshot.docs.isNotEmpty) {
         final storeDoc = snapshot.docs.first;
         storeStatus.value = storeDoc['isActive'] ?? false;
-        balance.value = storeDoc['earnings']?.toDouble() ?? 0.0;
+        balance.value = storeDoc['earnings'] ?? 0.0;
         vendorName.value = storeDoc['vendorName'] ?? "No name";
       }
     });
   }
 
   Future<VendorModal?> fetchStoreData() async {
+    String? merchantId = await _authController.fetchMerchantId("");
+    if (merchantId == null) {
+      return null;
+    }
+    print("fetch store data2");
+
     try {
-      String userId = await _getCurrentUserId();
-      DocumentSnapshot storeDoc = await FirebaseFirestore.instance
+      QuerySnapshot storeQuerySnapshot = await FirebaseFirestore.instance
           .collection('difwa-stores')
-          .doc(userId)
+          .where('merchantId', isEqualTo: merchantId)
           .get();
 
-      if (storeDoc.exists) {
-        return VendorModal.fromMap(storeDoc.data() as Map<String, dynamic>);
+      if (storeQuerySnapshot.docs.isNotEmpty) {
+        DocumentSnapshot storeDoc = storeQuerySnapshot.docs.first;
+
+        VendorModal storeData =
+            VendorModal.fromMap(storeDoc.data() as Map<String, dynamic>);
+
+        return storeData;
       } else {
-        throw Exception('Store with User ID $userId not found');
+        throw Exception('Store with Merchant ID $merchantId not found');
       }
     } catch (e) {
       Get.snackbar(
@@ -172,6 +194,7 @@ class VendorsController extends GetxController {
 
   Future<String> _generateMerchantId() async {
     String year = DateTime.now().year.toString().substring(2);
+
     try {
       DocumentReference counterDoc = FirebaseFirestore.instance
           .collection('difwa-order-counters')
@@ -187,7 +210,10 @@ class VendorsController extends GetxController {
         int userCount = counterSnapshot.exists ? counterSnapshot['count'] : 0;
         String merchantId =
             'DW$year${(userCount + 1).toString().padLeft(7, '0')}';
+
+        // Increment the count
         transaction.update(counterDoc, {'count': userCount + 1});
+
         return merchantId;
       });
 
@@ -210,11 +236,14 @@ class VendorsController extends GetxController {
 
       if (storeQuerySnapshot.docs.isNotEmpty) {
         DocumentSnapshot storeDoc = storeQuerySnapshot.docs.first;
-        return storeDoc['isActive'] ?? false;
+
+        bool isActive = storeDoc['isActive'] ?? false;
+        return isActive;
       } else {
         throw Exception('Store with Merchant ID $merchantId not found');
       }
     } catch (e) {
+      // Handle any errors
       Get.snackbar(
         'Error',
         'Failed to fetch store status: ${e.toString()}',
@@ -222,27 +251,35 @@ class VendorsController extends GetxController {
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
-      return false;
+      return false; // Return false if there's an error
     }
   }
 
   Future<void> toggleStoreActiveStatusByCurrentUser() async {
     try {
-      String userId = await _getCurrentUserId();
+      User? currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        throw Exception('User not authenticated');
+      }
+      String userId = currentUser.uid;
+
       DocumentSnapshot storeDoc = await FirebaseFirestore.instance
           .collection('difwa-stores')
-          .doc(userId)
+          .doc(
+              userId) // Use the current user's UID as the document ID (merchantId)
           .get();
 
       if (storeDoc.exists) {
         bool currentStatus = storeDoc['isActive'] ?? false;
+
         bool newStatus = !currentStatus;
 
         await FirebaseFirestore.instance
             .collection('difwa-stores')
-            .doc(userId)
+            .doc(userId) // Use the userId (merchantId) as the document ID
             .update({'isActive': newStatus});
 
+        // Show success message
         Get.snackbar(
           'Success',
           'Store active status updated to: $newStatus',
@@ -251,9 +288,10 @@ class VendorsController extends GetxController {
           colorText: Colors.white,
         );
       } else {
-        throw Exception('Store with User ID $userId not found');
+        throw Exception('Store with Merchant ID $userId not found');
       }
     } catch (e) {
+      // Handle any errors
       Get.snackbar(
         'Error',
         'Failed to toggle store status: ${e.toString()}',
@@ -265,46 +303,44 @@ class VendorsController extends GetxController {
   }
 
   Future<void> _updateUserRole(String userId, String merchantId) async {
-    try {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+    String? merchantId = await _authController.fetchMerchantId("");
+    if (merchantId == null) {
+      print("Merchant ID is null");
+      return;
+    }
+
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance
+        .collection('difwa-users')
+        .doc(userId)
+        .get();
+
+    if (userDoc.exists) {
+      await FirebaseFirestore.instance
           .collection('difwa-users')
           .doc(userId)
-          .get();
-
-      if (userDoc.exists) {
-        await FirebaseFirestore.instance
-            .collection('difwa-users')
-            .doc(userId)
-            .update({
-          'role': 'isStoreKeeper',
-          'merchantId': merchantId,
-          'isActive': false,
-        });
-      } else {
-        await FirebaseFirestore.instance
-            .collection('difwa-users')
-            .doc(userId)
-            .set({
-          'role': 'isStoreKeeper',
-          'userId': userId,
-          'merchantId': merchantId,
-          'isActive': false,
-        }, SetOptions(merge: true));
-      }
-    } catch (e) {
-      throw Exception('Error updating user role: ${e.toString()}');
+          .update({
+        'role': 'isStoreKeeper',
+        'merchantId': merchantId,
+        'isActive': false
+      });
+    } else {
+      await FirebaseFirestore.instance
+          .collection('difwa-users')
+          .doc(userId)
+          .set({
+        'role': 'isStoreKeeper',
+        'userId': userId,
+      }, SetOptions(merge: true));
     }
   }
 
-  Future<void> _saveUserStore(VendorModal newUser, String userId) async {
-    try {
-      await FirebaseFirestore.instance
-          .collection('difwa-stores')
-          .doc(userId)
-          .set(newUser.toMap());
-    } catch (e) {
-      throw Exception('Error saving user store: ${e.toString()}');
-    }
+  Future<void> _saveUserStore(VendorModal newUser, String newmerchantId) async {
+    print("here i am 3");
+    await FirebaseFirestore.instance
+        .collection('difwa-stores')
+        .doc()
+        .set(newUser.toMap());
+    print("here i am 4");
   }
 
   void _showSuccessSnackbar(String merchantId) {
@@ -318,27 +354,26 @@ class VendorsController extends GetxController {
   }
 
   void _handleError(dynamic e) {
-    print("Error: $e");
+    print("error test");
+    print(e);
     String errorMessage = e is FirebaseAuthException
-        ? e.message ?? 'An unknown error occurred'
-        : e.toString();
-    Get.snackbar(
-      'Error',
-      errorMessage,
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.red,
-      colorText: Colors.white,
-    );
+        ? e.message ?? 'An unknown sdfsdf error occurred'
+        : 'An unknown error occurred';
+    Get.snackbar('Error', errorMessage,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white);
   }
 
   Future<String?> fetchMerchantId() async {
+    final userIdd = _auth.currentUser?.uid;
+
     try {
-      String userId = await _getCurrentUserId();
       DocumentSnapshot storeDoc =
-          await _firestore.collection('difwa-stores').doc(userId).get();
+          await _firestore.collection('difwa-stores').doc(userIdd).get();
 
       if (!storeDoc.exists) {
-        return null;
+        throw Exception("Store document does not exist for this user.");
       }
 
       return storeDoc['merchantId'];
@@ -354,21 +389,15 @@ class VendorsController extends GetxController {
           .collection('difwa-stores')
           .doc(userId)
           .delete();
-      Get.snackbar(
-        'Success',
-        'Store deleted successfully',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
+      Get.snackbar('Success', 'Store deleted successfully',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white);
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to delete store: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      Get.snackbar('Error', 'Failed to delete store: ${e.toString()}',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white);
     }
   }
 

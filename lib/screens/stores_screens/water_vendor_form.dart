@@ -158,6 +158,8 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                 label: "Business Name",
                 icon: Icons.business,
                 onChanged: (value) => bussinessName = value,
+                validator: (value) =>
+                    Validators.validateEmpty(value, "Vendor Name"),
                 inputType: InputType.text,
               ),
               const SizedBox(height: 20),
@@ -167,6 +169,8 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                 icon: Icons.person,
                 onChanged: (value) => contactPerson = value,
                 inputType: InputType.text,
+                validator: (value) =>
+                    Validators.validateEmpty(value, "Vendor Name"),
               ),
               const SizedBox(height: 20),
               CommonTextField(
@@ -174,6 +178,8 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                 hint: "Phone Number",
                 icon: Icons.phone,
                 onChanged: (value) => phoneNumber = value,
+                validator: (value) =>
+                    Validators.validateEmpty(value, "Vendor Name"),
                 inputType: InputType.phone,
               ),
               const SizedBox(height: 20),
@@ -183,12 +189,14 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                 icon: Icons.email,
                 onChanged: (value) => email = value,
                 inputType: InputType.email,
+                validator: (value) =>
+                    Validators.validateEmpty(value, "Vendor Name"),
               ),
-              const SizedBox(height: 20),
-              dropdownInput(
-                  "Vendor Type",
-                  ["Bottled", "Tanker", "RO", "Mineral"],
-                  (value) => vendorType = value ?? ''),
+              // const SizedBox(height: 20),
+              // dropdownInput(
+              //     "Vendor Type",
+              //     ["Bottled", "Tanker", "RO", "Mineral"],
+              //     (value) => vendorType = value ?? ''),
             ],
           ),
         ),
@@ -201,14 +209,13 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
             children: [
               stepHeader("Location Details"),
               textInput(
-                "Business Address",
-                "Enter address",
-                Icons.location_on,
-                (value) => businessAddress = value,
-                businessAddressController..text = businessAddress,
-                InputType.address,
-                (value) => Validators.validateEmpty(value, "Business Address"),
-              ),
+                  "Business Address",
+                  "Enter address",
+                  Icons.location_on,
+                  (value) => businessAddress = value,
+                  businessAddressController..text = businessAddress,
+                  InputType.address,
+                  null),
               textInput(
                 "Area/City",
                 "Enter area or city",
@@ -225,7 +232,7 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                 (value) => postalCode = value,
                 postalCodeController..text = postalCode,
                 InputType.pin,
-                null,
+                (value) => Validators.validateEmpty(value, "Business Address"),
               ),
               textInput(
                 "State/Province",
@@ -234,7 +241,7 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                 (value) => state = value,
                 stateController..text = state,
                 InputType.text,
-                null,
+                (value) => Validators.validateEmpty(value, "Business Address"),
               ),
             ],
           ),
@@ -317,6 +324,10 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                 panCardImage,
                 imageUrl["panImg"],
                 isUploading: uploadingStatus["PAN Card"] ?? false,
+                validator: (value) =>
+                    aadhaarCardImage == null && imageUrl["aadharImg"] == null
+                        ? "Aadhaar Card is required"
+                        : null,
               ),
               uploadCard(
                 "Passport-size Photo",
@@ -324,6 +335,10 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                 passportPhotoImage,
                 imageUrl["passportImg"],
                 isUploading: uploadingStatus["Passport Photo"] ?? false,
+                validator: (value) =>
+                    aadhaarCardImage == null && imageUrl["aadharImg"] == null
+                        ? "Aadhaar Card is required"
+                        : null,
               ),
               uploadCard(
                 "Business License",
@@ -331,6 +346,10 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                 businessLicenseImage,
                 imageUrl["businessLicenseImg"],
                 isUploading: uploadingStatus["Business License"] ?? false,
+                validator: (value) =>
+                    aadhaarCardImage == null && imageUrl["aadharImg"] == null
+                        ? "Aadhaar Card is required"
+                        : null,
               ),
               uploadCard(
                 "Water Quality Certificate",
@@ -353,6 +372,10 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                 bankDocumentImage,
                 imageUrl["bankDocumentImg"],
                 isUploading: uploadingStatus["Bank Document"] ?? false,
+                validator: (value) =>
+                    aadhaarCardImage == null && imageUrl["aadharImg"] == null
+                        ? "Aadhaar Card is required"
+                        : null,
               ),
               uploadCard(
                 "Business Images",
@@ -389,7 +412,7 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                 (value) => accountNumber = value,
                 accountNumberController..text = accountNumber,
                 InputType.text,
-                null,
+                (value) => Validators.validateEmpty(value, "Bank Name"),
               ),
               textInput(
                 "UPI ID",
@@ -398,7 +421,7 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                 (value) => upiId = value,
                 upiIdController..text = upiId,
                 InputType.text,
-                null,
+                (value) => Validators.validateEmpty(value, "Bank Name"),
               ),
               textInput(
                 "IFSC/SWIFT Code",
@@ -407,7 +430,7 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                 (value) => ifscCode = value,
                 ifscCodeController..text = ifscCode,
                 InputType.text,
-                null,
+                (value) => Validators.validateEmpty(value, "Bank Name"),
               ),
               dropdownInput("Payment Terms", ["Prepaid", "Postpaid", "Weekly"],
                   (value) => status = value ?? ''),
@@ -583,6 +606,30 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
               ? const Text("No image uploaded")
               : Image.file(
                   File(image.path),
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.cover,
+                ),
+        ],
+      ),
+    );
+  }
+
+  Widget _imagePreviewItem2(String label, String? image) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            "$label: ",
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(width: 8),
+          image == null
+              ? const Text("No image uploaded")
+              : Image.network(
+                  image,
                   width: 100,
                   height: 100,
                   fit: BoxFit.cover,
@@ -881,14 +928,14 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
         _previewItem("Remarks", remarks),
         _previewItem("Status", status),
         const SizedBox(height: 20),
-        _imagePreviewItem("Aadhaar Card", aadhaarCardImage),
-        _imagePreviewItem("PAN Card", panCardImage),
-        _imagePreviewItem("Passport Photo", passportPhotoImage),
-        _imagePreviewItem("Business License", businessLicenseImage),
-        _imagePreviewItem(
-            "Water Quality Certificate", waterQualityCertificateImage),
-        _imagePreviewItem("Identity Proof", identityProofImage),
-        _imagePreviewItem("Bank Document", bankDocumentImage),
+        _imagePreviewItem2("Aadhaar Card", imageUrl["aadharImg"]),
+        _imagePreviewItem2("PAN Card", imageUrl["panImg"]),
+        _imagePreviewItem2("Passport Photo", imageUrl["passportImg"]),
+        _imagePreviewItem2("Business License", imageUrl["businessLicenseImg"]),
+        _imagePreviewItem2("Water Quality Certificate",
+            imageUrl["waterQualityCertificateImg"]),
+        _imagePreviewItem2("Identity Proof", imageUrl["IdentityProofImg"]),
+        _imagePreviewItem2("Bank Document", imageUrl["bankDocumentImg"]),
         const SizedBox(height: 20),
         const Text(
           "Business Images:",
