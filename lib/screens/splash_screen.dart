@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:difwa/controller/admin_controller/vendors_controller.dart';
+import 'package:difwa/models/stores_models/store_new_modal.dart';
 import 'package:difwa/utils/location_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -11,7 +13,7 @@ class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen>
@@ -19,6 +21,10 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _controller;
   late Animation<double> _logoScale;
   late Animation<double> _fadeText;
+
+  final VendorsController _vendorsController = Get.put(VendorsController());
+
+  VendorModal? vendorData;
 
   @override
   void initState() {
@@ -29,7 +35,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   void _initializeAnimations() {
     _controller = AnimationController(
-      duration: Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
 
@@ -45,43 +51,57 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _loadInitialData() async {
-    await Future.wait([fetchLocation(), _checkLoginStatus()]);
-  }
-
-  Future<void> fetchLocation() async {
-    await LocationHelper.getCurrentLocation();
+    await Future.wait([
+      LocationHelper.getCurrentLocation(),
+      Future.delayed(const Duration(milliseconds: 1500)), // splash delay
+    ]);
+    _checkLoginStatus();
   }
 
   Future<void> _checkLoginStatus() async {
-    await Future.delayed(Duration(milliseconds: 1500));
-    User? user = FirebaseAuth.instance.currentUser;
-    user != null
-        ? await _getUserRole(user.uid)
-        : Get.offNamed(AppRoutes.useronboarding);
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      Get.offNamed(AppRoutes.useronboarding);
+      return;
+    }
+
+    await _getUserRole(user.uid);
   }
 
   Future<void> _getUserRole(String userId) async {
     try {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+      final userDoc = await FirebaseFirestore.instance
           .collection('difwa-users')
           .doc(userId)
           .get();
 
-      if (userDoc.exists) {
-        String role = userDoc['role'] ?? 'isUser';
-        if (role == 'isUser') {
-          Get.offNamed(AppRoutes.userbottom);
-        } else if (role == 'isStoreKeeper') {
+      if (!userDoc.exists) {
+        Get.offNamed(AppRoutes.useronboarding);
+        return;
+      }
+
+      final role = userDoc['role'] ?? 'isUser';
+
+      if (role == 'isUser') {
+        Get.offNamed(AppRoutes.userbottom);
+      } else if (role == 'isStoreKeeper') {
+        vendorData = await _vendorsController.fetchStoreData();
+        final isVendorVerified = vendorData?.isVerified ?? false;
+        print("isverified");
+        print(isVendorVerified);
+
+        if (isVendorVerified) {
           Get.offNamed(AppRoutes.storebottombar);
         } else {
-          Get.offNamed(AppRoutes.useronboarding);
+          Get.offNamed(AppRoutes.vendor_not_verified);
         }
       } else {
         Get.offNamed(AppRoutes.useronboarding);
       }
     } catch (e) {
+      debugPrint("Error getting user role: $e");
       Get.snackbar('Error', 'Failed to retrieve user role');
-      // Get.offNamed(AppRoutes.useronboarding);
+      Get.offNamed(AppRoutes.useronboarding);
     }
   }
 
@@ -95,12 +115,9 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: const [
-              Color(0xFF141E30),
-              Color(0xFF243B55)
-            ], // Dark blue gradient
+            colors: [Color(0xFF141E30), Color(0xFF243B55)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -110,7 +127,6 @@ class _SplashScreenState extends State<SplashScreen>
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   ScaleTransition(
                     scale: _logoScale,
@@ -120,12 +136,12 @@ class _SplashScreenState extends State<SplashScreen>
                       height: 120,
                     ),
                   ),
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
                   FadeTransition(
                     opacity: _fadeText,
                     child: Column(
                       children: [
-                        Text(
+                        const Text(
                           "Welcome to Difwa",
                           style: TextStyle(
                             fontSize: 28,
@@ -134,7 +150,7 @@ class _SplashScreenState extends State<SplashScreen>
                             letterSpacing: 1.2,
                           ),
                         ),
-                        SizedBox(height: 12),
+                        const SizedBox(height: 12),
                         Text(
                           'Order Water with Ease!',
                           style: TextStyle(
@@ -151,7 +167,7 @@ class _SplashScreenState extends State<SplashScreen>
               ),
             ),
             Positioned(
-              bottom: 20, // Keep it slightly above the bottom for spacing
+              bottom: 20,
               left: 0,
               right: 0,
               child: FadeTransition(

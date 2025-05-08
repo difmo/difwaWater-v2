@@ -1,7 +1,7 @@
 class VendorModal {
-  String userId;
-  String merchantId;
-  final double earnings;
+  String? userId;
+  String? merchantId;
+  final double? earnings;
   String vendorName;
   String bussinessName;
   String contactPerson;
@@ -23,18 +23,18 @@ class VendorModal {
   String ifscCode;
   String gstNumber;
   String remarks;
-  String status;
-  List<String> images;
+  String? status;
+  Map<String, String> images;
   bool isVerified = false;
   String createdAt;
   String updatedAt;
   bool isActive = false;
-    String videoUrl;
+  String videoUrl;
 
   VendorModal({
-    required this.userId,
-    required this.merchantId,
-    required this.earnings,
+    this.userId,
+    this.merchantId,
+    this.earnings = 0.0,
     required this.vendorName,
     required this.bussinessName,
     required this.contactPerson,
@@ -56,14 +56,83 @@ class VendorModal {
     required this.ifscCode,
     required this.gstNumber,
     required this.remarks,
-    required this.status,
-    required this.images, // Image map is passed as argument
+    required this.images,
+    this.status = 'pending',
     this.isVerified = false,
     this.createdAt = '',
     this.updatedAt = '',
     this.isActive = false,
     this.videoUrl = '',
   });
+
+  // CopyWith method
+  VendorModal copyWith({
+    String? userId,
+    String? merchantId,
+    double? earnings,
+    String? vendorName,
+    String? bussinessName,
+    String? contactPerson,
+    String? phoneNumber,
+    String? email,
+    String? vendorType,
+    String? businessAddress,
+    String? areaCity,
+    String? postalCode,
+    String? state,
+    String? waterType,
+    String? capacityOptions,
+    String? dailySupply,
+    String? deliveryArea,
+    String? deliveryTimings,
+    String? bankName,
+    String? accountNumber,
+    String? upiId,
+    String? ifscCode,
+    String? gstNumber,
+    String? remarks,
+    String? status,
+    Map<String, String>? images,
+    bool? isVerified,
+    String? createdAt,
+    String? updatedAt,
+    bool? isActive,
+    String? videoUrl,
+  }) {
+    return VendorModal(
+      userId: userId ?? this.userId,
+      merchantId: merchantId ?? this.merchantId,
+      earnings: earnings ?? this.earnings,
+      vendorName: vendorName ?? this.vendorName,
+      bussinessName: bussinessName ?? this.bussinessName,
+      contactPerson: contactPerson ?? this.contactPerson,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      email: email ?? this.email,
+      vendorType: vendorType ?? this.vendorType,
+      businessAddress: businessAddress ?? this.businessAddress,
+      areaCity: areaCity ?? this.areaCity,
+      postalCode: postalCode ?? this.postalCode,
+      state: state ?? this.state,
+      waterType: waterType ?? this.waterType,
+      capacityOptions: capacityOptions ?? this.capacityOptions,
+      dailySupply: dailySupply ?? this.dailySupply,
+      deliveryArea: deliveryArea ?? this.deliveryArea,
+      deliveryTimings: deliveryTimings ?? this.deliveryTimings,
+      bankName: bankName ?? this.bankName,
+      accountNumber: accountNumber ?? this.accountNumber,
+      upiId: upiId ?? this.upiId,
+      ifscCode: ifscCode ?? this.ifscCode,
+      gstNumber: gstNumber ?? this.gstNumber,
+      remarks: remarks ?? this.remarks,
+      status: status ?? this.status,
+      images: images ?? this.images,
+      isVerified: isVerified ?? this.isVerified,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      isActive: isActive ?? this.isActive,
+      videoUrl: videoUrl ?? this.videoUrl,
+    );
+  }
 
   // To convert the model into a Map for Firestore
   Map<String, dynamic> toMap() {
@@ -93,7 +162,7 @@ class VendorModal {
       'gstNumber': gstNumber,
       'remarks': remarks,
       'status': status,
-      'images': images,  // Store the images map
+      'images': images, // Store the images map
       'isVerified': isVerified,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
@@ -130,7 +199,8 @@ class VendorModal {
       gstNumber: json['gstNumber'] ?? '',
       remarks: json['remarks'] ?? '',
       status: json['status'] ?? '',
-      images: List<String>.from(json['images'] ?? []), // Parsing the images list
+      images: Map<String, String>.from(
+          json['images'] ?? {}), // Parsing the images map
       isVerified: json['isVerified'] ?? false,
       createdAt: json['createdAt'] ?? '',
       updatedAt: json['updatedAt'] ?? '',
@@ -177,6 +247,7 @@ class VendorModal {
     };
   }
 
+  // Convert from Map
   factory VendorModal.fromMap(Map<String, dynamic> map) {
     return VendorModal(
       merchantId: map['merchantId'] ?? '',
@@ -204,7 +275,8 @@ class VendorModal {
       gstNumber: map['gstNumber'] ?? '',
       remarks: map['remarks'] ?? '',
       status: map['status'] ?? '',
-      images: List<String>.from(map['images'] ?? []), // Extracting images list
+      images: Map<String, String>.from(
+          map['images'] ?? {}), // Extracting images map
       isVerified: map['isVerified'] ?? false,
       createdAt: map['createdAt'] ?? '',
       updatedAt: map['updatedAt'] ?? '',

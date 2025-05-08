@@ -2,7 +2,7 @@ import 'package:difwa/config/app_color.dart';
 import 'package:difwa/config/app_styles.dart';
 import 'package:difwa/controller/auth_controller.dart';
 import 'package:difwa/models/user_models/user_details_model.dart';
-import 'package:difwa/screens/admin_screens/store_onboarding_screen.dart';
+import 'package:difwa/screens/stores_screens/store_onboarding_screen.dart';
 import 'package:difwa/screens/auth/saved_address.dart';
 import 'package:difwa/screens/customer_support_pages/FAQ_page.dart';
 import 'package:difwa/screens/customer_support_pages/contact_info_page.dart';
