@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:difwa/controller/admin_controller/vendors_controller.dart';
 import 'package:difwa/models/stores_models/store_new_modal.dart';
-import 'package:difwa/routes/store_bottom_bar.dart';
 import 'package:difwa/screens/stores_screens/store_not_verified_page.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/utils/validators.dart';

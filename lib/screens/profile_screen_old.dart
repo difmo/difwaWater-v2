@@ -1,4 +1,3 @@
-import 'package:difwa/config/app_color.dart';
 import 'package:difwa/config/app_styles.dart';
 import 'package:difwa/controller/auth_controller.dart';
 import 'package:difwa/models/user_models/user_details_model.dart';
@@ -9,7 +8,6 @@ import 'package:difwa/screens/customer_support_pages/contact_info_page.dart';
 import 'package:difwa/screens/customer_support_pages/locate_us_page.dart';
 import 'package:difwa/screens/edit_personaldetails.dart';
 import 'package:difwa/screens/ordershistory_screen.dart';
-import 'package:difwa/screens/personal_details.dart';
 import 'package:difwa/screens/user_wallet_page.dart';
 import 'package:difwa/utils/app__text_style.dart';
 import 'package:difwa/utils/theme_constant.dart';
@@ -18,7 +16,6 @@ import 'package:difwa/widgets/simmers/ProfileShimmer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatefulWidget {

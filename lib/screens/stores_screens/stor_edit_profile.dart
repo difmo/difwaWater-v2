@@ -7,7 +7,7 @@ import 'package:difwa/controller/admin_controller/vendors_controller.dart';
 import 'package:difwa/models/stores_models/store_new_modal.dart';
 
 class EditVendorDetailsScreen extends StatefulWidget {
-  const EditVendorDetailsScreen({Key? key}) : super(key: key);
+  const EditVendorDetailsScreen({super.key});
 
   @override
   _EditVendorDetailsScreenState createState() =>
@@ -296,7 +296,7 @@ class _EditVendorDetailsScreenState extends State<EditVendorDetailsScreen> {
               type: StepperType.vertical,
               physics: const ClampingScrollPhysics(),
               elevation: 0,
-              connectorColor: MaterialStateProperty.all(primaryRed),
+              connectorColor: WidgetStateProperty.all(primaryRed),
               controlsBuilder: (context, details) {
                 return Row(
                   children: [

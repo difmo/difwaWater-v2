@@ -1,6 +1,5 @@
 import 'package:difwa/routes/app_routes.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 class NavigationDecider {
   static void navigateBasedOnRole(String? role) {

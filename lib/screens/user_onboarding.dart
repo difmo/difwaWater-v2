@@ -147,7 +147,7 @@ class _OnboardingScreenState extends State<UserOnboardingScreen> {
       child: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Container(
+          child: SizedBox(
             width: double.infinity,
             height: 65,
             child: Row(
@@ -186,11 +186,11 @@ class OnboardingPage extends StatelessWidget {
   final String description;
 
   const OnboardingPage({
-    Key? key,
+    super.key,
     required this.image,
     required this.title,
     required this.description,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

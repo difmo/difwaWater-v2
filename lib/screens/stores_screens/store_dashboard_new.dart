@@ -154,7 +154,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                         StatCard(
                           title: 'Revenue',
-                          value: '\₹$balance',
+                          value: '₹$balance',
                           color: Colors.green,
                         ),
                       ],

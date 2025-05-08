@@ -4,7 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 class BackPressToExit extends StatefulWidget {
   final Widget child; // The screen you want to wrap
 
-  const BackPressToExit({Key? key, required this.child}) : super(key: key);
+  const BackPressToExit({super.key, required this.child});
 
   @override
   _BackPressToExitState createState() => _BackPressToExitState();

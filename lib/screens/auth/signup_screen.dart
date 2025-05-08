@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:difwa/routes/user_bottom_bar.dart';
 import 'package:difwa/utils/app__text_style.dart';
-import 'package:difwa/widgets/others/back_press_toexit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';

@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 class BlinkingStatusIndicator extends StatefulWidget {
   final bool isActive;
 
-  const BlinkingStatusIndicator({Key? key, required this.isActive})
-      : super(key: key);
+  const BlinkingStatusIndicator({super.key, required this.isActive});
 
   @override
   State<BlinkingStatusIndicator> createState() =>

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class StoreNotVerifiedPage extends StatefulWidget {
-  const StoreNotVerifiedPage({Key? key}) : super(key: key);
+  const StoreNotVerifiedPage({super.key});
 
   @override
   State<StoreNotVerifiedPage> createState() => _StoreNotVerifiedPageState();
@@ -14,7 +14,7 @@ class StoreNotVerifiedPage extends StatefulWidget {
 
 class _StoreNotVerifiedPageState extends State<StoreNotVerifiedPage> {
   Stream<DocumentSnapshot>? _vendorStream;
-  VendorsController _vendorsController = Get.put(VendorsController());
+  final VendorsController _vendorsController = Get.put(VendorsController());
 
   @override
   void initState() {

@@ -9,14 +9,14 @@ class ModernToggleSwitch extends StatefulWidget {
   final Color inactiveColor;
 
   const ModernToggleSwitch({
-    Key? key,
+    super.key,
     required this.initialValue,
     required this.onToggle,
     this.width = 70,
     this.height = 40,
     this.activeColor = const Color(0xFF4ADE80), // Modern green
     this.inactiveColor = const Color(0xFF9CA3AF), // Cool grey
-  }) : super(key: key);
+  });
 
   @override
   _ModernToggleSwitchState createState() => _ModernToggleSwitchState();
