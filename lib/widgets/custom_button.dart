@@ -94,8 +94,7 @@ class CustomButton extends StatelessWidget {
             ),
             child: Ink(
               decoration: BoxDecoration(
-                color: AppColors
-                    .logoprimary, 
+                color: AppColors.logoprimary,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Container(

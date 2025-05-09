@@ -2,6 +2,7 @@ import 'package:difwa/config/app_color.dart';
 import 'package:difwa/routes/app_routes.dart';
 import 'package:difwa/utils/app__text_style.dart';
 import 'package:difwa/utils/theme_constant.dart';
+import 'package:difwa/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -17,9 +18,44 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentIndex = 0;
 
+  final List<Map<String, dynamic>> _pages = [
+    {
+      "middleImage": 'assets/onboardingimg/onboarding0.svg',
+      "newHeading": 'Streamlined Order Management',
+      "newDescription":
+          'Effortlessly track and manage orders in real-time. Stay on top of deliveries with ease.',
+      "titleColor": Colors.white,
+      "showButton": false,
+    },
+    {
+      "middleImage": 'assets/onboardingimg/onboarding1.svg',
+      "newHeading": 'Optimize Your Storefront',
+      "newDescription":
+          'Showcase your products beautifully and increase visibility in your local community.',
+      "titleColor": Colors.white,
+      "showButton": false,
+    },
+    {
+      "middleImage": 'assets/onboardingimg/onboarding2.svg',
+      "newHeading": 'Seamless Customer Interaction',
+      "newDescription":
+          'Communicate effortlessly with your customers for a smooth experience.',
+      "titleColor": Colors.black,
+      "showButton": false,
+    },
+    {
+      "middleImage": 'assets/onboardingimg/onboarding3.svg',
+      "newHeading": 'Join Our Community!',
+      "newDescription":
+          'Connect with thousands of vendors and grow your business.',
+      "titleColor": Colors.white,
+      "showButton": true,
+    },
+  ];
+
   List<Widget> _buildPageIndicator() {
     return List.generate(
-      4, // Number of pages
+      _pages.length,
       (index) => AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         margin: const EdgeInsets.symmetric(horizontal: 4.0),
@@ -27,7 +63,7 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
         width: _currentIndex == index ? 20.0 : 10.0,
         decoration: BoxDecoration(
           color: _currentIndex == index
-              ? ThemeConstants.primaryColor
+              ? const Color.fromRGBO(29, 55, 87, 1)
               : Colors.grey,
           borderRadius: BorderRadius.circular(10.0),
         ),
@@ -36,9 +72,11 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
   }
 
   void _onNext() {
-    if (_currentIndex < 2) {
+    if (_currentIndex < _pages.length - 1) {
       _pageController.nextPage(
-          duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeIn,
+      );
     } else {
       Get.toNamed(AppRoutes.vendoform);
     }
@@ -50,48 +88,23 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: Stack(
         children: [
-          PageView(
+          PageView.builder(
             controller: _pageController,
+            itemCount: _pages.length,
             onPageChanged: (index) {
               setState(() {
                 _currentIndex = index;
               });
             },
-            children: [
-              _buildOnboardingPage(
-                middleImage: 'assets/onboardingimg/onboarding0.svg',
-                newHeading: 'Streamlined Order Management',
-                newDescription:
-                    'Easily track, process, and manage customer orders in real-time. No more missed deliveries or errors—stay on top of your business effortlessly.',
-                titleColor: Colors.white,
-                showButton: false,
-              ),
-              _buildOnboardingPage(
-                middleImage: 'assets/onboardingimg/onboarding1.svg',
-                newHeading: 'Streamlined Order Management',
-                newDescription:
-                    'Easily track, process, and manage customer orders in real-time. No more missed deliveries or errors—stay on top of your business effortlessly.',
-                titleColor: Colors.white,
-                showButton: false,
-              ),
-              _buildOnboardingPage(
-                middleImage: 'assets/onboardingimg/onboarding2.svg',
-                newHeading: 'Farm to Table!',
-                newDescription:
-                    'Easily track, process, and manage customer orders in real-time. No more missed deliveries or errors—stay on top of your business effortlessly.',
-                titleColor: Colors.black,
-                showButton: false,
-              ),
-              _buildOnboardingPage(
-                middleImage: 'assets/onboardingimg/onboarding3.svg',
-                newHeading: 'Join Our Community!',
-                newDescription:
-                    'Connect with fellow food lovers and share recipes.',
-                titleColor: Colors.white,
-                showButton: true, // Show button on the last page
-                onNextPressed: _onNext, // Pass the callback
-              ),
-            ],
+            itemBuilder: (context, index) {
+              return _buildOnboardingPage(
+                middleImage: _pages[index]['middleImage'],
+                newHeading: _pages[index]['newHeading'],
+                newDescription: _pages[index]['newDescription'],
+                titleColor: _pages[index]['titleColor'],
+                showButton: _pages[index]['showButton'],
+              );
+            },
           ),
           Positioned(
             bottom: 30.0,
@@ -116,15 +129,12 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
     required String newHeading,
     required String newDescription,
     required Color titleColor,
-    required bool showButton, // New parameter for showing button
-    VoidCallback? onNextPressed, // Callback for button press
+    required bool showButton,
   }) {
     return Padding(
       padding: const EdgeInsets.all(0.0),
       child: Stack(
         children: [
-          // Background image
-
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -141,8 +151,7 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
                         color: Colors.grey.withOpacity(0.5),
                         spreadRadius: 5,
                         blurRadius: 7,
-                        offset:
-                            const Offset(0, 3), // changes position of shadow
+                        offset: const Offset(0, 3),
                       ),
                     ],
                   ),
@@ -152,38 +161,35 @@ class _OnboardingScreenState extends State<StoreOnboardingScreen> {
                 ),
                 const SizedBox(height: 130),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text(newHeading,
-                      style: AppTextStyle.Text18700.copyWith(
-                          color: ThemeConstants.primaryColor)),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text(
+                    newHeading,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyle.Text18700.copyWith(
+                      color: AppColors.logoprimary,
+                    ),
+                  ),
                 ),
-                // New Description below the new heading
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text(newDescription,
-                      textAlign: TextAlign.center,
-                      style: AppTextStyle.Text14400),
+                  child: Text(
+                    newDescription,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyle.Text14400,
+                  ),
                 ),
                 const SizedBox(height: 30),
-                // Button on the last page
                 if (showButton)
                   Container(
                     width: double.infinity,
                     margin: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: ElevatedButton(
-                      style: ButtonStyle(
-                        backgroundColor:
-                            WidgetStateProperty.all(AppColors.logoprimary),
-                        foregroundColor: WidgetStateProperty.all(Colors.white),
-                      ),
-                      onPressed: onNextPressed,
-                      child: const Text(
-                        "Create Store",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                    child: CustomButton(
+                      text: "Create Store",
+                      height: 50,
+                      width: double.infinity,
+                      baseTextColor: Colors.white,
+                      backgroundColor: Colors.orange,
+                      onPressed: _onNext, // Fixed the callback
                     ),
                   ),
                 const SizedBox(height: 100),

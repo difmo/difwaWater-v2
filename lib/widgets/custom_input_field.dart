@@ -4,7 +4,7 @@ import 'package:difwa/utils/theme_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-enum InputType { phone, email, name,text, address, visiblePassword, pin }
+enum InputType { phone, email, name, text, address, visiblePassword, pin }
 
 class CommonTextField extends StatefulWidget {
   final InputType inputType;
@@ -87,7 +87,7 @@ class _CommonTextFieldState extends State<CommonTextField> {
         break;
       case InputType.text:
         _keyboardType = TextInputType.text;
-       
+
         break;
       case InputType.address:
         _keyboardType = TextInputType.streetAddress;
@@ -230,9 +230,6 @@ class _CommonTextFieldState extends State<CommonTextField> {
           borderRadius: BorderRadius.circular(widget.borderRadius ?? 16.0),
         ),
         contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 17),
-
-        // contentPadding:
-        //     EdgeInsets.symmetric(vertical: widget.height ?? 0, horizontal: 17),
       ),
     );
   }

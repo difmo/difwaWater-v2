@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:difwa/controller/auth_controller.dart';
 import 'package:difwa/models/user_models/user_details_model.dart';
 import 'package:difwa/routes/app_routes.dart';
+import 'package:difwa/screens/ServiceNotAvailableScreen.dart';
 import 'package:difwa/screens/checkout_screen.dart';
 import 'package:difwa/widgets/CustomPopup.dart';
 import 'package:difwa/widgets/ImageCarouselApp.dart';
@@ -212,82 +213,81 @@ class _BookNowScreenState extends State<BookNowScreen> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return _isLoading
-        ? const HomePageShimmer()
-        : Scaffold(
-            backgroundColor: Colors.white,
-            appBar: PreferredSize(
-                preferredSize: const Size.fromHeight(60),
-                child: CustomAppbar(
-                  onProfilePressed: widget.onProfilePressed,
-                  onNotificationPressed: () {
-                    Get.toNamed(AppRoutes
-                        .notification); // Navigate to notifications page
-                  },
-                  onMenuPressed: widget.onMenuPressed,
-                  hasNotifications: true,
-                  badgeCount: 0, // Example badge count
-                  usersData: usersData, // Profile picture URL
-                )),
-            body: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: Column(
-                  children: [
-                    // Image Carousel
-                    SizedBox(
-                      height: screenHeight * 0.20,
-                      child: const ImageCarouselPage(),
-                    ),
-                    const SizedBox(height: 10),
+    return _isLoading ? const HomePageShimmer() : ServiceNotAvailableScreen();
+    // Scaffold(
+    //     backgroundColor: Colors.white,
+    //     appBar: PreferredSize(
+    //         preferredSize: const Size.fromHeight(60),
+    //         child: CustomAppbar(
+    //           onProfilePressed: widget.onProfilePressed,
+    //           onNotificationPressed: () {
+    //             Get.toNamed(AppRoutes
+    //                 .notification); // Navigate to notifications page
+    //           },
+    //           onMenuPressed: widget.onMenuPressed,
+    //           hasNotifications: true,
+    //           badgeCount: 0, // Example badge count
+    //           usersData: usersData, // Profile picture URL
+    //         )),
+    //     body: SingleChildScrollView(
+    //       child: Padding(
+    //         padding: const EdgeInsets.all(5.0),
+    //         child: Column(
+    //           children: [
+    //             // Image Carousel
+    //             SizedBox(
+    //               height: screenHeight * 0.20,
+    //               child: const ImageCarouselPage(),
+    //             ),
+    //             const SizedBox(height: 10),
 
-                    // Show loading or package selector
-                    _isLoading
-                        ? PackageSelectorShimmer()
-                        : PackageSelectorComponent(
-                            bottleItems: _bottleItems,
-                            onSelected: _onPackageSelected,
-                          ),
+    //             // Show loading or package selector
+    //             _isLoading
+    //                 ? PackageSelectorShimmer()
+    //                 : PackageSelectorComponent(
+    //                     bottleItems: _bottleItems,
+    //                     onSelected: _onPackageSelected,
+    //                   ),
 
-                    const SizedBox(height: 16),
+    //             const SizedBox(height: 16),
 
-                    // Order details component
-                    OrderDetailsComponent(
-                      key: ValueKey(_selectedPackage),
-                      selectedPackage: _selectedPackage,
-                      onOrderUpdated: (quantity, hasEmptyBottles, totalPrice) {
-                        if (_totalPrice != totalPrice) {
-                          setState(() {
-                            _quantity = quantity;
-                            _hasEmptyBottle = hasEmptyBottles;
-                            _totalPrice = totalPrice;
-                          });
-                        }
-                      },
-                    ),
+    //             // Order details component
+    //             OrderDetailsComponent(
+    //               key: ValueKey(_selectedPackage),
+    //               selectedPackage: _selectedPackage,
+    //               onOrderUpdated: (quantity, hasEmptyBottles, totalPrice) {
+    //                 if (_totalPrice != totalPrice) {
+    //                   setState(() {
+    //                     _quantity = quantity;
+    //                     _hasEmptyBottle = hasEmptyBottles;
+    //                     _totalPrice = totalPrice;
+    //                   });
+    //                 }
+    //               },
+    //             ),
 
-                    const SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8, right: 8),
-                      child: SubscribeButtonComponent(
-                        text: "Order Now",
-                        onPressed: _onOrderPressed,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    // Subscribe button
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8, right: 8),
-                      child: SubscribeButtonComponent(
-                        text: "Subscribe Now",
-                        icon: Icons.check_circle,
-                        onPressed: _onSubscribePressed,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
+    //             const SizedBox(height: 20),
+    //             Padding(
+    //               padding: const EdgeInsets.only(left: 8, right: 8),
+    //               child: SubscribeButtonComponent(
+    //                 text: "Order Now",
+    //                 onPressed: _onOrderPressed,
+    //               ),
+    //             ),
+    //             const SizedBox(height: 4),
+    //             // Subscribe button
+    //             Padding(
+    //               padding: const EdgeInsets.only(left: 8, right: 8),
+    //               child: SubscribeButtonComponent(
+    //                 text: "Subscribe Now",
+    //                 icon: Icons.check_circle,
+    //                 onPressed: _onSubscribePressed,
+    //               ),
+    //             ),
+    //           ],
+    //         ),
+    //       ),
+    //     ),
+    //   );
   }
 }

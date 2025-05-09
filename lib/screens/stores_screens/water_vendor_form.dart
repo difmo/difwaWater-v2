@@ -1,13 +1,17 @@
 import 'dart:io';
 
+import 'package:difwa/config/app_color.dart';
 import 'package:difwa/controller/admin_controller/vendors_controller.dart';
 import 'package:difwa/models/stores_models/store_new_modal.dart';
 import 'package:difwa/screens/stores_screens/store_not_verified_page.dart';
+import 'package:difwa/utils/location_helper.dart';
 import 'package:difwa/utils/theme_constant.dart';
 import 'package:difwa/utils/validators.dart';
 import 'package:difwa/widgets/custom_button.dart';
 import 'package:difwa/widgets/custom_input_field.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shimmer/shimmer.dart';
@@ -96,6 +100,76 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
   XFile? waterQualityCertificateImage;
   XFile? identityProofImage;
   XFile? bankDocumentImage;
+  String locationDetails = "Fetching location...";
+
+  Future<void> fetchLocation() async {
+    print("Picking location...");
+
+    Position? position = await LocationHelper.getCurrentLocation();
+    print("Picked location... $position");
+
+    if (position != null) {
+      try {
+        // Fetch placemarks from coordinates
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+          position.latitude,
+          position.longitude,
+        );
+
+        // Filter out only those placemarks which have valid address details
+        placemarks = placemarks
+            .where((place) =>
+                place.street != null &&
+                place.locality != null &&
+                place.administrativeArea != null)
+            .toList();
+
+        print("Filtered Placemarks: $placemarks");
+
+        if (placemarks.isNotEmpty) {
+          // Take the most complete one
+          final Placemark placemark = placemarks.first;
+
+          print("Selected Placemark: ${placemark.administrativeArea}");
+
+          setState(() {
+            // Update UI with the location information
+            bussinessNameController.text = [
+              placemark.name ?? '', // House or building name
+              placemark.thoroughfare ?? '', // Street/Road name
+              placemark.subLocality ?? '', // Area/Colony
+              placemark.locality ?? '' // City
+            ].where((e) => e.isNotEmpty).join(', ');
+
+            areaCityController.text = [
+              placemark.subLocality ?? '', // Landmark
+              placemark.locality ?? '', // City
+              placemark.postalCode ?? '', // Zip Code
+              placemark.country ?? '' // Country
+            ].where((e) => e.isNotEmpty).join(', ');
+
+            stateController.text = placemark.administrativeArea ?? '';
+            postalCodeController.text = placemark.postalCode ?? '';
+          });
+        } else {
+          print("No valid placemarks found.");
+          setState(() {
+            locationDetails = "No address information available.";
+          });
+        }
+      } catch (e) {
+        print("Error fetching placemarks: $e");
+        setState(() {
+          locationDetails = "Error fetching address.";
+        });
+      }
+    } else {
+      print("Location not available.");
+      setState(() {
+        locationDetails = "Location not available.";
+      });
+    }
+  }
 
   void nextStep() {
     if (_formKeys[_currentStep].currentState?.validate() ?? false) {
@@ -158,7 +232,7 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                 icon: Icons.business,
                 onChanged: (value) => bussinessName = value,
                 validator: (value) =>
-                    Validators.validateEmpty(value, "Vendor Name"),
+                    Validators.validateEmpty(value, "Business Name"),
                 inputType: InputType.text,
               ),
               const SizedBox(height: 20),
@@ -169,7 +243,7 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                 onChanged: (value) => contactPerson = value,
                 inputType: InputType.text,
                 validator: (value) =>
-                    Validators.validateEmpty(value, "Vendor Name"),
+                    Validators.validateEmpty(value, "Contact Person Name"),
               ),
               const SizedBox(height: 20),
               CommonTextField(
@@ -178,7 +252,7 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                 icon: Icons.phone,
                 onChanged: (value) => phoneNumber = value,
                 validator: (value) =>
-                    Validators.validateEmpty(value, "Vendor Name"),
+                    Validators.validateEmpty(value, "Phone Number"),
                 inputType: InputType.phone,
               ),
               const SizedBox(height: 20),
@@ -188,8 +262,7 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                 icon: Icons.email,
                 onChanged: (value) => email = value,
                 inputType: InputType.email,
-                validator: (value) =>
-                    Validators.validateEmpty(value, "Vendor Name"),
+                validator: (value) => Validators.validateEmpty(value, "Email"),
               ),
               // const SizedBox(height: 20),
               // dropdownInput(
@@ -206,7 +279,34 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              stepHeader("Location Details"),
+              Row(
+                children: [
+                  Expanded(
+                    child: stepHeader("Location Details"),
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: fetchLocation,
+                      child: Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: AppColors.inputfield),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: const [
+                            Icon(Icons.location_on,
+                                color: AppColors.inputfield),
+                            SizedBox(width: 10),
+                            Text("Use my location"),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               textInput(
                   "Business Address",
                   "Enter address",
@@ -808,7 +908,7 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
       backgroundColor: ThemeConstants.whiteColor,
       appBar: AppBar(
         title: const Text("Register Water Vendor"),
-        backgroundColor: Colors.blue,
+        backgroundColor: AppColors.logoprimary,
         foregroundColor: Colors.white,
         centerTitle: true,
       ),
@@ -867,10 +967,19 @@ class _VendorMultiStepFormState extends State<VendorMultiStepForm> {
                     ),
                   if (_currentStep > 0) const SizedBox(width: 12),
                   Expanded(
-                    child: CustomButton(
-                      text:
-                          _currentStep == steps.length - 1 ? "Finish" : "Next",
-                      onPressed: nextStep,
+                    child: Container(
+                      width: double.infinity,
+                      margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: CustomButton(
+                        text: _currentStep == steps.length - 1
+                            ? "Finish"
+                            : "Next",
+                        height: 50,
+                        width: double.infinity,
+                        baseTextColor: Colors.white,
+                        backgroundColor: Colors.orange,
+                        onPressed: nextStep, // Fixed the callback
+                      ),
                     ),
                   ),
                 ],

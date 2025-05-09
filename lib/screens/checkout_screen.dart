@@ -5,6 +5,8 @@ import 'package:difwa/models/address_model.dart';
 import 'package:difwa/screens/auth/saved_address.dart';
 import 'package:difwa/utils/app__text_style.dart';
 import 'package:difwa/utils/generators.dart';
+import 'package:difwa/widgets/AddressNotFound.dart';
+import 'package:difwa/widgets/CustomPopup.dart';
 import 'package:difwa/widgets/subscribe_button_component.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -44,10 +46,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     _addressController = Get.put(AddressController());
     checkoutController.fetchWalletBalance();
     // _getSelectedAddress();
-  //   setState(() {
-  //   //   addresss =
-  //   //       // _addressController.getSelectedAddress() as Address? ;
-  //   // });
+    //   setState(() {
+    //   //   addresss =
+    //   //       // _addressController.getSelectedAddress() as Address? ;
+    //   // });
   }
 
   @override
@@ -289,7 +291,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     ],
                   );
                 } else {
-                  return const Text('No address selected.');
+                  return AddressNotFound();
                 }
               },
             ),
@@ -320,7 +322,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         "Success",
                         userUid);
                   } else {
-                    print("Please Create An Address");
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return CustomPopup(
+                            title: "Address not found",
+                            description:
+                                "You have not added any address yet. Please add a new address to proceed.",
+                            buttonText: "Got It!",
+                            onButtonPressed: () {
+                              Get.back();
+                            },
+                          );
+                        });
                   }
                 }),
           ],

@@ -25,7 +25,7 @@ class AddressController extends GetxController {
 
       QuerySnapshot selectedAddressSnapshot = await addressCollection
           .where('isSelected', isEqualTo: true)
-          .limit(1) 
+          .limit(1)
           .get();
 
       if (selectedAddressSnapshot.docs.isNotEmpty) {
@@ -198,37 +198,32 @@ class AddressController extends GetxController {
     return selectedAddress.value;
   }
 
-
-
-
-Stream<Address?> getSelectedAddress() {
-  final user = _auth.currentUser;
-  if (user == null) {
-    print("User not logged in!");
-    return Stream.value(null);
-  }
-
-  // Reference to the user's address collection
-  CollectionReference addressCollection = FirebaseFirestore.instance
-      .collection('difwa-users')
-      .doc(user.uid)
-      .collection('User-address');
-
-  // Real-time listener
-  return addressCollection
-      .where('isSelected', isEqualTo: true)
-      .snapshots()
-      .map((snapshot) {
-    if (snapshot.docs.isNotEmpty) {
-      var addressDocSnapshot = snapshot.docs.first;
-      return Address.fromJson(
-        addressDocSnapshot.data() as Map<String, dynamic>,
-      );
-    } else {
-      return null; // No address selected
+  Stream<Address?> getSelectedAddress() {
+    final user = _auth.currentUser;
+    if (user == null) {
+      print("User not logged in!");
+      return Stream.value(null);
     }
-  });
-}
 
+    // Reference to the user's address collection
+    CollectionReference addressCollection = FirebaseFirestore.instance
+        .collection('difwa-users')
+        .doc(user.uid)
+        .collection('User-address');
 
+    // Real-time listener
+    return addressCollection
+        .where('isSelected', isEqualTo: true)
+        .snapshots()
+        .map((snapshot) {
+      if (snapshot.docs.isNotEmpty) {
+        var addressDocSnapshot = snapshot.docs.first;
+        return Address.fromJson(
+          addressDocSnapshot.data() as Map<String, dynamic>,
+        );
+      } else {
+        return null; // No address selected
+      }
+    });
+  }
 }
