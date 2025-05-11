@@ -52,7 +52,7 @@ class FirebaseController {
     final userId = _auth.currentUser?.uid;
     String? merchantId = await fetchMerchantId();
 
-    final storeId = userId;
+    final storeId = merchantId;
     if (userId == null) {
       yield* Stream.empty();
     }
