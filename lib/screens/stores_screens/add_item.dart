@@ -152,13 +152,15 @@ class _AdminScreenState extends State<AddItem> {
                       onPressed: () async {
                         if (vacantBottlePrice > 0) {
                           try {
+                            print("Bottlewsdz");
+
                             await _controller.addBottleData(
                               selectedBottleSize!,
                               bottleSizes.firstWhere((b) =>
                                   b['size'] == selectedBottleSize!)['price'],
                               vacantBottlePrice,
                             );
-
+                            print("Bottle added successfully");
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                   content: Text('Bottle added successfully')),

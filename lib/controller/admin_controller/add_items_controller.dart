@@ -48,31 +48,42 @@ class FirebaseController {
     }
   }
 
-  Stream<List<Map<String, dynamic>>> fetchBottleItems() async* {
+  Future<List<Map<String, dynamic>>> fetchBottleData() async {
     final userId = _auth.currentUser?.uid;
-    String? merchantId = await fetchMerchantId();
+    print("Debug: Current user ID is $userId");
 
-    final storeId = merchantId;
-    if (userId == null) {
-      yield* Stream.empty();
-    }
+    try {
+      // Fetch merchantId
+      String? merchantId = await fetchMerchantId();
+      print("Debug: Fetched merchant ID is $merchantId");
 
-    yield* _firestore
-        .collection('difwa-stores')
-        .doc(storeId)
-        .collection('difwa-items')
-        .snapshots()
-        .map((querySnapshot) {
-      return querySnapshot.docs.map((doc) {
-        return {
-          'id': doc.id,
-          'size': doc['size'],
-          'price': doc['price'],
-          'vacantPrice': doc['vacantPrice'],
-          'merchantId': doc['merchantId'],
-        };
+      if (merchantId == null) {
+        throw Exception("Merchant ID is null.");
+      }
+
+      // Query all documents in difwa-items under the store (merchantId)
+      QuerySnapshot snapshot = await _firestore
+          .collection('difwa-stores')
+          .doc(merchantId)
+          .collection('difwa-items')
+          // .orderBy('timestamp', descending: true)
+          .get();
+
+      print("Debug: Fetched ${snapshot.docs.length} documents from Firestore");
+
+      // Convert documents to List<Map<String, dynamic>>
+      List<Map<String, dynamic>> bottles = snapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        data['id'] = doc.id;
+        print("Debug: Document ID ${doc.id}, Data: $data");
+        return data;
       }).toList();
-    });
+
+      return bottles;
+    } catch (e) {
+      print("Error in fetchBottleData: $e");
+      throw Exception("Failed to fetch bottle data: $e");
+    }
   }
 
   // Update bottle data

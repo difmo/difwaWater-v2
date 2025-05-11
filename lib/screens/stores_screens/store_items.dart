@@ -19,8 +19,8 @@ class StoreItems extends StatelessWidget {
         ),
         backgroundColor: ThemeConstants.blackColor,
       ),
-      body: StreamBuilder<List<Map<String, dynamic>>>(
-        stream: controller.fetchBottleItems(),
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: controller.fetchBottleData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
