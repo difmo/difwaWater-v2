@@ -18,7 +18,7 @@ class EarningController extends GetxController {
 
   Future<Map<String, int>> fetchEarnings() async {
     try {
-      String? merchantId = await _authController.fetchMerchantId("");
+      String? merchantId = await _authController.fetchMerchantId();
       if (merchantId == null) {
         print("Merchant ID is null");
         return {};
@@ -84,7 +84,7 @@ class EarningController extends GetxController {
   Future<int> fetchEarningsByDateRange(
       DateTime startDate, DateTime endDate) async {
     try {
-      String? merchantId = await _authController.fetchMerchantId("");
+      String? merchantId = await _authController.fetchMerchantId();
       if (merchantId == null) {
         print("Merchant ID is null");
         return 0;

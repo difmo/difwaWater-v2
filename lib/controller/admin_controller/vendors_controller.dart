@@ -372,7 +372,7 @@ class VendorsController extends GetxController {
 
       return storeDoc['merchantId'];
     } catch (e) {
-      throw Exception("Failed to fetch merchantId: $e");
+      throw Exception("sefsdsd to fetch merchantId: $e");
     }
   }
 

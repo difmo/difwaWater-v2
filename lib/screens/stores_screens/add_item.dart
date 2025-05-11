@@ -44,14 +44,15 @@ class _AdminScreenState extends State<AddItem> {
     return Scaffold(
       backgroundColor: ThemeConstants.whiteColor,
       appBar: AppBar(
-        title:  Text(
+        title: Text(
           'Select Waters',
-          style: AppTextStyle.Text18600.copyWith(color: ThemeConstants.whiteColor),
+          style:
+              AppTextStyle.Text18600.copyWith(color: ThemeConstants.whiteColor),
         ),
         backgroundColor: ThemeConstants.blackColor,
         iconTheme: const IconThemeData(
-          color: Colors.white, 
-      ),
+          color: Colors.white,
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -146,8 +147,9 @@ class _AdminScreenState extends State<AddItem> {
                       ),
                     ),
                     const SizedBox(height: 16),
-
-                    CustomButton(text: "Add",   onPressed: () async {
+                    CustomButton(
+                      text: "Add",
+                      onPressed: () async {
                         if (vacantBottlePrice > 0) {
                           try {
                             await _controller.addBottleData(
@@ -171,7 +173,7 @@ class _AdminScreenState extends State<AddItem> {
                             });
                           } catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Error: $e')),
+                              SnackBar(content: Text('Errtfdor: $e')),
                             );
                           }
                         } else {
@@ -181,8 +183,8 @@ class _AdminScreenState extends State<AddItem> {
                                     'Please select a bottle size and price')),
                           );
                         }
-                      },)
-                   
+                      },
+                    )
                   ],
                 ),
               ),

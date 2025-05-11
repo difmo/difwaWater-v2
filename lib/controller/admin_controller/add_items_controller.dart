@@ -5,12 +5,12 @@ class FirebaseController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<String?> fetchMerchantId(String userId) async {
+  Future<String?> fetchMerchantId() async {
     final userIdd = _auth.currentUser?.uid;
 
     try {
       DocumentSnapshot storeDoc =
-          await _firestore.collection('difwa-stores').doc(userIdd).get();
+          await _firestore.collection('difwa-users').doc(userIdd).get();
 
       if (!storeDoc.exists) {
         throw Exception("Store document does not exist for this user.");
@@ -24,12 +24,11 @@ class FirebaseController {
 
   Future<void> addBottleData(int size, double price, double vacantPrice) async {
     final userId = _auth.currentUser?.uid;
-    String? merchantId = await fetchMerchantId(userId.toString());
+    print("User45 ID: $userId");
+    String? merchantId = await fetchMerchantId();
+    print("Merchant45 ID: $merchantId");
 
-    final storeId = userId;
-    if (userId == null) {
-      throw Exception("User not logged in.");
-    }
+    final storeId = merchantId;
 
     try {
       await _firestore
@@ -49,15 +48,16 @@ class FirebaseController {
     }
   }
 
-  Stream<List<Map<String, dynamic>>> fetchBottleItems() {
+  Stream<List<Map<String, dynamic>>> fetchBottleItems() async* {
     final userId = _auth.currentUser?.uid;
+    String? merchantId = await fetchMerchantId();
 
     final storeId = userId;
     if (userId == null) {
-      return const Stream.empty();
+      yield* Stream.empty();
     }
 
-    return _firestore
+    yield* _firestore
         .collection('difwa-stores')
         .doc(storeId)
         .collection('difwa-items')
@@ -81,7 +81,7 @@ class FirebaseController {
     final userId = _auth.currentUser?.uid;
     final storeId = userId;
     try {
-      String? merchantId = await fetchMerchantId(userId.toString());
+      String? merchantId = await fetchMerchantId();
       await _firestore
           .collection('difwa-stores')
           .doc(storeId)

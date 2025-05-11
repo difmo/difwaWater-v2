@@ -51,7 +51,7 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
       // const StoreProfileScreen(),
       SupplierProfileScreen()
     ];
-    _authController.fetchMerchantId("").then((merchantId) {
+    _authController.fetchMerchantId().then((merchantId) {
       setState(() {
         merchantIdd = merchantId!;
       });

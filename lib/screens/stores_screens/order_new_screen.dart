@@ -32,7 +32,7 @@ class _OrdersScreenState extends State<OrdersScreen>
     _tabController = TabController(length: 3, vsync: this);
     _ordersController.fetchOrdersWhereAllCompleted();
     print("hello");
-    _authController.fetchMerchantId("").then((merchantId) {
+    _authController.fetchMerchantId().then((merchantId) {
       print(merchantId);
       setState(() {
         merchantIdd = merchantId!;

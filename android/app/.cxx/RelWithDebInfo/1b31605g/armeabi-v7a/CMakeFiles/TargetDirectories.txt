@@ -1,0 +1,2 @@
+/Users/pritamsharma/Documents/difwa/difwaWater-v2/android/app/.cxx/RelWithDebInfo/1b31605g/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/pritamsharma/Documents/difwa/difwaWater-v2/android/app/.cxx/RelWithDebInfo/1b31605g/armeabi-v7a/CMakeFiles/rebuild_cache.dir
