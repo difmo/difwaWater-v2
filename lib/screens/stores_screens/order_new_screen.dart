@@ -32,7 +32,7 @@ class _OrdersScreenState extends State<OrdersScreen>
     _tabController = TabController(length: 3, vsync: this);
     _ordersController.fetchOrdersWhereAllCompleted();
     print("hello");
-    _authController.fetchMerchantId().then((merchantId) {
+    _authController.fetchMerchantId("").then((merchantId) {
       print(merchantId);
       setState(() {
         merchantIdd = merchantId!;
@@ -162,7 +162,7 @@ class _OrderListPageState extends State<OrderListPage> {
             if (!userCache.containsKey(userId)) {
               fetchUserDetails(userId);
             }
-   
+
             return Card(
               color: ThemeConstants.whiteColor,
               margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -209,7 +209,10 @@ class _OrderListPageState extends State<OrderListPage> {
                         Text(
                           style: AppTextStyle.Text14400.copyWith(
                               color: ThemeConstants.grey),
-                          DateFormat('HH:mm').format(DateTime.fromMillisecondsSinceEpoch(order['timestamp'].millisecondsSinceEpoch).toLocal()),
+                          DateFormat('HH:mm').format(
+                              DateTime.fromMillisecondsSinceEpoch(
+                                      order['timestamp'].millisecondsSinceEpoch)
+                                  .toLocal()),
                         ),
                       ],
                     ),
@@ -235,9 +238,6 @@ class _OrderListPageState extends State<OrderListPage> {
                         // print("Current date")
                         // print("pritam");
                         // print(dateData['status']);
-
-              
-
 
                         // print(dateData['date']);
                         return ListTile(
@@ -284,7 +284,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                   const PopupMenuItem<String>(
                                     value: 'Shipped',
                                     child: Text('Shipped'),
-                                  ),  
+                                  ),
                               if (isCurrentDate)
                                 if (dateStatus == 'Shipped' &&
                                     dateStatus != "Cancel")

@@ -45,13 +45,13 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
     _screens = [
       const DashboardScreen(),
       // const StoreHome(),
-      const StoreItems(),
+      const AddItem(),
       OrdersScreen(),
       // AdminPanelScreen(),
       // const StoreProfileScreen(),
       SupplierProfileScreen()
     ];
-    _authController.fetchMerchantId().then((merchantId) {
+    _authController.fetchMerchantId("").then((merchantId) {
       setState(() {
         merchantIdd = merchantId!;
       });
@@ -74,7 +74,7 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
       print("Snapshot received: ${snapshot.docs.length} documents found");
 
       if (snapshot.docs.isNotEmpty) {
-        var orderDoc = snapshot.docs.first; // Fetch the first order
+        var orderDoc = snapshot.docs.first;
         var orderData = orderDoc.data();
 
         print("New order found with totalPrice: ${orderData['totalPrice']}");
@@ -97,7 +97,6 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
     });
   }
 
-  // Start continuous vibration
   void _startVibration() async {
     if (await Vibration.hasVibrator()) {
       _isVibrating = true;
@@ -105,7 +104,6 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
     }
   }
 
-  // Start playing the ringtone continuously
   void _startSound() async {
     await _audioPlayer.setSource(AssetSource('audio/zomato_ring_5.mp3'));
     _audioPlayer.setReleaseMode(ReleaseMode.loop);
@@ -113,13 +111,11 @@ class _HomeScreenState extends State<BottomStoreHomePage> {
     _isSoundPlaying = true;
   }
 
-  // Stop the continuous vibration
   void _stopVibration() {
     Vibration.cancel();
     _isVibrating = false;
   }
 
-  // Stop the continuous sound
   void _stopSound() async {
     _audioPlayer.stop();
     _isSoundPlaying = false;
