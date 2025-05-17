@@ -1,107 +1,79 @@
 import 'package:difwa/controller/admin_controller/add_items_controller.dart';
-import 'package:difwa/utils/app__text_style.dart';
+import 'package:difwa/screens/stores_screens/add_item.dart';
 import 'package:difwa/utils/theme_constant.dart';
-import 'package:difwa/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 
-class AddItem extends StatefulWidget {
-  const AddItem({super.key});
-
-  @override
-  _AdminScreenState createState() => _AdminScreenState();
-}
-
-class _AdminScreenState extends State<AddItem> {
-  final List<Map<String, dynamic>> bottleSizes = [
-    {
-      'size': 10,
-      'price': 10.0,
-      'image': 'https://5.imimg.com/data5/RK/MM/MY-26385841/ff-1000x1000.jpg'
-    },
-    {
-      'size': 15,
-      'price': 20.0,
-      'image': 'https://5.imimg.com/data5/RK/MM/MY-26385841/ff-1000x1000.jpg'
-    },
-    {
-      'size': 18,
-      'price': 25.0,
-      'image': 'https://5.imimg.com/data5/RK/MM/MY-26385841/ff-1000x1000.jpg'
-    },
-    {
-      'size': 20,
-      'price': 30.0,
-      'image': 'https://5.imimg.com/data5/RK/MM/MY-26385841/ff-1000x1000.jpg'
-    },
-  ];
-
-  int? selectedBottleSize;
-  double vacantBottlePrice = 0.0;
-  final FirebaseController _controller = FirebaseController();
+class StoreItems extends StatelessWidget {
+  const StoreItems({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final FirebaseController controller = FirebaseController();
+
     return Scaffold(
-      backgroundColor: ThemeConstants.whiteColor,
+      backgroundColor: ThemeConstants.backgroundColor,
       appBar: AppBar(
-        title: Text(
-          'Select Waters',
-          style:
-              AppTextStyle.Text18600.copyWith(color: ThemeConstants.whiteColor),
+        title: const Text(
+          'Store Items',
+          style: TextStyle(color: Colors.white),
         ),
         backgroundColor: ThemeConstants.blackColor,
-        iconTheme: const IconThemeData(
-          color: Colors.white,
-        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            const Text(
-              "Select a Bottle to Sell",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16.0,
-                  mainAxisSpacing: 16.0,
-                ),
-                itemCount: bottleSizes.length,
-                itemBuilder: (context, index) {
-                  final bottle = bottleSizes[index];
+      body: StreamBuilder<List<Map<String, dynamic>>>(
+        stream: controller.fetchBottleItems(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedBottleSize = bottle['size'];
-                      });
-                    },
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16.0),
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          final bottleItems = snapshot.data ?? [];
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: bottleItems.length,
+            itemBuilder: (context, index) {
+              final item = bottleItems[index];
+
+              String imagePath;
+              if (item['size'] == 10) {
+                imagePath = 'assets/images/water.jpg';
+              } else if (item['size'] == 20) {
+                imagePath = 'assets/images/water.jpg';
+              } else {
+                imagePath = 'assets/images/water.jpg';
+              }
+
+              return Card(
+                color: ThemeConstants.backgroundColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                elevation: 4,
+                margin: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Display image based on the size of the bottle
+                      Image.asset(
+                        imagePath, // Use the dynamically selected image path
+                        width: 70,
+                        height: 70,
+                        fit: BoxFit.cover,
                       ),
-                      elevation: 4,
-                      color: selectedBottleSize == bottle['size']
-                          ? Colors.blue.shade100
-                          : Colors.white,
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
+                      const SizedBox(width: 16),
+                      // Bottle Information
+                      Expanded(
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Image.network(
-                              bottle['image'],
-                              width: 70,
-                              height: 70,
-                              fit: BoxFit.cover,
-                            ),
-                            const SizedBox(height: 8),
                             Text(
-                              '${bottle['size']}L',
+                              '${item['size']}L',
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -109,86 +81,59 @@ class _AdminScreenState extends State<AddItem> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              '₹ ${bottle['price']}',
+                              'Price: ₹${item['price']}',
                               style: const TextStyle(fontSize: 16),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Vacant Bottle Price: ₹${item['vacantPrice']}',
+                              style: const TextStyle(
+                                  fontSize: 14, color: Colors.grey),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            if (selectedBottleSize != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                child: Column(
-                  children: [
-                    Text(
-                      'Selected Bottle: $selectedBottleSize L',
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      onChanged: (value) {
-                        setState(() {
-                          vacantBottlePrice = double.tryParse(value) ?? 0.0;
-                        });
-                      },
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: 'Enter Vacant Bottle Price (₹)',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        hintText: '₹ 0.0',
+                      // Edit and Delete buttons
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          // IconButton(
+                          //   icon: const Icon(Icons.edit),
+                          //   onPressed: () {
+                          //     // Handle edit
+                          //   },
+                          // ),
+                          IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () async {
+                              await controller.deleteBottleData(item['id']);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Item deleted')),
+                              );
+                            },
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    CustomButton(
-                      text: "Add",
-                      onPressed: () async {
-                        if (vacantBottlePrice > 0) {
-                          try {
-                            await _controller.addBottleData(
-                              selectedBottleSize!,
-                              bottleSizes.firstWhere((b) =>
-                                  b['size'] == selectedBottleSize!)['price'],
-                              vacantBottlePrice,
-                            );
-
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Bottle added successfully')),
-                            );
-
-                            // Reset form state
-                            setState(() {
-                              selectedBottleSize =
-                                  null; // Clear selected bottle size
-                              vacantBottlePrice =
-                                  0.0; // Reset vacant bottle price
-                            });
-                          } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Error: $e')),
-                            );
-                          }
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text(
-                                    'Please select a bottle size and price')),
-                          );
-                        }
-                      },
-                    )
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-          ],
+              );
+            },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Navigate to the AddItem screen when the button is pressed
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddItem()),
+          );
+        },
+        backgroundColor: ThemeConstants.blackColor,
+        child: const Icon(
+          Icons.add,
+          color: ThemeConstants.whiteColor,
         ),
       ),
     );

@@ -10,7 +10,7 @@ class FirebaseController {
 
     try {
       DocumentSnapshot storeDoc =
-          await _firestore.collection('difwa-stores').doc(userIdd).get();
+          await _firestore.collection('difwa-users').doc(userIdd).get();
 
       if (!storeDoc.exists) {
         throw Exception("Store document does not exist for this user.");
@@ -26,7 +26,7 @@ class FirebaseController {
     final userId = _auth.currentUser?.uid;
     String? merchantId = await fetchMerchantId(userId.toString());
 
-    final storeId = userId;
+    final storeId = merchantId;
     if (userId == null) {
       throw Exception("User not logged in.");
     }
@@ -49,17 +49,17 @@ class FirebaseController {
     }
   }
 
-  Stream<List<Map<String, dynamic>>> fetchBottleItems() {
+  Stream<List<Map<String, dynamic>>> fetchBottleItems() async* {
     final userId = _auth.currentUser?.uid;
+    String? merchantId = await fetchMerchantId(userId.toString());
 
-    final storeId = userId;
     if (userId == null) {
-      return const Stream.empty();
+      yield* Stream.empty();
     }
 
-    return _firestore
+    yield* _firestore
         .collection('difwa-stores')
-        .doc(storeId)
+        .doc(merchantId)
         .collection('difwa-items')
         .snapshots()
         .map((querySnapshot) {
@@ -84,7 +84,7 @@ class FirebaseController {
       String? merchantId = await fetchMerchantId(userId.toString());
       await _firestore
           .collection('difwa-stores')
-          .doc(storeId)
+          .doc(merchantId)
           .collection('difwa-items')
           .doc(docId)
           .update({
@@ -101,10 +101,12 @@ class FirebaseController {
   Future<void> deleteBottleData(String docId) async {
     final userId = _auth.currentUser?.uid;
     final storeId = userId;
+    String? merchantId = await fetchMerchantId(userId.toString());
+
     try {
       await _firestore
           .collection('difwa-stores')
-          .doc(storeId)
+          .doc(merchantId)
           .collection('difwa-items')
           .doc(docId)
           .delete();

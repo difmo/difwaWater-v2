@@ -3,6 +3,9 @@ import 'package:difwa/controller/admin_controller/add_items_controller.dart';
 import 'package:difwa/controller/admin_controller/order_controller.dart';
 import 'package:difwa/controller/admin_controller/vendors_controller.dart';
 import 'package:difwa/screens/store_widgets/blinking_status_indicator.dart';
+import 'package:difwa/screens/store_widgets/order_tile.dart';
+import 'package:difwa/screens/store_widgets/state_card.dart';
+import 'package:difwa/screens/store_widgets/status_card.dart';
 import 'package:difwa/screens/stores_screens/payment_history_graph.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -333,130 +336,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class StatCard extends StatelessWidget {
-  final String title;
-  final String value;
-  final Color color;
-
-  const StatCard({
-    super.key,
-    required this.title,
-    required this.value,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width / 2 - 24,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            value,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-          ),
-          Text(title, style: const TextStyle(color: Colors.black54)),
-          const SizedBox(height: 4),
-        ],
-      ),
-    );
-  }
-}
-
-class StatusCard extends StatelessWidget {
-  final String label;
-  final String value;
-  final Color color;
-
-  const StatusCard({
-    super.key,
-    required this.label,
-    required this.value,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 110,
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
-      ),
-      child: Column(
-        children: [
-          Text(
-            value,
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.bold,
-              fontSize: 28,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: const TextStyle(color: Colors.black54),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class OrderTile extends StatelessWidget {
-  final String orderId;
-  final String details;
-  final String status;
-  final Color color;
-
-  const OrderTile({
-    super.key,
-    required this.orderId,
-    required this.details,
-    required this.status,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white,
-      elevation: 0.5,
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ListTile(
-        title: Text(
-          orderId,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(details),
-        trailing: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Text(
-            status,
-            style: TextStyle(color: color, fontWeight: FontWeight.bold),
-          ),
         ),
       ),
     );

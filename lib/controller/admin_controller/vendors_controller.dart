@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:difwa/controller/admin_controller/add_items_controller.dart';
+
 import 'package:difwa/models/stores_models/store_new_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,17 +11,10 @@ class VendorsController extends GetxController {
   final _formKey = GlobalKey<FormState>();
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
   File? imageFile;
-  final FirebaseController _authController = Get.put(FirebaseController());
 
-  @override
-  Future<void> checkFunction() async {
-    String merchantId = await _generateMerchantId();
-    print("Generated merchant ID: $merchantId");
-    return;
-  }
+  var activeStores = <String, bool>{}.obs;
 
   Future<String> uploadImage(File imageFile, String fileName) async {
     try {
@@ -172,6 +165,31 @@ class VendorsController extends GetxController {
       DocumentSnapshot storeDoc = await FirebaseFirestore.instance
           .collection('difwa-stores')
           .doc(await fetchMerchantId())
+          .get();
+
+      if (storeDoc.exists) {
+        return VendorModal.fromMap(storeDoc.data() as Map<String, dynamic>);
+      } else {
+        throw Exception('Store with User ID $userId not found');
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to fetch store data: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return null;
+    }
+  }
+
+  Future<VendorModal?> fetchStoreDataByMerchantId(String merchantId) async {
+    try {
+      String userId = await _getCurrentUserId();
+      DocumentSnapshot storeDoc = await FirebaseFirestore.instance
+          .collection('difwa-stores')
+          .doc(merchantId)
           .get();
 
       if (storeDoc.exists) {
@@ -401,24 +419,16 @@ class VendorsController extends GetxController {
     }
   }
 
-  // Future<void> updateStoreDetails(Map<String, dynamic> updates) async {
-  //   try {
-  //     String userId = await _getCurrentUserId();
-  //     await FirebaseFirestore.instance
-  //         .collection('difwa-stores')
-  //         .doc(userId)
-  //         .update(updates);
-  //     Get.snackbar('Success', 'Store details updated successfully',
-  //         snackPosition: SnackPosition.BOTTOM,
-  //         backgroundColor: Colors.green,
-  //         colorText: Colors.white);
-  //   } catch (e) {
-  //     Get.snackbar('Error', 'Failed to update store: ${e.toString()}',
-  //         snackPosition: SnackPosition.BOTTOM,
-  //         backgroundColor: Colors.red,
-  //         colorText: Colors.white);
-  //   }
-  // }
+  Future<void> getIsActiveStores(List<String> merchantIds) async {
+    try {
+      for (String id in merchantIds) {
+        bool isActive = await getIsActiveStore(id);
+        activeStores[id] = isActive;
+      }
+    } catch (e) {
+      print("Error fetching store status: $e");
+    }
+  }
 
   GlobalKey<FormState> get formKey => _formKey;
 }

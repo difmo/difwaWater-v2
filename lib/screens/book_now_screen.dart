@@ -1,18 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:difwa/controller/admin_controller/vendors_controller.dart';
 import 'package:difwa/controller/auth_controller.dart';
+import 'package:difwa/models/stores_models/store_new_modal.dart';
 import 'package:difwa/models/user_models/user_details_model.dart';
 import 'package:difwa/routes/app_routes.dart';
 import 'package:difwa/screens/ServiceNotAvailableScreen.dart';
 import 'package:difwa/screens/checkout_screen.dart';
+import 'package:difwa/screens/store_details_screen.dart';
 import 'package:difwa/widgets/CustomPopup.dart';
 import 'package:difwa/widgets/ImageCarouselApp.dart';
 import 'package:difwa/widgets/custom_appbar.dart';
 import 'package:difwa/widgets/order_details_component.dart';
 import 'package:difwa/widgets/package_selector_component.dart';
-import 'package:difwa/widgets/simmers/HomePageShimmer.dart';
 import 'package:difwa/widgets/subscribe_button_component.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+// import 'package:difwa/controller/'
 
 import '../widgets/simmers/PackageSelectorShimmer .dart';
 
@@ -34,8 +37,13 @@ class _BookNowScreenState extends State<BookNowScreen> {
   double _totalPrice = 0;
   bool _isLoading = true;
   List<Map<String, dynamic>> _bottleItems = [];
+  List<VendorModal> _stores = [];
+  String? _selectedMerchantId;
 
   final AuthController _userData = Get.put(AuthController());
+  final VendorsController _vendorController = Get.put(VendorsController());
+  //  final storedata  = await _vendorController
+  //             .fetchStoreDataByMerchantId();
   UserDetailsModel? usersData;
   @override
   void initState() {
@@ -64,10 +72,12 @@ class _BookNowScreenState extends State<BookNowScreen> {
     }
   }
 
-  /// Fetches bottle items from Firestore
   Future<void> fetchBottleItems() async {
     try {
+      Set<String> fetchedVendors = {};
       List<Map<String, dynamic>> fetchedItems = [];
+      List<VendorModal> vendorList = [];
+
       QuerySnapshot storeSnapshot =
           await FirebaseFirestore.instance.collection('difwa-stores').get();
 
@@ -79,12 +89,38 @@ class _BookNowScreenState extends State<BookNowScreen> {
             .get();
 
         for (var doc in itemSnapshot.docs) {
-          fetchedItems.add(doc.data() as Map<String, dynamic>);
+          final data = doc.data() as Map<String, dynamic>;
+          String merchantId = data['merchantId'] ?? '';
+
+          // Skip items with missing price or vacantPrice
+          if (data['price'] == null || data['vacantPrice'] == null) {
+            print('Skipping item with missing price/vacantPrice: $data');
+            continue;
+          }
+
+          VendorModal? vendordata;
+          if (!fetchedVendors.contains(merchantId)) {
+            vendordata =
+                await _vendorController.fetchStoreDataByMerchantId(merchantId);
+            if (vendordata != null) {
+              fetchedVendors.add(merchantId);
+              vendorList.add(vendordata);
+            }
+          } else {
+            vendordata =
+                vendorList.firstWhere((v) => v.merchantId == merchantId);
+          }
+
+          fetchedItems.add({
+            'itemData': data,
+            'vendorData': vendordata,
+          });
         }
       }
 
       if (mounted) {
         setState(() {
+          _stores = vendorList;
           _bottleItems = fetchedItems;
           _isLoading = false;
         });
@@ -96,7 +132,6 @@ class _BookNowScreenState extends State<BookNowScreen> {
           _isLoading = false;
         });
       }
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Failed to load bottle data. Try again!")),
       );
@@ -109,22 +144,34 @@ class _BookNowScreenState extends State<BookNowScreen> {
       _selectedPackage = package;
       _selectedIndex = _bottleItems.indexOf(package!);
     });
+    _calculateTotalPrice(); // Ensure immediate total price update
 
     if (package != null) {
       _calculateTotalPrice(); // Ensure immediate total price update
     }
   }
 
-  /// Calculates total price based on selected package, quantity, and empty bottles
   void _calculateTotalPrice() {
     if (_selectedIndex == -1) return;
 
-    var bottle = _bottleItems[_selectedIndex];
-    double price = (bottle['price'] ?? 0) * _quantity;
-    double vacantPrice = _hasEmptyBottle ? (bottle['vacantPrice'] ?? 0) : 0;
+    var bottle = _bottleItems[2]['itemData']; // Access itemData directly
+    print('Selected bottle: $bottle');
+    print('Quantity: $_quantity');
+    print('Has empty bottle: $_hasEmptyBottle');
+
+    // Safely convert price and vacantPrice to double
+    double price = (bottle['price'] ?? 0).toDouble(); // Convert to double
+    double vacantPrice =
+        _hasEmptyBottle ? (bottle['vacantPrice'] ?? 0).toDouble() : 0.0;
+
+    print('Price per bottle: $price');
+    print('Vacant price per bottle: $vacantPrice');
+    print(
+        'Total price calculation: ${price * _quantity} + ($_quantity * $vacantPrice)');
 
     setState(() {
-      _totalPrice = price + (_quantity * vacantPrice);
+      _totalPrice = (price * _quantity) + (_quantity * vacantPrice);
+      print('Total price set: $_totalPrice');
     });
   }
 
@@ -212,82 +259,189 @@ class _BookNowScreenState extends State<BookNowScreen> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+// _isLoading ? const HomePageShimmer() : ServiceNotAvailableScreen();
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(60),
+          child: CustomAppbar(
+            onProfilePressed: widget.onProfilePressed,
+            onNotificationPressed: () {
+              Get.toNamed(
+                  AppRoutes.notification); // Navigate to notifications page
+            },
+            onMenuPressed: widget.onMenuPressed,
+            hasNotifications: true,
+            badgeCount: 0, // Example badge count
+            usersData: usersData, // Profile picture URL
+          )),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: Column(
+            children: [
+              // Image Carousel
+              SizedBox(
+                height: screenHeight * 0.20,
+                child: const ImageCarouselPage(),
+              ),
+              const SizedBox(height: 10),
+              if (_stores.isNotEmpty)
+                SizedBox(
+                  height: 100,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: _stores.length + 1, // +1 for "All Bottles"
+                    itemBuilder: (context, index) {
+                      if (index == 0) {
+                        // "All Bottles" tile
+                        bool isSelected = _selectedMerchantId == null;
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedMerchantId = null;
+                            });
+                          },
+                          child: Container(
+                            width: 140,
+                            margin: const EdgeInsets.symmetric(horizontal: 6),
+                            decoration: BoxDecoration(
+                              color:
+                                  isSelected ? Colors.blue[50] : Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: isSelected
+                                    ? Colors.blue
+                                    : Colors.grey[300]!,
+                                width: 2,
+                              ),
+                            ),
+                            padding: const EdgeInsets.all(8),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Icon(Icons.water_drop, color: Colors.blue),
+                                SizedBox(height: 4),
+                                Text(
+                                  'All Bottles',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
 
-    return _isLoading ? const HomePageShimmer() : ServiceNotAvailableScreen();
-    // Scaffold(
-    //     backgroundColor: Colors.white,
-    //     appBar: PreferredSize(
-    //         preferredSize: const Size.fromHeight(60),
-    //         child: CustomAppbar(
-    //           onProfilePressed: widget.onProfilePressed,
-    //           onNotificationPressed: () {
-    //             Get.toNamed(AppRoutes
-    //                 .notification); // Navigate to notifications page
-    //           },
-    //           onMenuPressed: widget.onMenuPressed,
-    //           hasNotifications: true,
-    //           badgeCount: 0, // Example badge count
-    //           usersData: usersData, // Profile picture URL
-    //         )),
-    //     body: SingleChildScrollView(
-    //       child: Padding(
-    //         padding: const EdgeInsets.all(5.0),
-    //         child: Column(
-    //           children: [
-    //             // Image Carousel
-    //             SizedBox(
-    //               height: screenHeight * 0.20,
-    //               child: const ImageCarouselPage(),
-    //             ),
-    //             const SizedBox(height: 10),
+                      // Vendor tiles
+                      final vendor = _stores[index - 1];
+                      bool isSelected =
+                          _selectedMerchantId == vendor.merchantId;
 
-    //             // Show loading or package selector
-    //             _isLoading
-    //                 ? PackageSelectorShimmer()
-    //                 : PackageSelectorComponent(
-    //                     bottleItems: _bottleItems,
-    //                     onSelected: _onPackageSelected,
-    //                   ),
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _selectedMerchantId = vendor.merchantId;
+                          });
+                        },
+                        onLongPress: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => StoreDetailScreen(store: vendor),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          width: 160,
+                          margin: const EdgeInsets.symmetric(horizontal: 6),
+                          decoration: BoxDecoration(
+                            color: isSelected ? Colors.blue[50] : Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color:
+                                  isSelected ? Colors.blue : Colors.grey[300]!,
+                              width: 2,
+                            ),
+                          ),
+                          padding: const EdgeInsets.all(8),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                vendor.vendorName,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                vendor.businessAddress ?? '',
+                                style: const TextStyle(
+                                    fontSize: 12, color: Colors.grey),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
 
-    //             const SizedBox(height: 16),
+              // Show loading or package selector
+              _isLoading
+                  ? PackageSelectorShimmer()
+                  : PackageSelectorComponent(
+                      bottleItems: _selectedMerchantId == null
+                          ? _bottleItems
+                          : _bottleItems
+                              .where((item) =>
+                                  item['itemData']['merchantId'] ==
+                                  _selectedMerchantId)
+                              .toList(),
+                      onSelected: _onPackageSelected,
+                    ),
 
-    //             // Order details component
-    //             OrderDetailsComponent(
-    //               key: ValueKey(_selectedPackage),
-    //               selectedPackage: _selectedPackage,
-    //               onOrderUpdated: (quantity, hasEmptyBottles, totalPrice) {
-    //                 if (_totalPrice != totalPrice) {
-    //                   setState(() {
-    //                     _quantity = quantity;
-    //                     _hasEmptyBottle = hasEmptyBottles;
-    //                     _totalPrice = totalPrice;
-    //                   });
-    //                 }
-    //               },
-    //             ),
+              const SizedBox(height: 16),
 
-    //             const SizedBox(height: 20),
-    //             Padding(
-    //               padding: const EdgeInsets.only(left: 8, right: 8),
-    //               child: SubscribeButtonComponent(
-    //                 text: "Order Now",
-    //                 onPressed: _onOrderPressed,
-    //               ),
-    //             ),
-    //             const SizedBox(height: 4),
-    //             // Subscribe button
-    //             Padding(
-    //               padding: const EdgeInsets.only(left: 8, right: 8),
-    //               child: SubscribeButtonComponent(
-    //                 text: "Subscribe Now",
-    //                 icon: Icons.check_circle,
-    //                 onPressed: _onSubscribePressed,
-    //               ),
-    //             ),
-    //           ],
-    //         ),
-    //       ),
-    //     ),
-    //   );
+              // Order details component
+              OrderDetailsComponent(
+                key: ValueKey(_selectedPackage),
+                selectedPackage: _selectedPackage,
+                onOrderUpdated: (quantity, hasEmptyBottles, totalPrice) {
+                  if (_totalPrice != totalPrice) {
+                    setState(() {
+                      _quantity = quantity;
+                      _hasEmptyBottle = hasEmptyBottles;
+                      _totalPrice = totalPrice;
+                    });
+                  }
+                },
+              ),
+
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.only(left: 8, right: 8),
+                child: SubscribeButtonComponent(
+                  text: "Order Now",
+                  onPressed: _onOrderPressed,
+                ),
+              ),
+              const SizedBox(height: 4),
+              // Subscribe button
+              Padding(
+                padding: const EdgeInsets.only(left: 8, right: 8),
+                child: SubscribeButtonComponent(
+                  text: "Subscribe Now",
+                  icon: Icons.check_circle,
+                  onPressed: _onSubscribePressed,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

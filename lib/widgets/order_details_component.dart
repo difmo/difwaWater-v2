@@ -33,18 +33,25 @@ class _OrderDetailsComponentState extends State<OrderDetailsComponent> {
   }
 
   void _calculateTotal() {
-    if (widget.selectedPackage != null) {
-      double pricePerUnit = widget.selectedPackage!['price'];
-      double vacantPrice =
-          _hasEmptyBottle ? widget.selectedPackage!['vacantPrice'] : 0;
+    final itemData = widget.selectedPackage?['itemData'];
 
-      _totalPrice = (_quantity * pricePerUnit) + (_quantity * vacantPrice);
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          widget.onOrderUpdated(_quantity, _hasEmptyBottle, _totalPrice);
-        }
-      });
-    }
+    if (itemData == null) return;
+
+    final pricePerUnit = (itemData['price'] as num?)?.toDouble() ?? 0.0;
+
+    final vacantPricePerUnit = _hasEmptyBottle
+        ? (itemData['vacantPrice'] as num?)?.toDouble() ?? 0.0
+        : 0.0;
+
+    // Calculate the total price
+    _totalPrice = (_quantity * pricePerUnit) + (_quantity * vacantPricePerUnit);
+
+    // Update the parent widget with the new values
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        widget.onOrderUpdated(_quantity, _hasEmptyBottle, _totalPrice);
+      }
+    });
   }
 
   void _incrementQuantity() {
