@@ -297,49 +297,44 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             ),
 
             // Payment Button
-            SubscribeButtonComponent(
-                text: 'Pay Now',
-                onPressed: () async {
-                  if (await _addressController.hasAddresses()) {
-                    print("selected address");
-
-                    await checkoutController.processPayment(
-                        addresss,
-                        // widget.totalPrice,
-                        widget.orderData,
-                        widget.orderData['price'],
-                        widget.totalDays,
-                        (widget.orderData['vacantPrice'] *
-                                widget.orderData['quantity'])
-                            .toDouble(),
-                        widget.selectedDates,
-                        context);
-
-                    await _walletController2.saveWalletHistory(
-                        widget.totalPrice,
-                        "Debited",
-                        Generators.generatePaymentId(),
-                        "Success",
-                        userUid);
-                  } else {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return CustomPopup(
-                            title: "Address not found",
-                            description:
-                                "You have not added any address yet. Please add a new address to proceed.",
-                            buttonText: "Got It!",
-                            onButtonPressed: () {
-                              Get.back();
-                            },
-                          );
-                        });
-                  }
-                }),
+            SubscribeButtonComponent(text: 'Pay Now', onPressed: paynow),
           ],
         ),
       ),
     );
+  }
+
+  void paynow() async {
+    if (await _addressController.hasAddresses()) {
+      print("selected address");
+
+      await checkoutController.processPayment(
+          addresss,
+          // widget.totalPrice,
+          widget.orderData,
+          widget.orderData['price'],
+          widget.totalDays,
+          (widget.orderData['vacantPrice'] * widget.orderData['quantity'])
+              .toDouble(),
+          widget.selectedDates,
+          context);
+
+      // await _walletController2.saveWalletHistory(widget.totalPrice, "Debited",
+      //     Generators.generatePaymentId(), "Success", userUid);
+    } else {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CustomPopup(
+              title: "Address not found",
+              description:
+                  "You have not added any address yet. Please add a new address to proceed.",
+              buttonText: "Got It!",
+              onButtonPressed: () {
+                Get.back();
+              },
+            );
+          });
+    }
   }
 }

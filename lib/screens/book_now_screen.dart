@@ -63,7 +63,7 @@ class _BookNowScreenState extends State<BookNowScreen> {
       });
       // }
     } catch (e) {
-      // if (mounted) {
+      // if (mounted) {F
       setState(() {
         _isLoading = false;
       });
@@ -91,8 +91,6 @@ class _BookNowScreenState extends State<BookNowScreen> {
         for (var doc in itemSnapshot.docs) {
           final data = doc.data() as Map<String, dynamic>;
           String merchantId = data['merchantId'] ?? '';
-
-          // Skip items with missing price or vacantPrice
           if (data['price'] == null || data['vacantPrice'] == null) {
             print('Skipping item with missing price/vacantPrice: $data');
             continue;
@@ -110,10 +108,12 @@ class _BookNowScreenState extends State<BookNowScreen> {
             vendordata =
                 vendorList.firstWhere((v) => v.merchantId == merchantId);
           }
+          data['isActive'] = vendordata?.isActive;
 
           fetchedItems.add({
             'itemData': data,
-            'vendorData': vendordata,
+            'vendorName': vendordata?.vendorName,
+            'isActive': vendordata?.isActive
           });
         }
       }
@@ -154,7 +154,7 @@ class _BookNowScreenState extends State<BookNowScreen> {
   void _calculateTotalPrice() {
     if (_selectedIndex == -1) return;
 
-    var bottle = _bottleItems[2]['itemData']; // Access itemData directly
+    var bottle = _bottleItems[_selectedIndex]['itemData']; // Use selected index
     print('Selected bottle: $bottle');
     print('Quantity: $_quantity');
     print('Has empty bottle: $_hasEmptyBottle');
@@ -175,20 +175,27 @@ class _BookNowScreenState extends State<BookNowScreen> {
     });
   }
 
-  /// Handles subscription button press
   void _onSubscribePressed() {
     if (_selectedPackage != null && _selectedIndex != -1) {
+      final itemData = _bottleItems[_selectedIndex]['itemData'];
+      final price = (itemData['price'] ?? 0).toDouble();
+      final vacantPrice =
+          _hasEmptyBottle ? (itemData['vacantPrice'] ?? 0).toDouble() : 0.0;
+
+      final Map<String, dynamic> myOrderData = {
+        'bottle': itemData, // Use itemData directly
+        'quantity': _quantity,
+        'price': price,
+        'vacantPrice': vacantPrice,
+        'hasEmptyBottle': _hasEmptyBottle,
+        'totalPrice': (price * _quantity) + (_quantity * vacantPrice),
+      };
+
+      print("Data: $myOrderData");
+
       Get.toNamed(
         AppRoutes.subscription,
-        arguments: {
-          'bottle': _bottleItems[_selectedIndex],
-          'quantity': _quantity,
-          'price': _bottleItems[_selectedIndex]['price'],
-          'vacantPrice':
-              _hasEmptyBottle ? _bottleItems[_selectedIndex]['vacantPrice'] : 0,
-          'hasEmptyBottle': _hasEmptyBottle,
-          'totalPrice': _totalPrice,
-        },
+        arguments: myOrderData,
       );
     } else {
       showDialog(
@@ -207,19 +214,18 @@ class _BookNowScreenState extends State<BookNowScreen> {
     }
   }
 
-  /// Handles order button press
   void _onOrderPressed() {
     if (_selectedPackage != null && _selectedIndex != -1) {
-      try {} catch (e) {}
+      final bottleData = _bottleItems[_selectedIndex]['itemData'];
+
       print(_bottleItems[_selectedIndex]);
       print(_bottleItems[_selectedIndex]['price']);
       print([DateTime.now()]);
       final Map<String, dynamic> myOrderData = {
         'bottle': _bottleItems[_selectedIndex],
         'quantity': _quantity,
-        'price': _bottleItems[_selectedIndex]['price'],
-        'vacantPrice':
-            _hasEmptyBottle ? _bottleItems[_selectedIndex]['vacantPrice'] : 0,
+        'price': bottleData['price'],
+        'vacantPrice': _hasEmptyBottle ? bottleData['vacantPrice'] : 0,
         'hasEmptyBottle': _hasEmptyBottle,
         'totalPrice': _totalPrice,
       };
@@ -228,6 +234,7 @@ class _BookNowScreenState extends State<BookNowScreen> {
           "Total Price: ${_bottleItems[_selectedIndex]['price']} (Type: ${_bottleItems[_selectedIndex]['price'].runtimeType})");
       print("Total Days:1");
       print("Selected Dates: ${[DateTime.now()]}");
+      setState(() {});
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -369,14 +376,14 @@ class _BookNowScreenState extends State<BookNowScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                vendor.vendorName,
+                                vendor.bankName,
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold),
                                 textAlign: TextAlign.center,
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                vendor.businessAddress ?? '',
+                                vendor.vendorName ?? '',
                                 style: const TextStyle(
                                     fontSize: 12, color: Colors.grey),
                                 textAlign: TextAlign.center,

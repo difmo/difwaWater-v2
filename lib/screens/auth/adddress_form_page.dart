@@ -67,6 +67,12 @@ class _AddressFormState extends State<AddressForm> {
 
   Future<bool> saveAddress() async {
     try {
+      String userId = "";
+      List<Address> existingAddresses =
+          await addressController.getAddresses().first;
+
+      bool isOnlyAddress = existingAddresses.isEmpty;
+
       await addressController.saveAddress(
         Address(
           name: _nameController.text,
@@ -77,14 +83,15 @@ class _AddressFormState extends State<AddressForm> {
           street: _streetController.text,
           floor: _floorController.text,
           saveAddress: _isChecked,
-          userId: "", // Provide actual userId
+          userId: userId,
           isDeleted: _isdeleted,
-          isSelected: _isSelected,
+          isSelected: isOnlyAddress,
           docId: "",
           locationType: selectedLocationType,
           country: selectedCountry?.name ?? '',
         ),
       );
+
       return true;
     } catch (e) {
       print("Error saving address: $e");

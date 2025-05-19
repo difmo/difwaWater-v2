@@ -96,6 +96,8 @@ class CheckoutController extends GetxController {
       BuildContext context) async {
     double totalAmount = totalPrice * totalDays + vacantBottlePrice;
 
+    print("dfddfsfdf $orderData");
+
     if (walletBalance.value >= totalAmount) {
       double newBalance = walletBalance.value - totalAmount;
 
@@ -140,7 +142,7 @@ class CheckoutController extends GetxController {
           'totalDays': totalDays,
           'selectedDates': selectedDatesWithHistory,
           'orderData': orderData,
-          'address':address,
+          'address': address,
           'status': 'pending',
           'timestamp': FieldValue.serverTimestamp(),
           'merchantId': orderData['bottle']['merchantId'],
@@ -158,6 +160,7 @@ class CheckoutController extends GetxController {
               1,
         });
       } catch (e) {
+        print(e);
         showDialog(
             context: context,
             builder: (BuildContext context) {

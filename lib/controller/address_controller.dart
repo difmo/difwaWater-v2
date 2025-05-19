@@ -216,12 +216,16 @@ class AddressController extends GetxController {
         .where('isSelected', isEqualTo: true)
         .snapshots()
         .map((snapshot) {
+      print(
+          "Debug: getSelectedAddress snapshot received with ${snapshot.docs.length} docs");
       if (snapshot.docs.isNotEmpty) {
         var addressDocSnapshot = snapshot.docs.first;
+        print("Debug: Selected address data: ${addressDocSnapshot.data()}");
         return Address.fromJson(
           addressDocSnapshot.data() as Map<String, dynamic>,
         );
       } else {
+        print("Debug: No address selected");
         return null; // No address selected
       }
     });

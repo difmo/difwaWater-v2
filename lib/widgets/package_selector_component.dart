@@ -1,5 +1,4 @@
 import 'package:difwa/config/app_constant.dart';
-import 'package:difwa/models/stores_models/store_new_modal.dart';
 import 'package:flutter/material.dart';
 
 class PackageSelectorComponent extends StatefulWidget {
@@ -22,11 +21,10 @@ class _PackageSelectorComponentState extends State<PackageSelectorComponent> {
 
   void _handleSelection(int index) {
     var entry = widget.bottleItems[index];
-    var vendor = entry['vendorData'] as VendorModal?;
-    bool isActive = vendor?.isActive ?? true;
+    bool isActive = entry['isActive'] ?? true;
 
     if (!isActive) {
-      debugPrint("🚫 Merchant is inactive: ${vendor?.vendorName}");
+      debugPrint("🚫 Merchant is inactive: ${entry['vendorName']}");
       return;
     }
 
@@ -59,6 +57,9 @@ class _PackageSelectorComponentState extends State<PackageSelectorComponent> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          SizedBox(
+            height: 20,
+          ),
           const Text(
             'Select Your Package',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -72,15 +73,14 @@ class _PackageSelectorComponentState extends State<PackageSelectorComponent> {
               itemBuilder: (context, index) {
                 var entry = widget.bottleItems[index];
                 var bottle = entry['itemData'] ?? {};
-                VendorModal? vendor = entry['vendorData'];
 
                 bool isSelected = index == _selectedIndex;
-                bool isActive = vendor?.isActive ?? true;
+                bool isActive = entry['isActive'] ?? true;
 
                 String imageUrl =
                     bottle['imageUrl'] ?? bottleImageUrl; // Fallback image URL
                 String merchantName =
-                    vendor?.vendorName ?? 'Vendor'; // Default 'Vendor'
+                    entry['vendorName'] ?? 'Vendor'; // Use entry['vendorName']
                 String size =
                     bottle['size']?.toString() ?? ''; // Default empty string
                 String name = bottle['name'] ?? 'Premium'; // Default 'Premium'
